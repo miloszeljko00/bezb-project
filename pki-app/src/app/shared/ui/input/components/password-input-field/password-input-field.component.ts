@@ -10,6 +10,7 @@ export class PasswordInputFieldComponent {
   
   @Input() value = '';
   @Input() disabled = false;
+  @Input() autocomplete = '';
   @Output() valueChange = new EventEmitter<string>();
 
   valueChanged(event: string) {

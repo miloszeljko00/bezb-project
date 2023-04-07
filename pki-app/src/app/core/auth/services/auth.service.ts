@@ -26,10 +26,10 @@ export class AuthService {
     this.user = JSON.parse(user)
     this.token = token
 
+    console.log('%cMyProject%cline:29%cthis.tokenExpired(this.token)', 'color:#fff;background:#ee6f57;padding:3px;border-radius:2px', 'color:#fff;background:#1f3c88;padding:3px;border-radius:2px', 'color:#fff;background:rgb(251, 178, 23);padding:3px;border-radius:2px', this.tokenExpired(this.token))
     if(this.tokenExpired(this.token)){
-      window.sessionStorage.removeItem('token')
-      window.sessionStorage.removeItem('user')
-      window.location.href = '/'
+      this.clearAuth()
+      this.router.navigate([''])
     }
    }
 
@@ -43,7 +43,7 @@ export class AuthService {
         window.sessionStorage.setItem('user', JSON.stringify(this.user))
 
         this.toastr.success('Login successful.', "Login Success")
-        window.location.href = '/'
+        this.router.navigate([''])
       },
       error: (error: Error) => {
         this.toastr.error("Invalid credentials.", "Login Failed")
@@ -52,16 +52,14 @@ export class AuthService {
   }
 
   logout() {
-    return this.http.get<LoginResponse>(environment.apiUrl+"/api/auth/actions/logout").subscribe({
+    this.http.get<LoginResponse>(environment.apiUrl+"/api/auth/actions/logout").subscribe({
       next: (response) => {
-        window.sessionStorage.removeItem('token')
-        window.sessionStorage.removeItem('user')
-        window.location.href = '/'
+        this.clearAuth()
+        this.router.navigate([''])
       },
       error: (error: Error) => {
-        window.sessionStorage.removeItem('token')
-        window.sessionStorage.removeItem('user')
-        window.location.href = '/'
+        this.clearAuth()
+        this.router.navigate([''])
       }
     })
   }
@@ -109,7 +107,7 @@ export class AuthService {
   private tokenExpired(token: string): boolean {
     const decodedToken: Token = jwtDecode(token)
 
-    const expirationDate = new Date(decodedToken.exp)
+    const expirationDate = new Date((decodedToken.exp as number ) * 1000)
     const currentDate = new Date()
 
     return currentDate > expirationDate

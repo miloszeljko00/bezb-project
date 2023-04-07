@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +43,7 @@ public class JwtService {
         var sub = userDetails.getUsername();
         var roles = userDetails.getAuthorities();
         var iat = new Date(System.currentTimeMillis());
-        var exp = new Date(iat.getTime() + 1000*60*24);
+        var exp = new Date(iat.toInstant().plus(1, ChronoUnit.DAYS).toEpochMilli());
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(sub)

@@ -16,7 +16,7 @@ public class CertificateHolderController {
     public ResponseEntity<CreateEntityResponse> createEntity(@RequestBody CreateEntityRequest createEntityRequest) {
         // TODO: Implementirati kreiranje krajnjeg entiteta kome se izdaju sertifikati
 
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/actions/create-certificate-authority")

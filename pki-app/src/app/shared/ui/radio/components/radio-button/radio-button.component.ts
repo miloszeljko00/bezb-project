@@ -10,8 +10,7 @@ export interface RadioOption {
 @Component({
   selector: 'app-radio-button',
   templateUrl: './radio-button.component.html',
-  styleUrls: ['./radio-button.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./radio-button.component.scss']
 })
 export class RadioButtonComponent {
 
@@ -20,8 +19,11 @@ export class RadioButtonComponent {
   @Input() selected: any;
   @Output() selectedChange: EventEmitter<any> = new EventEmitter<any>();
 
+  ngOnInit() {
+    if(this.options[0]) this.selected = this.options[0].value;
+  }
+
   selectionChange(event: MatRadioChange){
-    this.selected = event;
     this.selectedChange.emit(this.selected);
   }
 

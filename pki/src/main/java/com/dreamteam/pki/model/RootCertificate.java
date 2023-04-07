@@ -14,9 +14,6 @@ public class RootCertificate extends  Certificate{
     @OneToMany
     private List<Certificate> issuedCertificates;
 
-    @Column(name = "public_key")
-    private String publicKey;
-
     @Column(name = "private_key")
     private String privateKey;
 }

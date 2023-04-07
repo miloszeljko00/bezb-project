@@ -14,54 +14,72 @@ import { Token } from '../models/token';
 })
 export class AuthService {
 
-  private user: User | null = null;
-  private token: string | null = null;
+  private user: User | null = null
+  private token: string | null = null
 
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {
-    const user = window.sessionStorage.getItem('user');
-    const token = window.sessionStorage.getItem('token');
-    if(!user) return;
-    if(!token) return;
+    const user = window.sessionStorage.getItem('user')
+    const token = window.sessionStorage.getItem('token')
+    if(!user) return
+    if(!token) return
 
-    this.user = JSON.parse(user);
-    this.token = token;
+    this.user = JSON.parse(user)
+    this.token = token
+
+    if(this.tokenExpired(this.token)){
+      window.sessionStorage.removeItem('token')
+      window.sessionStorage.removeItem('user')
+      window.location.href = '/'
+    }
    }
 
   login(loginRequest: LoginRequest) {
     this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/login", loginRequest).subscribe({
       next: (response) => {
-        this.token = response.token;
-        window.sessionStorage.setItem('token', this.token);
+        this.token = response.token
+        window.sessionStorage.setItem('token', this.token)
 
-        this.user = this.extractUser(this.token);
-        window.sessionStorage.setItem('user', JSON.stringify(this.user));
+        this.user = this.extractUser(this.token)
+        window.sessionStorage.setItem('user', JSON.stringify(this.user))
 
         this.toastr.success('Login successful.', "Login Success")
-        window.location.href = '/';
+        window.location.href = '/'
       },
       error: (error: Error) => {
         this.toastr.error("Invalid credentials.", "Login Failed")
       }
-    });
+    })
   }
 
   logout() {
     return this.http.get<LoginResponse>(environment.apiUrl+"/api/auth/actions/logout").subscribe({
       next: (response) => {
-        window.sessionStorage.removeItem('token');
-        window.sessionStorage.removeItem('user');
-        window.location.href = '/';
+        window.sessionStorage.removeItem('token')
+        window.sessionStorage.removeItem('user')
+        window.location.href = '/'
       },
       error: (error: Error) => {
-        window.sessionStorage.removeItem('token');
-        window.sessionStorage.removeItem('user');
-        window.location.href = '/';
+        window.sessionStorage.removeItem('token')
+        window.sessionStorage.removeItem('user')
+        window.location.href = '/'
       }
-    });
+    })
+  }
+  clearAuth() {
+    this.clearUser()
+    this.clearToken()
+  }
+  clearUser() {
+    window.sessionStorage.removeItem('user')
+    this.user = null
+  }
+  clearToken() {
+    window.sessionStorage.removeItem('token')
+    this.token = null
   }
 
   getUser() {
-    return this.user;
+    return this.user
   }
 
   getToken() {
@@ -73,18 +91,27 @@ export class AuthService {
   }
 
   isAdmin() {
-    return this.user != null && this.user.roles.includes('ROLE_ADMIN');
+    return this.user != null && this.user.roles.includes('ROLE_ADMIN')
   }
   isCertificateAuthority() {
-    return this.user != null && this.user.roles.includes('ROLE_CERTIFICATE_AUTHORITY');
+    return this.user != null && this.user.roles.includes('ROLE_CERTIFICATE_AUTHORITY')
   }
   isEntity() {
-    return this.user != null && this.user.roles.includes('ROLE_ENTITY');
+    return this.user != null && this.user.roles.includes('ROLE_ENTITY')
   }
 
   private extractUser(token: string) {
-        const decodedToken: Token = jwtDecode(token);
-        const authorities = decodedToken.authorities.map((auth: any) => auth.authority);
-        return new User(decodedToken.sub, authorities);
+        const decodedToken: Token = jwtDecode(token)
+        const authorities = decodedToken.authorities.map((auth: any) => auth.authority)
+        return new User(decodedToken.sub, authorities)
+  }
+
+  private tokenExpired(token: string): boolean {
+    const decodedToken: Token = jwtDecode(token)
+
+    const expirationDate = new Date(decodedToken.exp)
+    const currentDate = new Date()
+
+    return currentDate > expirationDate
   }
 }

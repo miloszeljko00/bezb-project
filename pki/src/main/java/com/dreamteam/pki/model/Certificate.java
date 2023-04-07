@@ -32,4 +32,7 @@ public class Certificate {
 
     @Column(name = "revoked")
     private boolean revoked;
+
+    @Column(name = "public_key")
+    private String publicKey;
 }

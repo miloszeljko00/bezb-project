@@ -28,7 +28,7 @@ public class CertificateController {
 
     @PostMapping("/actions/issue-entity-certificate")
     public ResponseEntity<IssueEntityCertificateResponse> issueEntityCertificate(@RequestBody IssueEntityCertificateRequest issueEntityCertificateRequest) {
-        // TODO: Na zahtev admina ili CA kreirati novi intermediate sertifikat
+        // TODO: Na zahtev admina ili CA kreirati novi entity sertifikat
 
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -39,6 +39,7 @@ public class CertificateController {
         //  ili na zahtev CA ukoliko je potpisan od strane njegovog sertifikata
         //  napomena: Ukoliko je sertifikat korenski ili sredisnji bitno je proglasiti nevalidnim
         //  sve sertifikate potpisane ovim sertifikatom!
+
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -54,10 +55,11 @@ public class CertificateController {
     public ResponseEntity<GetCertificateResponse> getCertificate(@PathVariable String certificateId) {
         // TODO: Vratiti sertifikat ukoliko sertifikat sa trazenim Id-em postoji
         //  i pripada ulogovanom korisniku koji ga je zatrazio
+
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    @GetMapping("{certificateId}/actions")
+    @GetMapping("{certificateId}/actions/download")
     public ResponseEntity<DownloadCertificateResponse> downloadCertificate(@PathVariable String certificateId) {
         // TODO: Vratiti sertifikat sa trazenim Id-em kao .pem datoteku na zahtev vlasnika ili izdavaoca
 

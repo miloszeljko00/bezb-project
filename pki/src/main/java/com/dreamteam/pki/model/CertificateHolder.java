@@ -20,6 +20,20 @@ public class CertificateHolder {
     @Column(name = "certificate_holder_type")
     private CertificateHolderType type;
 
+
+    /**
+     * Here is a breakdown of the fields in a typical X500Name:
+     *
+     * commonName: The common name of the entity, usually the name of a person or organization. This field is often abbreviated as "CN".
+     * country: The country or region where the entity is located. This field is often abbreviated as "C".
+     * state: The state or province where the entity is located. This field is often abbreviated as "ST".
+     * locality: The locality or city where the entity is located. This field is often abbreviated as "L".
+     * organization: The organization or company that the entity belongs to. This field is often abbreviated as "O".
+     * organizationalUnit: The unit or department within the organization that the entity belongs to. This field is often abbreviated as "OU".
+     * Here's an example of an X500Name:
+     *
+     * CN=John Doe,OU=IT,O=Acme Corp,L=New York,ST=NY,C=US
+     */
     @Column(name = "X500Name")
     private X500Name x500Name;
 

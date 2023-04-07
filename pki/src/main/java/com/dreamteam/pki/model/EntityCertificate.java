@@ -10,7 +10,4 @@ import lombok.Data;
 public class EntityCertificate extends Certificate {
     @ManyToOne
     private Certificate parentCertificate;
-
-    @Column(name = "private_key")
-    private String publicKey;
 }

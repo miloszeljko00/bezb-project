@@ -19,16 +19,20 @@ export class NavbarComponent {
     this.user = this.authService.getUser();
   }
 
-  login(): void {
+  login() {
    this.router.navigate(['/login']);
   }
 
-  logout(): void {
+  logout() {
     this.authService.logout();
   }
 
-  goToHomePage(): void {
+  goToHomePage() {
     this.router.navigate(['']);
+  }
+  
+  goToAccountsPage() {
+    this.router.navigate(['/accounts']);
   }
   
 }

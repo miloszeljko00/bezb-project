@@ -7,6 +7,7 @@ import { DateFieldComponent } from './components/date-field/date-field.component
 import { InputFieldComponent } from './components/input-field/input-field.component';
 import { NumberInputFieldComponent } from './components/number-input-field/number-input-field.component';
 import { SelectFieldComponent } from './components/select-field/select-field.component';
+import { PasswordInputFieldComponent } from './components/password-input-field/password-input-field.component';
 
 
 
@@ -17,6 +18,7 @@ import { SelectFieldComponent } from './components/select-field/select-field.com
     InputFieldComponent,
     NumberInputFieldComponent,
     SelectFieldComponent,
+    PasswordInputFieldComponent,
   ],
   imports: [
     CommonModule,
@@ -29,6 +31,7 @@ import { SelectFieldComponent } from './components/select-field/select-field.com
     InputFieldComponent,
     NumberInputFieldComponent,
     SelectFieldComponent,
+    PasswordInputFieldComponent,
   ]
 })
 export class InputModule { }

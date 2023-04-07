@@ -1,0 +1,6 @@
+<div class="footer">
+  <div>
+    <app-button (click)="closeDialog()">{{ cancelText }}</app-button>
+    <app-raised-button (click)="okClick.emit($event)" [disabled]="okDisabled">{{okText}}</app-raised-button>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+.button {
+  height: inherit;
+  color: gray;
+  transition: color .2s linear;
+}
+
+.button:hover {
+  color: limegreen;
+}

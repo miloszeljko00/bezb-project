@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  #----------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:6.19
+    container_name: pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@email.com
+      PGADMIN_DEFAULT_PASSWORD: user
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+  #----------------------------------------------------------------
+  pki-db:
+    image: postgres:15.1
+    container_name: pki-db
+    expose:
+      - "54320"
+    ports:
+      - "54320:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: pki-db
+      POSTGRES_PASSWORD: user
+      POSTGRES_HOST: localhost
+    volumes:
+      - pki-db-data:/var/lib/postgresql/data
+  #----------------------------------------------------------------
+volumes:
+  pgadmin-data:
+  pki-db-data:
+#----------------------------------------------------------------

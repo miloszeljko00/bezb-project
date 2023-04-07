@@ -1,0 +1,13 @@
+.button {
+  height: inherit;
+  transition: opacity 0.2s linear;
+}
+
+.active-button:hover {
+  opacity: 0.8;
+}
+
+.disabled-button {
+  background-color: #c2c2c2 !important;
+  color: white !important;
+}

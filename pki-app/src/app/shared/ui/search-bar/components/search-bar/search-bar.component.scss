@@ -1,0 +1,24 @@
+.search-bar{
+  margin-top: 20px;
+  background-color: #f2f2f2;
+  display: flex;
+  align-content:center;
+  width: inherit;
+  height: 40px;
+  margin-right: 50px;
+}
+
+.search-bar input{
+  background-color: #f2f2f2;
+  width: inherit;
+  border: none;
+}
+.search-bar input:focus{
+  outline: none;
+}
+
+.mat-icon{
+  margin: auto;
+  margin-left: 10px;
+  margin-right: 20px;
+}

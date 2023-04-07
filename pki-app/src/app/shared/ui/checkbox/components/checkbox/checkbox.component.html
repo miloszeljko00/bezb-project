@@ -1,0 +1,5 @@
+<mat-checkbox [checked]="checked" (change)="checkedChanged($event)">
+  <div class="checkbox-label">
+    <mat-icon *ngIf="fontIcon != ''" class="icon" [fontSet]="fontSet">{{fontIcon}}</mat-icon><ng-content></ng-content>
+  </div>
+</mat-checkbox>

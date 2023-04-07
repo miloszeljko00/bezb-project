@@ -13,10 +13,16 @@ export class NavbarComponent {
   user: User | null = null;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthService, 
     private router: Router
-    ) {
-    this.user = this.authService.getUser();
+  ) {}
+
+  ngOnInit() {
+    this.authService.getUserObservable().subscribe({
+      next: (result) => {
+        this.user = result
+      }
+    });
   }
 
   login() {

@@ -1,11 +1,11 @@
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
-  selector: 'app-button',
-  templateUrl: './button.component.html',
-  styleUrls: ['./button.component.scss'],
+  selector: 'app-secondary-button',
+  templateUrl: './secondary-button.component.html',
+  styleUrls: ['./secondary-button.component.scss'],
 })
-export class ButtonComponent {
+export class SecondaryButtonComponent {
 
   @Input() disabled: boolean = false;
 
@@ -15,6 +15,7 @@ export class ButtonComponent {
 
   ngOnInit() {
     if(!this.button) return;
+    
     if(this.disabled) {
       this.button.nativeElement.classList.add('disabled-button');
       this.button.nativeElement.classList.remove('active-button');
@@ -25,9 +26,9 @@ export class ButtonComponent {
     }
   }
 
-  ngOnChange(): void {
-    console.log(this.button)
+  ngOnChanges() {
     if(!this.button) return;
+
     if(this.disabled) {
       this.button.nativeElement.classList.add('disabled-button');
       this.button.nativeElement.classList.remove('active-button');

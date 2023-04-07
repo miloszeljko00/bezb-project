@@ -50,17 +50,17 @@ export class AuthService {
       next: (response) => {
         window.sessionStorage.removeItem('token');
         window.sessionStorage.removeItem('user');
-        this.toastr.success('Logout successful.', "Logout Success")
         window.location.href = '/';
       },
       error: (error: Error) => {
-        this.toastr.error("Couldn't logout safely.", "Logout Failed")
+        window.sessionStorage.removeItem('token');
+        window.sessionStorage.removeItem('user');
+        window.location.href = '/';
       }
     });
   }
 
   getUser() {
-    console.log('%cMyProject%cline:64%cthis.user', 'color:#fff;background:#ee6f57;padding:3px;border-radius:2px', 'color:#fff;background:#1f3c88;padding:3px;border-radius:2px', 'color:#fff;background:rgb(96, 143, 159);padding:3px;border-radius:2px', this.user)
     return this.user;
   }
 

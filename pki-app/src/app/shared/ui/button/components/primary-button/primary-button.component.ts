@@ -1,11 +1,11 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
-  selector: 'app-raised-button',
-  templateUrl: './raised-button.component.html',
-  styleUrls: ['./raised-button.component.scss'],
+  selector: 'app-primary-button',
+  templateUrl: './primary-button.component.html',
+  styleUrls: ['./primary-button.component.scss'],
 })
-export class RaisedButtonComponent {
+export class PrimaryButtonComponent {
 
   @Input() disabled: boolean = false;
 
@@ -15,7 +15,6 @@ export class RaisedButtonComponent {
 
   ngOnInit() {
     if(!this.button) return;
-    
     if(this.disabled) {
       this.button.nativeElement.classList.add('disabled-button');
       this.button.nativeElement.classList.remove('active-button');
@@ -26,9 +25,9 @@ export class RaisedButtonComponent {
     }
   }
 
-  ngOnChanges() {
+  ngOnChange(): void {
+    console.log(this.button)
     if(!this.button) return;
-
     if(this.disabled) {
       this.button.nativeElement.classList.add('disabled-button');
       this.button.nativeElement.classList.remove('active-button');

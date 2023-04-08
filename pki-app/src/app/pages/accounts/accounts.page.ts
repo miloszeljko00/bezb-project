@@ -37,7 +37,7 @@ export class AccountsPage {
     if(this.selectedRadioOption.value == "entity") {
       this.certificateHolderService.createCertificateHolderEntity(this.createCertificateHolderForm).subscribe({
         next: (result: any) => {
-          this.toastrService.success("pogodjen end point!");
+          this.toastrService.success("Certificate Holder Entity created successfully!");
           console.log(result);
         },
         error: (error: any) => {

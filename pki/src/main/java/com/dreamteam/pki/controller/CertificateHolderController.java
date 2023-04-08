@@ -22,6 +22,7 @@ public class CertificateHolderController {
 
     @PostMapping("/actions/create-entity")
     public ResponseEntity<CreateEntityResponse> createEntity(@RequestBody CreateEntityRequest createEntityRequest) {
+        //TODO: IMPLEMENTIRATI PROVERU DA LI ACCOUNT SA DATIM EMAILOM VEC POSTOJI
         var certificateHolder = customMapperService.convertCreateEntityRequestToCertificateHolder(createEntityRequest);
         certificateHolder = certificateHolderService.saveCertificateHolder(certificateHolder);
         return new ResponseEntity<>(customMapperService.convertCertificateHolderToCreateEntityResponse(certificateHolder), HttpStatus.OK);
@@ -29,10 +30,9 @@ public class CertificateHolderController {
 
     @PostMapping("/actions/create-certificate-authority")
     public ResponseEntity<CreateCertificateAuthorityResponse> createCertificateAuthority(@RequestBody CreateCertificateAuthorityRequest createCertificateAuthorityRequest) {
-        // TODO: Implementirati kreiranje sertifikacionog autoriteta kome se izdaju sertifikati
-        //  pomocu kojih on moze dalje da izdaje sertifikate
-
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        var certificateHolder = customMapperService.convertCreateCertificateAuthorityRequestToCertificateHolder(createCertificateAuthorityRequest);
+        certificateHolder = certificateHolderService.saveCertificateHolder(certificateHolder);
+        return new ResponseEntity<>(customMapperService.convertCertificateHolderToCreateCertificateAuthorityResponse(certificateHolder), HttpStatus.OK);
     }
 
     @DeleteMapping("{entityId}")

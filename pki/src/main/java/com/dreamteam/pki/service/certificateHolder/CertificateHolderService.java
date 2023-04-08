@@ -14,4 +14,8 @@ public class CertificateHolderService {
     public CertificateHolder  saveCertificateHolder(CertificateHolder holder){
         return certificateHolderRepository.save(holder);
     }
+
+    public void deleteCertificateHolder(CertificateHolder certificateHolder) {
+        certificateHolderRepository.delete(certificateHolder);
+    }
 }

@@ -33,6 +33,12 @@ public class Account implements UserDetails {
     @Column(name = "role")
     private Role role;
 
+    public Account(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));

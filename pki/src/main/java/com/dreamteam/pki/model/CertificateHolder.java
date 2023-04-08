@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.Data;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 
@@ -40,6 +41,6 @@ public class CertificateHolder {
     @OneToMany(mappedBy = "subject")
     private List<Certificate> certificates;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Account account;
 }

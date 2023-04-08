@@ -9,6 +9,7 @@
         [value]="selectedOption.displayValue"
         (input)="applyFilterOnInput($event)"
         (change)="updateFilterOnLostFocus(input)"
+        [disabled]="disabled"
         >
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event)" [displayWith]="displayFn" (opened)="updateFilterOnOpened(input)">
     <mat-option *ngFor="let option of filteredOptions" [value]="option">

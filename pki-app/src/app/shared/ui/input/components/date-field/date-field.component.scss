@@ -6,3 +6,11 @@
   display: flex;
   padding-top: 4px;
 }
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-icon-button{
+  margin-right: 5px;
+}

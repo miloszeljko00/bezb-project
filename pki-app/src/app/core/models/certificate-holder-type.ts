@@ -1,0 +1,4 @@
+export enum CertificateHolderType {
+  CERTIFICATE_AUTHORITY = 'CERTIFICATE AUTHORITY',
+  ENTITY = 'ENTITY',
+}

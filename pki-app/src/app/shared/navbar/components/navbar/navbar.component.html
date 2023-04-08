@@ -9,12 +9,17 @@
       <div *ngIf="user">
         <ng-container class="admin" *ngIf="user.roles.includes('ROLE_ADMIN')">
             <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
+            <app-navbar-button (click)="goToCertificatesPage()">Certificates</app-navbar-button>
             <app-navbar-button (click)="goToAccountsPage()">Accounts</app-navbar-button>
         </ng-container>
         <ng-container class="certificate-authority" *ngIf="user.roles.includes('ROLE_CERTIFICATE_AUTHORITY')">
+            <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
+            <app-navbar-button (click)="goToCertificatesPage()">Certificates</app-navbar-button>
+            <app-navbar-button (click)="goToAccountsPage()">Accounts</app-navbar-button>
         </ng-container>
         <ng-container class="entity" *ngIf="user.roles.includes('ROLE_ENTITY')">
             <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
+            <app-navbar-button (click)="goToCertificatesPage()">Certificates</app-navbar-button>
         </ng-container>
       </div>
   </div>

@@ -5,6 +5,8 @@ import com.dreamteam.pki.repository.ICertificateHolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CertificateHolderService {
 
@@ -14,7 +16,9 @@ public class CertificateHolderService {
     public CertificateHolder  saveCertificateHolder(CertificateHolder holder){
         return certificateHolderRepository.save(holder);
     }
-
+    public List<CertificateHolder> getAllCertificateHolders(){
+        return certificateHolderRepository.findAll();
+    }
     public void deleteCertificateHolder(CertificateHolder certificateHolder) {
         certificateHolderRepository.delete(certificateHolder);
     }

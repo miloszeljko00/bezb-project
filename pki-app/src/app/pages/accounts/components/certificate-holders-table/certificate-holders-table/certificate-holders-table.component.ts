@@ -2,6 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChil
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Observable, of } from 'rxjs';
 import { Certificate } from 'src/app/core/models/certificate';
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 
@@ -13,7 +14,7 @@ import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 })
 export class CertificateHoldersTableComponent implements AfterViewInit, OnInit{
 
-  @Input() data : CertificateHolder[] = [];
+  @Input() data$ : Observable<CertificateHolder[]> = of([]);
   @Output() addClicked = new EventEmitter<void>();
   @Output() revokeClicked = new EventEmitter<Certificate>();
 
@@ -23,11 +24,13 @@ export class CertificateHoldersTableComponent implements AfterViewInit, OnInit{
   dataSource = new MatTableDataSource<CertificateHolder>();
 
   constructor(public dialog: MatDialog) {
-    console.log(this.data);
   }
 
   ngOnInit() {
-    this.dataSource = new MatTableDataSource(this.data);
+    this.data$.subscribe((data: CertificateHolder[]) => {
+      this.dataSource = new MatTableDataSource(data);
+      console.log(data);
+    });
   }
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;

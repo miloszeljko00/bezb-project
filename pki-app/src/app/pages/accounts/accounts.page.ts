@@ -1,49 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { CreateCertificateHolderDialogComponent } from './dialogs/create-certificate-holder.dialog/create-certificate-holder.dialog';
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
-import { CertificateHolderType } from 'src/app/core/models/certificate-holder-type';
-
-
-const CERTIFICATE_HOLDERS: CertificateHolder[] = [
-  {
-    id: 'axdasdxas-dxa-dax-sdx-asxasx',
-    email: 'ca@email.com',
-    type: CertificateHolderType.CERTIFICATE_AUTHORITY,
-    commonName: 'Pera Peric',
-    country: 'Serbia',
-    locality: 'Novi Sad',
-    state: 'Vojvodina',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'WebTeam',
-  },
-  {
-    id: 'asdafgfa-dasd-asdasa-hhgds-gasfsas',
-    email: 'entity@email.com',
-    type: CertificateHolderType.ENTITY,
-    commonName: 'Djoka Djokic',
-    country: 'Bosna i Hercegovina',
-    locality: 'Banjaluka',
-    state: 'Republika Srpska',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'AITeam',
-  }
-]
-
+import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-accounts',
   templateUrl: './accounts.page.html',
   styleUrls: ['./accounts.page.scss']
 })
-export class AccountsPage {
+export class AccountsPage implements OnInit{
 
-  data: CertificateHolder[] = CERTIFICATE_HOLDERS;
+  certificateHolders$: Observable<CertificateHolder[]> = of([]);
   constructor(
     public toastrService: ToastrService,
-    public dialog : MatDialog
-     ) {}
+    public dialog : MatDialog,
+    public certificateHolderService: CertificateHolderService
+     ) {
+     }
+
+  ngOnInit() {
+    this.certificateHolders$ = this.certificateHolderService.getAllCertificateHolders();
+  }
 
   openCreateCertificateHolderDialog(){
     const dialogRef = this.dialog.open(CreateCertificateHolderDialogComponent, {
@@ -51,7 +31,7 @@ export class AccountsPage {
       height: '60%',
       autoFocus: false,
       restoreFocus: false,
-      data: CERTIFICATE_HOLDERS
+      data: this.certificateHolders$
     });
     dialogRef.afterClosed().subscribe({
       next: (result: any) => {

@@ -1,3 +1,6 @@
-<div class="app-certificate-holders-table">
-  <app-certificate-holders-table [data]="data"></app-certificate-holders-table>
-</div>
+<ng-container *ngIf="certificateHolders$ | async as data">
+  <div class="app-certificate-holders-table">
+    <app-certificate-holders-table [data$]="certificateHolders$"></app-certificate-holders-table>
+  </div>
+</ng-container>
+

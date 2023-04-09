@@ -1,6 +1,6 @@
 <ng-container *ngIf="certificateHolders$ | async as data">
   <div class="app-certificate-holders-table">
-    <app-certificate-holders-table [data$]="certificateHolders$" (addClicked)="openCreateCertificateHolderDialog()"></app-certificate-holders-table>
+    <app-certificate-holders-table [data$]="certificateHolders$" (addClicked)="openCreateCertificateHolderDialog()" (deleteClicked)="openConfirmDialog($event)"></app-certificate-holders-table>
   </div>
 </ng-container>
 

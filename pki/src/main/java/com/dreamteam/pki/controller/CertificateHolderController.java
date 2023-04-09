@@ -53,18 +53,15 @@ public class CertificateHolderController {
         return new ResponseEntity<>(customMapperService.convertCertificateHolderToCreateCertificateAuthorityResponse(certificateHolder), HttpStatus.OK);
     }
 
-    @DeleteMapping("{entityId}")
+    @DeleteMapping("/actions/delete-entity/{entityId}")
     public ResponseEntity<Void> deleteEntity(@PathVariable String entityId) {
-        // TODO: Implementirati brisanje krajnjeg entiteta kome se izdaju sertifikati
-
+        certificateHolderService.deleteCertificateHolderEntity(entityId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("{certificateAuthorityId}")
+    @DeleteMapping("/actions/delete-certificate-authority/{certificateAuthorityId}")
     public ResponseEntity<Void> deleteCertificateAuthority(@PathVariable String certificateAuthorityId) {
-        // TODO: Implementirati brisanje sertifikacionog autoriteta kome se izdaju sertifikati
-        //  pomocu kojih on moze dalje da izdaje sertifikate, proci kroz sve Certificate u listi i postaviti revoked na true
-
+        certificateHolderService.deleteCertificateHolderCA(certificateAuthorityId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

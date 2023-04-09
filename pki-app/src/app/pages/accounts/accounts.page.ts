@@ -5,6 +5,8 @@ import { CreateCertificateHolderDialogComponent } from './dialogs/create-certifi
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
 import { BehaviorSubject } from 'rxjs';
+import { ConfirmDialog } from 'src/app/shared/ui/dialog/components/confirm-dialog/confirm.dialog';
+import { CertificateHolderType } from 'src/app/core/models/certificate-holder-type';
 
 @Component({
   selector: 'app-accounts',
@@ -23,17 +25,12 @@ export class AccountsPage {
      }
 
   ngAfterContentInit() {
-    console.log("usao sam u ngAfterContentInit")
     this.certificateHolderService.getAllCertificateHolders().subscribe({
       next : (result: any) => {
-        console.log("Rezultat stigao sa beka poruka iz ngAfterContentInit" )
-        console.log(result);
-        console.log("poruka iz ngAfterContentInit")
         this.certificateHolders = result;
         this.certificateHolders$.next(this.certificateHolders);
       },
       error : (error:any) => {
-        console.log(error);
       }
     });
   }
@@ -59,6 +56,45 @@ export class AccountsPage {
         // );
       },
       error: (error:any) => {
+      }
+    })
+  }
+  openConfirmDialog(certificateHolder : CertificateHolder){
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      autoFocus: false,
+      restoreFocus: false,
+      data: { title: 'Delete certificate holder?' }
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (result: boolean) => {
+        console.log(result);
+        if(result){
+          if(certificateHolder.type == CertificateHolderType.CERTIFICATE_AUTHORITY){
+            this.certificateHolderService.deleteCertificateHolderCertificateAuthority(certificateHolder.id).subscribe({
+              next: () => {
+                this.certificateHolders = this.certificateHolders.filter((item) => item.id !== certificateHolder.id);
+                this.certificateHolders$.next(this.certificateHolders);
+                this.toastrService.success("Certificate Holder CA deleted successfully")
+              },
+              error: (error:any) => {
+                this.toastrService.error(error);
+              }
+            })
+          }
+          else if(certificateHolder.type == CertificateHolderType.ENTITY){
+            this.certificateHolderService.deleteCertificateHolderEntity(certificateHolder.id).subscribe({
+              next: () => {
+                this.certificateHolders = this.certificateHolders.filter((item) => item.id !== certificateHolder.id);
+                this.certificateHolders$.next(this.certificateHolders);
+                this.toastrService.success("Certificate Holder Entity deleted successfully")
+              },
+              error: (error:any) => {
+                this.toastrService.error(error);
+              }
+            })
+          }
+        }
       }
     })
   }

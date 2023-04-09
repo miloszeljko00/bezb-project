@@ -89,7 +89,8 @@ public class CustomMapperService {
     public CreateEntityResponse convertCertificateHolderToCreateEntityResponse(CertificateHolder certificateHolder) {
         CreateEntityResponse response = new CreateEntityResponse();
         response.setEmail(certificateHolder.getAccount().getEmail());
-        response.setPassword(certificateHolder.getAccount().getPassword());
+        response.setType(certificateHolder.getType());
+        response.setId(certificateHolder.getId());
         RDN[] rdns = certificateHolder.getX500Name().getRDNs();
 
         // Iterate through the RDNs to find the one with the type "commonName"
@@ -111,7 +112,8 @@ public class CustomMapperService {
     public CreateCertificateAuthorityResponse convertCertificateHolderToCreateCertificateAuthorityResponse(CertificateHolder certificateHolder) {
         CreateCertificateAuthorityResponse response = new CreateCertificateAuthorityResponse();
         response.setEmail(certificateHolder.getAccount().getEmail());
-        response.setPassword(certificateHolder.getAccount().getPassword());
+        response.setType(certificateHolder.getType());
+        response.setId(certificateHolder.getId());
         RDN[] rdns = certificateHolder.getX500Name().getRDNs();
 
         // Iterate through the RDNs to find the one with the type "commonName"

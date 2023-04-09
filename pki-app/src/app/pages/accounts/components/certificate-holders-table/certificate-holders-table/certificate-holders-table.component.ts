@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, of } from 'rxjs';
-import { Certificate } from 'src/app/core/models/certificate';
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 
 
@@ -17,7 +16,7 @@ export class CertificateHoldersTableComponent implements AfterViewInit, OnInit{
   @Input() data$ : Observable<CertificateHolder[]> = of([]);
   @Output() addClicked = new EventEmitter<void>();
   @Output() editClicked = new EventEmitter<any>();
-  @Output() revokeClicked = new EventEmitter<Certificate>();
+  @Output() deleteClicked = new EventEmitter<CertificateHolder>();
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -29,10 +28,7 @@ export class CertificateHoldersTableComponent implements AfterViewInit, OnInit{
   }
 
   ngOnInit() {
-    console.log("random ispis iz ngOnInit tabele")
     this.data$.subscribe((data: CertificateHolder[]) => {
-      console.log("ispisujem data iz ngOnInit tabele")
-      console.log(data);
       this.dataSource = new MatTableDataSource(data);
     });
   }

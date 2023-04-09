@@ -15,4 +15,5 @@ public class CreateRootCertificateResponse {
     private UserInfo subject;
     private Date iat;
     private Date exp;
+    private boolean revoked;
 }

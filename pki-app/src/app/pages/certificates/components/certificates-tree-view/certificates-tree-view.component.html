@@ -1,0 +1,10 @@
+<div>
+<div class="container">
+  <div *ngFor="let node of data">
+    <hr>
+    <tree-view #treeView [data]="node" [template]="treeTemplate"></tree-view>
+  </div>
+  <hr>
+</div>
+
+<ng-template #treeTemplate let-node>{{ node.data.serialNumber }}</ng-template>

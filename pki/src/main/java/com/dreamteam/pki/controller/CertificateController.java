@@ -17,7 +17,6 @@ import com.dreamteam.pki.service.generators.KeyPairGenerator;
 import com.dreamteam.pki.service.certificateHolder.CertificateHolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -36,7 +35,68 @@ public class CertificateController {
     private final CertificateHolderService certificateHolderService;
     private final CertificateService certificateService;
     private final KeyPairGenerator keyPairGenerator;
-    private final X500NameMapper x500NameMapper;
+
+    @GetMapping("/{serialNumber}")
+    public ResponseEntity<Object> getCertificate(@PathVariable String serialNumber, Authentication authentication) {
+        var user = certificateHolderService.findByEmail(authentication.getName());
+
+        if(user == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        var certificate = certificateService.findBySerialNumber(new BigInteger(serialNumber));
+
+        if(certificate == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        var response = GetCertificateResponse.builder()
+                .serialNumber(certificate.getSerialNumber().toString())
+                .type(certificate.getType().toString())
+                .issuer(X500NameMapper.fromX500Name(certificate.getIssuer().getX500Name(), certificate.getIssuer().getType()))
+                .subject(X500NameMapper.fromX500Name(certificate.getSubject().getX500Name(), certificate.getSubject().getType()))
+                .iat(certificate.getDateRange().getStartDate())
+                .exp(certificate.getDateRange().getEndDate())
+                .revoked(certificate.isRevoked())
+                .issuedCertificates(new ArrayList<>())
+                .build();
+
+        if(user.getType() == CertificateHolderType.ADMIN) {
+
+            if(certificate.getType() == CertificateType.ROOT_CERTIFICATE){
+                response.setIssuedCertificates(((RootCertificate) certificate).getIssuedCertificates());
+            }
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        if(user.getType() == CertificateHolderType.CERTIFICATE_AUTHORITY) {
+            if(((CertificateAuthority) user).ownsCertificate(certificate)){
+                if(certificate.getType() == CertificateType.ROOT_CERTIFICATE){
+                    response.setIssuedCertificates(((RootCertificate) certificate).getIssuedCertificates());
+                }else if(certificate.getType() == CertificateType.INTERMEDIATE_CERTIFICATE){
+                    response.setIssuedCertificates(((IntermediateCertificate) certificate).getIssuedCertificates());
+                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        }
+
+        if(user.getType() == CertificateHolderType.ENTITY) {
+            if(user.getCertificates().contains(certificate)) return new ResponseEntity<>(response, HttpStatus.OK);
+            else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping
+    public ResponseEntity<Object> getAllCertificate(Authentication authentication) {
+        var user = certificateHolderService.findByEmail(authentication.getName());
+
+        if(user == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        var response = new GetAllCertificateResponse(user.getCertificates());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @AdminRole
     @PostMapping("/actions/create-root-certificate")
@@ -67,10 +127,11 @@ public class CertificateController {
         var response = CreateRootCertificateResponse.builder()
                 .serialNumber(rootCertificate.getSerialNumber().toString())
                 .type(rootCertificate.getType().toString())
-                .issuer(x500NameMapper.fromX500Name(rootCertificate.getIssuer().getX500Name()))
-                .subject(x500NameMapper.fromX500Name(rootCertificate.getSubject().getX500Name()))
+                .issuer(X500NameMapper.fromX500Name(rootCertificate.getIssuer().getX500Name(), rootCertificate.getIssuer().getType()))
+                .subject(X500NameMapper.fromX500Name(rootCertificate.getSubject().getX500Name(), rootCertificate.getSubject().getType()))
                 .iat(rootCertificate.getDateRange().getStartDate())
                 .exp(rootCertificate.getDateRange().getEndDate())
+                .revoked(rootCertificate.isRevoked())
             .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -133,11 +194,12 @@ public class CertificateController {
         var response = CreateIntermediateCertificateResponse.builder()
                 .serialNumber(intermediateCertificate.getSerialNumber().toString())
                 .type(intermediateCertificate.getType().toString())
-                .issuer(x500NameMapper.fromX500Name(intermediateCertificate.getIssuer().getX500Name()))
-                .subject(x500NameMapper.fromX500Name(intermediateCertificate.getSubject().getX500Name()))
+                .issuer(X500NameMapper.fromX500Name(intermediateCertificate.getIssuer().getX500Name(), intermediateCertificate.getIssuer().getType()))
+                .subject(X500NameMapper.fromX500Name(intermediateCertificate.getSubject().getX500Name(), intermediateCertificate.getSubject().getType()))
                 .iat(intermediateCertificate.getDateRange().getStartDate())
                 .exp(intermediateCertificate.getDateRange().getEndDate())
                 .parentCertificateSerialNumber(intermediateCertificate.getParentCertificate().getSerialNumber().toString())
+                .revoked(intermediateCertificate.isRevoked())
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -196,11 +258,12 @@ public class CertificateController {
         var response = CreateEntityCertificateResponse.builder()
                 .serialNumber(entityCertificate.getSerialNumber().toString())
                 .type(entityCertificate.getType().toString())
-                .issuer(x500NameMapper.fromX500Name(entityCertificate.getIssuer().getX500Name()))
-                .subject(x500NameMapper.fromX500Name(entityCertificate.getSubject().getX500Name()))
+                .issuer(X500NameMapper.fromX500Name(entityCertificate.getIssuer().getX500Name(), entityCertificate.getIssuer().getType()))
+                .subject(X500NameMapper.fromX500Name(entityCertificate.getSubject().getX500Name(), entityCertificate.getSubject().getType()))
                 .iat(entityCertificate.getDateRange().getStartDate())
                 .exp(entityCertificate.getDateRange().getEndDate())
                 .parentCertificateSerialNumber(entityCertificate.getParentCertificate().getSerialNumber().toString())
+                .revoked(entityCertificate.isRevoked())
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -212,22 +275,6 @@ public class CertificateController {
         //  ili na zahtev CA ukoliko je potpisan od strane njegovog sertifikata
         //  napomena: Ukoliko je sertifikat korenski ili sredisnji bitno je proglasiti nevalidnim
         //  sve sertifikate potpisane ovim sertifikatom!
-
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    @GetMapping
-    public ResponseEntity<Object> getAllCertificate() {
-        // TODO: Vratiti listu svih sertifikata koji pripadaju ulogovanom korisniku,
-        //  odnosno sve sertifikate ukoliko admin pristupa endpoint-u
-
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    @GetMapping("/{certificateId}")
-    public ResponseEntity<Object> getCertificate(@PathVariable String certificateId) {
-        // TODO: Vratiti sertifikat ukoliko sertifikat sa trazenim Id-em postoji
-        //  i pripada ulogovanom korisniku koji ga je zatrazio
 
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }

@@ -1,6 +1,7 @@
 package com.dreamteam.pki.service.customMapper;
 
 import com.dreamteam.pki.dto.certificate_holder.UserInfo;
+import com.dreamteam.pki.model.enums.CertificateHolderType;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class X500NameMapper {
 
-    public X500Name toX500Name(UserInfo userInfo){
+    public static X500Name toX500Name(UserInfo userInfo){
         return (new X500NameBuilder(BCStyle.INSTANCE))
             .addRDN(BCStyle.UID, userInfo.getId())
             .addRDN(BCStyle.CN, userInfo.getCommonName())
@@ -22,7 +23,7 @@ public class X500NameMapper {
         .build();
     }
 
-    public UserInfo fromX500Name(X500Name x500Name) {
+    public static UserInfo fromX500Name(X500Name x500Name, CertificateHolderType certificateHolderType) {
         return UserInfo.builder()
             .id(x500Name.getRDNs(BCStyle.UID).length > 0 ? x500Name.getRDNs(BCStyle.UID)[0].getFirst().getValue().toString() : "")
             .commonName(x500Name.getRDNs(BCStyle.CN).length > 0 ? x500Name.getRDNs(BCStyle.CN)[0].getFirst().getValue().toString() : "")
@@ -32,6 +33,7 @@ public class X500NameMapper {
             .country(x500Name.getRDNs(BCStyle.C).length > 0 ? x500Name.getRDNs(BCStyle.C)[0].getFirst().getValue().toString() : "")
             .state(x500Name.getRDNs(BCStyle.ST).length > 0 ? x500Name.getRDNs(BCStyle.ST)[0].getFirst().getValue().toString() : "")
             .locality(x500Name.getRDNs(BCStyle.L).length > 0 ? x500Name.getRDNs(BCStyle.L)[0].getFirst().getValue().toString() : "")
+            .type(certificateHolderType.toString())
         .build();
     }
 }

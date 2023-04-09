@@ -7,59 +7,9 @@ import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 import { CertificateHolderType } from 'src/app/core/models/certificate-holder-type';
 import { CertificateType } from 'src/app/core/models/certificate-type';
 
-const CERTIFICATE_HOLDERS: CertificateHolder[] = [
-  { 
-    id: 'axdasdxas-dxa-dax-sdx-asxasx',
-    email: 'ca@email.com',
-    type: CertificateHolderType.CERTIFICATE_AUTHORITY, 
-    commonName: 'Pera Peric',
-    country: 'Serbia',
-    locality: 'Novi Sad',
-    state: 'Vojvodina',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'WebTeam',
-  },
-  { 
-    id: 'asdafgfa-dasd-asdasa-hhgds-gasfsas',
-    email: 'entity@email.com',
-    type: CertificateHolderType.ENTITY, 
-    commonName: 'Djoka Djokic',
-    country: 'Bosna i Hercegovina',
-    locality: 'Banjaluka',
-    state: 'Republika Srpska',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'AITeam',
-  }
-]
-const CERTIFICATES: Certificate[] = [
-  { 
-    serialNumber: '1', 
-    type: CertificateType.ROOT_CERTIFICATE, 
-    issuer: CERTIFICATE_HOLDERS[0], 
-    subject: CERTIFICATE_HOLDERS[0], 
-    iat: new Date(2023, 4, 7, 15, 15, 0), 
-    exp: new Date(2024, 4, 7, 15, 15, 0), 
-    publicKey: 'gsracxASJTSDFGADFA',
-  },
-  { 
-    serialNumber: '2', 
-    type: CertificateType.INTERMEDIATE_CERTIFICATE, 
-    issuer: CERTIFICATE_HOLDERS[0], 
-    subject: CERTIFICATE_HOLDERS[1], 
-    iat: new Date(2023, 4, 7, 15, 15, 0), 
-    exp: new Date(2024, 4, 7, 15, 15, 0), 
-    publicKey: 'jgdhsfgfdasdfacasrfvq',
-  },
-  { 
-    serialNumber: '3', 
-    type: CertificateType.INTERMEDIATE_CERTIFICATE, 
-    issuer: CERTIFICATE_HOLDERS[0], 
-    subject: CERTIFICATE_HOLDERS[1], 
-    iat: new Date(2023, 1, 1, 12, 0, 0), 
-    exp: new Date(2024, 1, 1, 12, 0, 0), 
-    publicKey: 'hjegdsdcatyjuadacadacsda'
-  }
-];
+const CERTIFICATE_HOLDERS: CertificateHolder[] = []
+
+const CERTIFICATES: Certificate[] = [];
 
 @Component({
   selector: 'app-certificates-table',

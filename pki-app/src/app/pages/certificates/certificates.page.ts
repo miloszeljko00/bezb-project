@@ -2,11 +2,14 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NewCertificateDialog } from './dialogs/new-certificate-dialog/new-certificate.dialog';
 import { auto } from '@popperjs/core';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { ConfirmDialog } from 'src/app/shared/ui/dialog/components/confirm-dialog/confirm.dialog';
 import { Certificate } from 'src/app/core/models/certificate';
 import { CertificateType } from 'src/app/core/models/certificate-type';
 import { ToastrService } from 'ngx-toastr';
+import { CertificateService } from 'src/app/core/services/certificate.service';
+import { Certificates } from 'src/app/core/models/certificates';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-certificates',
@@ -17,10 +20,25 @@ export class CertificatesPage implements OnDestroy{
 
   newCertificateDialogClosedSubscription = new Subscription();
 
+  certificates$: BehaviorSubject<Certificate[]> = new BehaviorSubject<Certificate[]>([]);
+
   constructor(
     public dialog: MatDialog,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private certificateService: CertificateService
   ) {}
+
+  ngOnInit() {
+    this.certificateService.getAllCertificates().subscribe({
+      next: (certificates: Certificates) => {
+        console.log(certificates);
+        this.certificates$.next(certificates.certificates);
+      },
+      error: (error: HttpErrorResponse) =>{
+        this.toastr.error(error.message)
+      }
+    })
+  }
 
   ngOnDestroy(): void {
     this.newCertificateDialogClosedSubscription.unsubscribe()
@@ -46,7 +64,7 @@ export class CertificatesPage implements OnDestroy{
           case CertificateType.ENTITY_CERTIFICATE:
             break
           default:
-            this.toastr.error(
+            this.toastr.error("Invalid Certificate type: " + result.type);
         }
         
 

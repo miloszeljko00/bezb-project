@@ -16,4 +16,5 @@ public class CreateEntityCertificateResponse {
     private Date iat;
     private Date exp;
     private String parentCertificateSerialNumber;
+    private boolean revoked;
 }

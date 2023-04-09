@@ -8,6 +8,7 @@ import lombok.Data;
 public class UserInfo {
     private String id;
     private String email;
+    private String type;
     private String commonName;
     private String country;
     private String state;

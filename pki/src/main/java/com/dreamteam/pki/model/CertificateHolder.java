@@ -43,4 +43,7 @@ public class CertificateHolder {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Account account;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 }

@@ -12,8 +12,8 @@ VALUES ('3403bb0f-0d70-40b0-955d-2424d7a5699e', 'entity@email.com', '$2a$10$4pFo
 INSERT INTO public.admins(id, account_id)
 VALUES ('8cff54a5-fb38-43db-9c01-ae383fc4e9be', '9d8eeb20-b52a-430f-9d0d-72cbaf592cf9');
 
-INSERT INTO certificate_holders (dtype, id, certificate_holder_type, x500name, account_id)
-VALUES ('CertificateAuthority', '8cff54a5-fb38-43db-9c01-ae383fc4e9be', 'CERTIFICATE_AUTHORITY', 'CN=MyCA', 'd206f89e-73cd-4388-ba29-8f528258db99');
+INSERT INTO certificate_holders (dtype, id, certificate_holder_type, x500name, account_id, is_deleted)
+VALUES ('CertificateAuthority', '8cff54a5-fb38-43db-9c01-ae383fc4e9be', 'CERTIFICATE_AUTHORITY', 'CN=MyCA', 'd206f89e-73cd-4388-ba29-8f528258db99', false);
 
-INSERT INTO certificate_holders (dtype, id, certificate_holder_type, x500name, account_id)
-VALUES ('Entity', 'e58e7a07-d5e5-4337-9e9d-fa8b56053727', 'ENTITY', 'CN=JohnDoe', '3403bb0f-0d70-40b0-955d-2424d7a5699e');
+INSERT INTO certificate_holders (dtype, id, certificate_holder_type, x500name, account_id, is_deleted)
+VALUES ('Entity', 'e58e7a07-d5e5-4337-9e9d-fa8b56053727', 'ENTITY', 'CN=JohnDoe', '3403bb0f-0d70-40b0-955d-2424d7a5699e', false);

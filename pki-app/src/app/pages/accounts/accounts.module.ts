@@ -17,7 +17,7 @@ import { CertificateHoldersTableComponent } from './components/certificate-holde
   declarations: [
     AccountsPage,
     CreateCertificateHolderDialogComponent,
-    CertificateHoldersTableComponent
+    CertificateHoldersTableComponent,
   ],
   imports: [
     CommonModule,

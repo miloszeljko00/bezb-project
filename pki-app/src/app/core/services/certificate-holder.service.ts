@@ -15,10 +15,10 @@ export class CertificateHolderService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  createCertificateHolderEntity(certificateHolderRequest: CreateEntityRequest) {
+  saveCertificateHolderEntity(certificateHolderRequest: CreateEntityRequest) {
     return this.http.post<any>(environment.apiUrl+"/api/certificate-holders/actions/create-entity", certificateHolderRequest);
   }
-  createCertificateHolderCA(certificateHolderRequest: CreateCertificateAuthorityRequest) {
+  saveCertificateHolderCA(certificateHolderRequest: CreateCertificateAuthorityRequest) {
     return this.http.post<CreateCertificateAuthorityResponse>(environment.apiUrl+"/api/certificate-holders/actions/create-certificate-authority", certificateHolderRequest);
   }
   getAllCertificateHolders() {

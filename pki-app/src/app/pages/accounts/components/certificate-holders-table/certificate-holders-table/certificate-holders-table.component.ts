@@ -16,20 +16,24 @@ export class CertificateHoldersTableComponent implements AfterViewInit, OnInit{
 
   @Input() data$ : Observable<CertificateHolder[]> = of([]);
   @Output() addClicked = new EventEmitter<void>();
+  @Output() editClicked = new EventEmitter<any>();
   @Output() revokeClicked = new EventEmitter<Certificate>();
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns: string[] = ['id', 'email', 'type', 'commonName', 'country', 'state', 'locality', 'organization', 'organizationalUnit'];
+  displayedColumns: string[] = ['id', 'email', 'type', 'commonName', 'country', 'state', 'locality', 'organization', 'organizationalUnit', 'actions'];
   dataSource = new MatTableDataSource<CertificateHolder>();
 
   constructor(public dialog: MatDialog) {
+
   }
 
   ngOnInit() {
+    console.log("random ispis iz ngOnInit tabele")
     this.data$.subscribe((data: CertificateHolder[]) => {
-      this.dataSource = new MatTableDataSource(data);
+      console.log("ispisujem data iz ngOnInit tabele")
       console.log(data);
+      this.dataSource = new MatTableDataSource(data);
     });
   }
   ngAfterViewInit() {

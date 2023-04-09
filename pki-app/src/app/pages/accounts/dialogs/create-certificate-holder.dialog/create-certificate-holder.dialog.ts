@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
@@ -26,7 +26,8 @@ export class CreateCertificateHolderDialogComponent {
   constructor(
     public toastrService: ToastrService,
      private certificateHolderService: CertificateHolderService,
-     @Inject(MAT_DIALOG_DATA) public data: CertificateHolder[]) {
+     @Inject(MAT_DIALOG_DATA) public data: CertificateHolder[],
+     public dialogRef: MatDialogRef<CreateCertificateHolderDialogComponent>) {
     this.radioOptions.push({
       value: "entity",
       displayValue: "Entity"
@@ -37,30 +38,26 @@ export class CreateCertificateHolderDialogComponent {
     this.selectedRadioOption = "entity";
   }
   createCertificateHolder(){
-    //TODO: NAPRAVITI NEKU VALIDACIJU DA SE NE MOZE BAS BILO STA SLATI NA FRONT
-    console.log(this.selectedRadioOption);
-    console.log(this.createCertificateHolderForm);
+    //TODO: NAPRAVITI NEKU VALIDACIJU DA SE NE MOZE BAS BILO STA SLATI NA BACK
     if(this.selectedRadioOption == "entity") {
-      this.certificateHolderService.createCertificateHolderEntity(this.createCertificateHolderForm).subscribe({
+      this.certificateHolderService.saveCertificateHolderEntity(this.createCertificateHolderForm).subscribe({
         next: (result: any) => {
           this.toastrService.success("Certificate Holder Entity created successfully!");
-          console.log(result);
+          this.dialogRef.close({data:result})
         },
         error: (error: any) => {
           this.toastrService.error(error);
-          console.log(error);
         }
       });
     }
     else if(this.selectedRadioOption == "certificate authority") {
-      this.certificateHolderService.createCertificateHolderCA(this.createCertificateHolderForm).subscribe({
+      this.certificateHolderService.saveCertificateHolderCA(this.createCertificateHolderForm).subscribe({
         next: (result: any) => {
           this.toastrService.success("Certificate Holder CA created successfully!");
-          console.log(result);
+          this.dialogRef.close({data:result})
         },
         error: (error: any) => {
           this.toastrService.error(error);
-          console.log(error);
         }
       });
     }

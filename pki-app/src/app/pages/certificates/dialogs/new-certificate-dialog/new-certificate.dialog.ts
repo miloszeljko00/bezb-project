@@ -7,10 +7,10 @@ import { CertificateType } from 'src/app/core/models/certificate-type';
 import { SelectOption } from 'src/app/shared/ui/input/components/select-field/select-field.component';
 
 const CERTIFICATE_HOLDERS: CertificateHolder[] = [
-  { 
+  {
     id: 'axdasdxas-dxa-dax-sdx-asxasx',
     email: 'ca@email.com',
-    type: CertificateHolderType.CERTIFICATE_AUTHORITY, 
+    type: CertificateHolderType.CERTIFICATE_AUTHORITY,
     commonName: 'Pera Peric',
     country: 'Serbia',
     locality: 'Novi Sad',
@@ -18,10 +18,10 @@ const CERTIFICATE_HOLDERS: CertificateHolder[] = [
     organization: 'WeDoSOFTWARE',
     organizationalUnit: 'WebTeam',
   },
-  { 
+  {
     id: 'asdafgfa-dasd-asdasa-hhgds-gasfsas',
     email: 'entity@email.com',
-    type: CertificateHolderType.ENTITY, 
+    type: CertificateHolderType.ENTITY,
     commonName: 'Djoka Djokic',
     country: 'Bosna i Hercegovina',
     locality: 'Banjaluka',
@@ -67,7 +67,6 @@ export class NewCertificateDialog {
   }
 
   createCertificate() {
-    console.log(this.certificateForm)
     this.dialogRef.close(this.certificateForm)
   }
 

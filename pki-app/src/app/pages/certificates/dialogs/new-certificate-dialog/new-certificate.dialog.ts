@@ -67,7 +67,6 @@ export class NewCertificateDialog {
   }
 
   createCertificate() {
-    console.log(this.certificateForm)
     this.dialogRef.close(this.certificateForm)
   }
 

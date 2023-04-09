@@ -24,7 +24,8 @@ public interface IKeyStoreWriter {
      *
      * @param certificateName - naziv pod kojim ce sertifikat biti sacuvan u key store, mora biti unique!
      * @param privateKey      - privatni kljuc za dekriptovanje sertifikata
+     * @param keyStorePassword        - kljuc keystore-a
      * @param certificate     - sertifikat koji se upisuje u key store
      */
-    void writeCertificate(String certificateName, PrivateKey privateKey, char[] password, java.security.cert.Certificate certificate);
+    void writeCertificate(String certificateName, PrivateKey privateKey, String keyStorePassword, java.security.cert.Certificate certificate);
 }

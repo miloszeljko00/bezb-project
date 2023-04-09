@@ -3,13 +3,22 @@ package com.dreamteam.pki.model;
 import com.dreamteam.pki.model.enums.CertificateType;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigInteger;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
-@Data
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@SuperBuilder
 @Table(name = "certificates")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Certificate {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificate_seq")
@@ -34,5 +43,8 @@ public class Certificate {
     private boolean revoked;
 
     @Column(name = "public_key")
-    private String publicKey;
+    private PublicKey publicKey;
+
+    @Column(name = "private_key")
+    private PrivateKey privateKey;
 }

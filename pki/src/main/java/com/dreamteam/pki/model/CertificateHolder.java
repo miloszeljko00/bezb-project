@@ -3,11 +3,16 @@ package com.dreamteam.pki.model;
 import com.dreamteam.pki.model.enums.CertificateHolderType;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.hibernate.annotations.Cascade;
 
+import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -15,7 +20,7 @@ import java.util.List;
 public class CertificateHolder {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "certificate_holder_type")
@@ -43,4 +48,12 @@ public class CertificateHolder {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Account account;
+
+    public CertificateHolder(){
+        certificates = new ArrayList<>();
+    }
+
+    public void addCertificate(Certificate certificate) {
+        this.certificates.add(certificate);
+    }
 }

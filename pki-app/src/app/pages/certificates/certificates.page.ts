@@ -5,6 +5,8 @@ import { auto } from '@popperjs/core';
 import { Subscription } from 'rxjs';
 import { ConfirmDialog } from 'src/app/shared/ui/dialog/components/confirm-dialog/confirm.dialog';
 import { Certificate } from 'src/app/core/models/certificate';
+import { CertificateType } from 'src/app/core/models/certificate-type';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-certificates',
@@ -15,7 +17,10 @@ export class CertificatesPage implements OnDestroy{
 
   newCertificateDialogClosedSubscription = new Subscription();
 
-  constructor(public dialog: MatDialog) {}
+  constructor(
+    public dialog: MatDialog,
+    private toastr: ToastrService
+  ) {}
 
   ngOnDestroy(): void {
     this.newCertificateDialogClosedSubscription.unsubscribe()
@@ -32,6 +37,19 @@ export class CertificatesPage implements OnDestroy{
     this.newCertificateDialogClosedSubscription = dialogRef.afterClosed().subscribe({
       next: (result: any) => {
         // TODO: Poslati zahtev za kreiranje sertifikata
+
+        switch(result.type) {
+          case CertificateType.ROOT_CERTIFICATE:
+            break
+          case CertificateType.INTERMEDIATE_CERTIFICATE:
+            break
+          case CertificateType.ENTITY_CERTIFICATE:
+            break
+          default:
+            this.toastr.error(
+        }
+        
+
       },
     })
   }

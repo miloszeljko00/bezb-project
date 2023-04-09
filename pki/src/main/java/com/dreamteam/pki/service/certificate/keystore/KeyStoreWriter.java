@@ -44,9 +44,9 @@ public class KeyStoreWriter implements IKeyStoreWriter {
     }
 
     @Override
-    public void writeCertificate(String certificateName, PrivateKey privateKey, char[] password, java.security.cert.Certificate certificate) {
+    public void writeCertificate(String certificateName, PrivateKey privateKey, String keyStorePassword, java.security.cert.Certificate certificate) {
         try {
-            keyStore.setKeyEntry(certificateName, privateKey, password, new Certificate[] {certificate});
+            keyStore.setKeyEntry(certificateName, privateKey, keyStorePassword.toCharArray(), new Certificate[] {certificate});
         } catch (KeyStoreException e) {
             e.printStackTrace();
         }

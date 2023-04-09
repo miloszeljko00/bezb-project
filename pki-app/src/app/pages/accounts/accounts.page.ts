@@ -78,6 +78,7 @@ export class AccountsPage {
                 this.toastrService.success("Certificate Holder CA deleted successfully")
               },
               error: (error:any) => {
+                console.log(error);
                 this.toastrService.error(error);
               }
             })
@@ -90,6 +91,7 @@ export class AccountsPage {
                 this.toastrService.success("Certificate Holder Entity deleted successfully")
               },
               error: (error:any) => {
+                console.log(error);
                 this.toastrService.error(error);
               }
             })

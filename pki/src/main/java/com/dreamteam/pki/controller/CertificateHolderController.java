@@ -40,17 +40,25 @@ public class CertificateHolderController {
 
     @PostMapping("/actions/create-entity")
     public ResponseEntity<CreateEntityResponse> saveEntity(@RequestBody CreateEntityRequest createEntityRequest) {
-        //TODO: IMPLEMENTIRATI PROVERU DA LI ACCOUNT SA DATIM EMAILOM VEC POSTOJI
         var certificateHolder = customMapperService.convertCreateEntityRequestToCertificateHolder(createEntityRequest);
-        certificateHolder = certificateHolderService.saveCertificateHolder(certificateHolder);
-        return new ResponseEntity<>(customMapperService.convertCertificateHolderToCreateEntityResponse(certificateHolder), HttpStatus.OK);
+        try {
+            certificateHolder = certificateHolderService.createCertificateHolder(certificateHolder);
+            return new ResponseEntity<>(customMapperService.convertCertificateHolderToCreateEntityResponse(certificateHolder), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/actions/create-certificate-authority")
     public ResponseEntity<CreateCertificateAuthorityResponse> saveCertificateAuthority(@RequestBody CreateCertificateAuthorityRequest createCertificateAuthorityRequest) {
         var certificateHolder = customMapperService.convertCreateCertificateAuthorityRequestToCertificateHolder(createCertificateAuthorityRequest);
-        certificateHolder = certificateHolderService.saveCertificateHolder(certificateHolder);
-        return new ResponseEntity<>(customMapperService.convertCertificateHolderToCreateCertificateAuthorityResponse(certificateHolder), HttpStatus.OK);
+        try {
+            certificateHolder = certificateHolderService.createCertificateHolder(certificateHolder);
+            return new ResponseEntity<>(customMapperService.convertCertificateHolderToCreateCertificateAuthorityResponse(certificateHolder), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @DeleteMapping("/actions/delete-entity/{entityId}")

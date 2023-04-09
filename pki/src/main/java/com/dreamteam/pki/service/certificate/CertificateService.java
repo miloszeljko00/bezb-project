@@ -13,7 +13,7 @@ public class CertificateService {
     public void deleteCertificate(Certificate certificate) {
         certificateRepository.delete(certificate);
     }
-    public Certificate saveCertificate(Certificate certificate){
+    public Certificate createCertificate(Certificate certificate){
         return certificateRepository.save(certificate);
     }
 }

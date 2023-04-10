@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input,TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input,TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { ECOTree,ECONode } from "./econode";
 
 
@@ -48,6 +48,7 @@ import { ECOTree,ECONode } from "./econode";
   fill:transparent;
 }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeViewComponent  {
 

@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @Builder
 public class GetCertificateResponse {
-    private String serialNumber;
+    private String id;
     private String type;
     private UserInfo issuer;
     private UserInfo subject;
@@ -30,7 +30,7 @@ public class GetCertificateResponse {
         issuedCertificates = new ArrayList<>();
         for(var certificate : certificates) {
             var certificateDto = GetCertificateResponse.builder()
-                    .serialNumber(certificate.getSerialNumber().toString())
+                    .id(certificate.getSerialNumber().toString())
                     .type(certificate.getType().toString())
                     .issuer(X500NameMapper.fromX500Name(certificate.getIssuer().getX500Name(), certificate.getIssuer().getType()))
                     .subject(X500NameMapper.fromX500Name(certificate.getSubject().getX500Name(), certificate.getSubject().getType()))

@@ -47,7 +47,7 @@ public class CertificateController {
         if(certificate == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         var response = GetCertificateResponse.builder()
-                .serialNumber(certificate.getSerialNumber().toString())
+                .id(certificate.getSerialNumber().toString())
                 .type(certificate.getType().toString())
                 .issuer(X500NameMapper.fromX500Name(certificate.getIssuer().getX500Name(), certificate.getIssuer().getType()))
                 .subject(X500NameMapper.fromX500Name(certificate.getSubject().getX500Name(), certificate.getSubject().getType()))

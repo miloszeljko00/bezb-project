@@ -38,16 +38,16 @@ public class CertificateHolderService {
         return certificateHolderRepository.findAll();
     }
     public void deleteCertificateHolderEntity(String id) {
-        certificateHolderRepository.deleteById(id);
+        certificateHolderRepository.deleteById(UUID.fromString(id));
     }
     public void deleteCertificateHolderCA(String id) {
-        var certificateHolder = certificateHolderRepository.findById(id);
+        var certificateHolder = certificateHolderRepository.findById(UUID.fromString(id));
         try {
             for(Certificate certificate : certificateHolder.get().getCertificates()){
                 certificate.setRevoked(true);
                 certificateService.createCertificate(certificate);
             }
-            certificateHolderRepository.deleteById(id);
+            certificateHolderRepository.deleteById(UUID.fromString(id));
         }catch (Exception e) {
             log.error(String.valueOf(e));
         }

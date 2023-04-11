@@ -4,7 +4,7 @@ import com.dreamteam.pki.model.enums.CertificateHolderType;
 import lombok.Data;
 
 @Data
-public class CreateEntityResponse {
+public class GetCertificateHolder {
     private String id;
     private String email;
     private CertificateHolderType type;

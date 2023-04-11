@@ -12,6 +12,9 @@ import com.dreamteam.pki.service.generators.PasswordGenerator;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.dreamteam.pki.model.Certificate;
+import com.dreamteam.pki.repository.ICertificateRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -182,5 +185,11 @@ public class CertificateService {
             return isValid(ic);
         }
         return true;
+    }
+    public void deleteCertificate(Certificate certificate) {
+        certificateRepository.delete(certificate);
+    }
+    public Certificate createCertificate(Certificate certificate){
+        return certificateRepository.save(certificate);
     }
 }

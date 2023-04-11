@@ -18,7 +18,6 @@ export class LoginPage {
 
   login() {
     const loginRequest = new LoginRequest(this.loginForm.email, this.loginForm.password)
-    console.log(loginRequest)
     this.authService.login(loginRequest)
   }
 

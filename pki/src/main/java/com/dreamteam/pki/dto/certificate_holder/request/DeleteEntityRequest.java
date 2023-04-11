@@ -1,13 +1,11 @@
-package com.dreamteam.pki.dto.certificate_holder.response;
+package com.dreamteam.pki.dto.certificate_holder.request;
 
-import com.dreamteam.pki.model.enums.CertificateHolderType;
 import lombok.Data;
 
 @Data
-public class CreateEntityResponse {
-    private String id;
+public class DeleteEntityRequest {
     private String email;
-    private CertificateHolderType type;
+    private String password;
     private String commonName;
     private String country;
     private String state;

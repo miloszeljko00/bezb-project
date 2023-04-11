@@ -23,7 +23,6 @@ export class SelectFieldComponent implements OnInit {
   ngOnInit() {;
   }
   selectionChange(event: MatSelectChange){
-    console.log(event.value);
     this.selected=event.value;
     this.selectedChange.emit(this.selected);
   }

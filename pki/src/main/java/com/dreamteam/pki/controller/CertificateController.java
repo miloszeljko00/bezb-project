@@ -4,6 +4,7 @@ import com.dreamteam.pki.auth.role_validators.AdminOrCertificateAuthorityRole;
 import com.dreamteam.pki.auth.role_validators.AdminRole;
 import com.dreamteam.pki.dto.ErrorCodes;
 import com.dreamteam.pki.dto.ErrorMessage;
+import com.dreamteam.pki.dto.certificate.CertificateExtensionDto;
 import com.dreamteam.pki.dto.certificate.request.CreateEntityCertificateRequest;
 import com.dreamteam.pki.dto.certificate.request.CreateIntermediateCertificateRequest;
 import com.dreamteam.pki.dto.certificate.request.CreateRootCertificateRequest;
@@ -138,6 +139,7 @@ public class CertificateController {
                 .iat(rootCertificate.getDateRange().getStartDate())
                 .exp(rootCertificate.getDateRange().getEndDate())
                 .revoked(rootCertificate.isRevoked())
+                .extensions(mapper.map(rootCertificate.getCertificateExtensions(), new TypeToken<List<CertificateExtensionDto>>() {}.getType()))
             .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -207,6 +209,7 @@ public class CertificateController {
                 .exp(intermediateCertificate.getDateRange().getEndDate())
                 .parentCertificateSerialNumber(intermediateCertificate.getParentCertificate().getSerialNumber().toString())
                 .revoked(intermediateCertificate.isRevoked())
+                .extensions(mapper.map(intermediateCertificate.getCertificateExtensions(), new TypeToken<List<CertificateExtensionDto>>() {}.getType()))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -263,6 +266,8 @@ public class CertificateController {
 
         entityCertificate = certificateService.createEntityCertificate(entityCertificate);
 
+        if(entityCertificate == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
         var response = CreateEntityCertificateResponse.builder()
                 .serialNumber(entityCertificate.getSerialNumber().toString())
                 .type(entityCertificate.getType().toString())
@@ -272,6 +277,7 @@ public class CertificateController {
                 .exp(entityCertificate.getDateRange().getEndDate())
                 .parentCertificateSerialNumber(entityCertificate.getParentCertificate().getSerialNumber().toString())
                 .revoked(entityCertificate.isRevoked())
+                .extensions(mapper.map(entityCertificate.getCertificateExtensions(), new TypeToken<List<CertificateExtensionDto>>() {}.getType()))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);

@@ -5,10 +5,8 @@ import com.dreamteam.pki.model.IntermediateCertificate;
 import com.dreamteam.pki.model.RootCertificate;
 import com.dreamteam.pki.model.enums.CertificateType;
 import com.dreamteam.pki.service.customMapper.X500NameMapper;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,7 @@ import java.util.List;
 @Data
 public class GetAllCertificateResponse {
     private List<GetCertificateResponse> certificates;
-
+    private final ModelMapper mapper;
 
     public GetAllCertificateResponse() {
         certificates = new ArrayList<>();
@@ -35,6 +33,7 @@ public class GetAllCertificateResponse {
                     .exp(certificate.getDateRange().getEndDate())
                     .revoked(certificate.isRevoked())
                     .issuedCertificates(new ArrayList<>())
+                    .extensions()
                 .build();
             if(certificate.getType() == CertificateType.ROOT_CERTIFICATE){
                 certificateDto.setIssuedCertificates(((RootCertificate) certificate).getIssuedCertificates());

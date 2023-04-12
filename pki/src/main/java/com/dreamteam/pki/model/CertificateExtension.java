@@ -1,5 +1,6 @@
 package com.dreamteam.pki.model;
 
+import com.dreamteam.pki.model.enums.CertificateExtensionType;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
@@ -18,8 +19,9 @@ public class CertificateExtension {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "extension_name")
-    private String extensionName;
+    private CertificateExtensionType extensionType;
 
     @Column(name = "extension_value")
     private String extensionValue;
@@ -27,6 +29,4 @@ public class CertificateExtension {
     @Column(name = "is_critical")
     private boolean critical;
 
-    @ManyToOne
-    private Certificate certificate;
 }

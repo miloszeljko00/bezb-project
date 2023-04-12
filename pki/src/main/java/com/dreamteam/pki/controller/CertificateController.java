@@ -55,6 +55,8 @@ public class CertificateController {
 
         var certificate = certificateService.findBySerialNumber(new BigInteger(serialNumber));
 
+        certificate = filterRevoked(certificate);
+
         if(certificate == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         var extensions = new ArrayList<CertificateExtensionDto>();
@@ -105,15 +107,49 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    private Certificate filterRevoked(Certificate certificate) {
+        if(certificate.isRevoked()) return null;
+
+        if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)) {
+            var issuedCertificates = filterRevoked(((RootCertificate) certificate).getIssuedCertificates());
+            ((RootCertificate) certificate).setIssuedCertificates(issuedCertificates);
+        }
+        if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)) {
+            var issuedCertificates = filterRevoked(((IntermediateCertificate) certificate).getIssuedCertificates());
+            ((IntermediateCertificate) certificate).setIssuedCertificates(issuedCertificates);
+        }
+        return certificate;
+    }
+
     @GetMapping
     public ResponseEntity<Object> getAllCertificate(Authentication authentication) {
         var user = certificateHolderService.findByEmail(authentication.getName());
 
         if(user == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-        var response = new GetAllCertificateResponse(user.getCertificates());
+        var certificates = filterRevoked(user.getCertificates());
+        
+        var response = new GetAllCertificateResponse(certificates);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<Certificate> filterRevoked(List<Certificate> certificates) {
+        var result = new ArrayList<Certificate>();
+        for(var certificate : certificates) {
+            if(certificate.isRevoked()) continue;
+            result.add(certificate);
+
+            if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)) {
+                var issuedCertificates = filterRevoked(((RootCertificate) certificate).getIssuedCertificates());
+                ((RootCertificate) certificate).setIssuedCertificates(issuedCertificates);
+            }
+            if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)) {
+                var issuedCertificates = filterRevoked(((IntermediateCertificate) certificate).getIssuedCertificates());
+                ((IntermediateCertificate) certificate).setIssuedCertificates(issuedCertificates);
+            }
+        }
+        return result;
     }
 
     @AdminRole

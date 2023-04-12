@@ -1,10 +1,12 @@
 package com.dreamteam.pki.dto.certificate.response;
 
+import com.dreamteam.pki.dto.certificate.CertificateExtensionDto;
 import com.dreamteam.pki.dto.certificate_holder.UserInfo;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -17,4 +19,6 @@ public class CreateIntermediateCertificateResponse {
     private Date exp;
     private String parentCertificateSerialNumber;
     private boolean revoked;
+    private List<CertificateExtensionDto> extensions;
+
 }

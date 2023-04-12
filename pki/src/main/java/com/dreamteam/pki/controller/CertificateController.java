@@ -4,6 +4,7 @@ import com.dreamteam.pki.auth.role_validators.AdminOrCertificateAuthorityRole;
 import com.dreamteam.pki.auth.role_validators.AdminRole;
 import com.dreamteam.pki.dto.ErrorCodes;
 import com.dreamteam.pki.dto.ErrorMessage;
+import com.dreamteam.pki.dto.certificate.CertificateExtensionDto;
 import com.dreamteam.pki.dto.certificate.request.CreateEntityCertificateRequest;
 import com.dreamteam.pki.dto.certificate.request.CreateIntermediateCertificateRequest;
 import com.dreamteam.pki.dto.certificate.request.CreateRootCertificateRequest;
@@ -17,6 +18,8 @@ import com.dreamteam.pki.service.generators.KeyPairGenerator;
 import com.dreamteam.pki.service.certificateHolder.CertificateHolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,6 +29,7 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +39,8 @@ public class CertificateController {
     private final CertificateHolderService certificateHolderService;
     private final CertificateService certificateService;
     private final KeyPairGenerator keyPairGenerator;
+
+    private final ModelMapper mapper;
 
     @GetMapping("/{serialNumber}")
     public ResponseEntity<Object> getCertificate(@PathVariable String serialNumber, Authentication authentication) {
@@ -120,6 +126,7 @@ public class CertificateController {
                 .dateRange(dateRange)
                 .revoked(false)
                 .publicKey(keys.getPublic())
+                .certificateExtensions(mapper.map(createRootCertificateRequest.getCertificateExtensions(), new TypeToken<List<CertificateExtension>>() {}.getType()))
             .build();
 
         rootCertificate = certificateService.createRootCertificate(rootCertificate);
@@ -132,6 +139,7 @@ public class CertificateController {
                 .iat(rootCertificate.getDateRange().getStartDate())
                 .exp(rootCertificate.getDateRange().getEndDate())
                 .revoked(rootCertificate.isRevoked())
+                .extensions(mapper.map(rootCertificate.getCertificateExtensions(), new TypeToken<List<CertificateExtensionDto>>() {}.getType()))
             .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -161,7 +169,7 @@ public class CertificateController {
             if(!certificateService.isValid((RootCertificate) parentCertificate)) return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        var issuer = parentCertificate.getIssuer();
+        var issuer = parentCertificate.getSubject();
         var subject = certificateHolderService.findById(createIntermediateCertificateRequest.getSubjectId());
 
         if(subject.getType() == CertificateHolderType.ENTITY) return new ResponseEntity<>(new ErrorMessage("Entity can't own intermediate certificate", ErrorCodes.SUBJECT_CANT_OWN_DESIRED_CERTIFICATE_TYPE), HttpStatus.BAD_REQUEST);
@@ -187,6 +195,7 @@ public class CertificateController {
                 .dateRange(dateRange)
                 .revoked(false)
                 .publicKey(keys.getPublic())
+                .certificateExtensions(mapper.map(createIntermediateCertificateRequest.getCertificateExtensions(), new TypeToken<List<CertificateExtension>>() {}.getType()))
                 .build();
 
         intermediateCertificate = certificateService.createIntermediateCertificate(intermediateCertificate);
@@ -200,6 +209,7 @@ public class CertificateController {
                 .exp(intermediateCertificate.getDateRange().getEndDate())
                 .parentCertificateSerialNumber(intermediateCertificate.getParentCertificate().getSerialNumber().toString())
                 .revoked(intermediateCertificate.isRevoked())
+                .extensions(mapper.map(intermediateCertificate.getCertificateExtensions(), new TypeToken<List<CertificateExtensionDto>>() {}.getType()))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -228,7 +238,7 @@ public class CertificateController {
             if(!certificateService.isValid((RootCertificate) parentCertificate)) return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        var issuer = parentCertificate.getIssuer();
+        var issuer = parentCertificate.getSubject();
         var subject = certificateHolderService.findById(createEntityCertificateRequest.getSubjectId());
 
         if(user.getType() == CertificateHolderType.CERTIFICATE_AUTHORITY && user instanceof CertificateAuthority certificateAuthority){
@@ -251,9 +261,12 @@ public class CertificateController {
                 .dateRange(dateRange)
                 .revoked(false)
                 .publicKey(keys.getPublic())
+                .certificateExtensions(mapper.map(createEntityCertificateRequest.getCertificateExtensions(), new TypeToken<List<CertificateExtension>>() {}.getType()))
                 .build();
 
         entityCertificate = certificateService.createEntityCertificate(entityCertificate);
+
+        if(entityCertificate == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         var response = CreateEntityCertificateResponse.builder()
                 .serialNumber(entityCertificate.getSerialNumber().toString())
@@ -264,6 +277,7 @@ public class CertificateController {
                 .exp(entityCertificate.getDateRange().getEndDate())
                 .parentCertificateSerialNumber(entityCertificate.getParentCertificate().getSerialNumber().toString())
                 .revoked(entityCertificate.isRevoked())
+                .extensions(mapper.map(entityCertificate.getCertificateExtensions(), new TypeToken<List<CertificateExtensionDto>>() {}.getType()))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);

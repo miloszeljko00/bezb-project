@@ -1,7 +1,6 @@
 
 <h1>Create Certificate using template</h1>
 <table>
-
   <tr>
     <td colspan="3">
       <app-select-field [options]="certificateTypes" [(selected)]="certificateForm.type" (selectedChange)="adjustFormForCertificateType($event)">Certificate Type</app-select-field>
@@ -23,19 +22,131 @@
       <app-autocomplete-input-field [options]="certificateHolders" [selected]="certificateForm.subject" [selectedText]="certificateForm.subject && certificateForm.subject.commonName ? certificateForm.subject.commonName : ''" (selectedChange)="subjectSelected($event)" label="Subject"></app-autocomplete-input-field>
     </td>
   </tr>
+  <tr>
+    <td colspan="3">
+      <h1>Choose extensions</h1>  </td>
+  </tr>
 
+  <tr>
+    <td>
+      <mat-label>AUTHORITY_INFO_ACCESS</mat-label>  </td>
+
+    <td>
+
+      <app-input-field></app-input-field>
+     </td>
+    <td>
+
+      <label>critical</label>
+      <input type="checkbox" disabled="disabled"> </td>
+    <td> <button>add</button>
+    </td>
+  </tr>
+
+  <tr><td>
+    <mat-label>BASIC_CONSTRAINTS</mat-label>  </td>
+
+    <td >
+      <app-number-input-field> 1 </app-number-input-field>
+    </td>
+
+    <td>
+
+      <label>critical</label>
+      <input type="checkbox"  disabled = "disabled" checked = "checked" >
+    </td>
+    <td> <button>add</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>CRL_DISTRIBUTION_POINTS</mat-label>  </td>
+
+    <td class="inputs">
+      <app-input-field></app-input-field>
+
+    </td>
+    <td class="inputs">
+      <app-input-field></app-input-field>
+    </td>
+    <td>
+
+      <label>critical</label>
+      <input type="checkbox"  >
+    </td>
+    <td> <button>add</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>ISSUER_ALT_NAME</mat-label>  </td>
+
+    <td>
+
+      <app-input-field>text</app-input-field>
+    </td>
+
+    <td>
+<label>critical</label>
+      <input type="checkbox"  >
+    </td>
+    <td> <button>add</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>KEY_USAGE</mat-label>  </td>
+
+    <td>
+<app-number-input-field></app-number-input-field>
+    </td>
+
+    <td>
+
+      <label>critical</label>
+      <input type="checkbox"  >
+    </td>
+    <td> <button>add</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>PRIVATE_KEY_USAGE_PERIOD</mat-label>  </td>
+
+    <td>
+
+      <app-input-field>,</app-input-field>
+    </td>
+
+    <td>
+
+      <label>critical</label>
+      <input type="checkbox" disabled="disabled">
+    </td>
+    <td> <button>add</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>SUBJECT_ALT_NAME</mat-label>  </td>
+
+    <td>
+
+      <app-input-field>,</app-input-field>
+    </td>
+
+    <td>
+
+      <label>critical</label>
+      <input type="checkbox" disabled="disabled">
+    </td>
+    <td> <button>add</button>
+    </td>
+  </tr>
   <app-primary-button (click)="createCertificate()">Create</app-primary-button>
-
 </table>
 
-<form>
-  <div class="container">
-    <div *ngFor="let item of templateTypes">
-      <div><input type="checkbox" name = "{{item.displayValue}}" [(ngModel)]="item.isSelected" > </div>
-      <div><label>{{item.displayValue}}</label></div>
-    </div>
-  </div>
-</form>
+
 
 
 

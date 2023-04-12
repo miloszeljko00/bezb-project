@@ -1,14 +1,14 @@
 import {CertificateExtensionType} from "./certificate-extension-type";
 
 export class CertificateExtension {
-  extensionName: string = "AUTHORITY_INFO_ACCESS";
-  extensionValue: string = CertificateExtensionType.AUTHORITY_INFO_ACCESS;
+  extensionValue: string = "";
+  certificateExtensionType: string = CertificateExtensionType.AUTHORITY_INFO_ACCESS;
   critical: boolean = false;
 
   public constructor(obj?: any) {
     if (obj) {
-      this.extensionName = obj.extensionName;
       this.extensionValue = obj.extensionValue;
+      this.certificateExtensionType = obj.certificateExtensionType;
       this.critical = obj.critical;
     }
   }

@@ -171,7 +171,7 @@ export class TemplatesFormComponent {
   addAuthorityInfoAccess() {
 
     let extension = new CertificateExtension();
-    extension.extensionName = CertificateExtensionType.AUTHORITY_INFO_ACCESS;
+    extension.certificateExtensionType = CertificateExtensionType.AUTHORITY_INFO_ACCESS;
     extension.extensionValue = this.authorityInput;
     extension.critical = false;
     this.extensionList.push(extension);
@@ -181,7 +181,7 @@ export class TemplatesFormComponent {
   addBasicConstraints() {
 
     let extension = new CertificateExtension();
-    extension.extensionName = CertificateExtensionType.BASIC_CONSTRAINTS;
+    extension.certificateExtensionType = CertificateExtensionType.BASIC_CONSTRAINTS;
     extension.extensionValue = this.basicConstraintsValue.toString();
     extension.critical = true;
     this.extensionList.push(extension);
@@ -190,9 +190,8 @@ export class TemplatesFormComponent {
   addCrl() {
 
     let extension = new CertificateExtension();
-    extension.extensionName = CertificateExtensionType.CRL_DISTRIBUTION_POINTS;
-
-    let crlInput =this.crlInput1+this.crlInput2
+    extension.certificateExtensionType = CertificateExtensionType.CRL_DISTRIBUTION_POINTS;
+    let crlInput =this.crlInput1 +','+this.crlInput2
     extension.extensionValue = crlInput;
     extension.critical = this.crlChecked;
     this.extensionList.push(extension);
@@ -200,7 +199,7 @@ export class TemplatesFormComponent {
 
   addIssuerAltName() {
     let extension = new CertificateExtension();
-    extension.extensionName = CertificateExtensionType.ISSUER_ALT_NAME;
+    extension.certificateExtensionType = CertificateExtensionType.ISSUER_ALT_NAME;
     extension.extensionValue = this.issuerInput;
     extension.critical = this.issuerChecked;
     this.extensionList.push(extension);
@@ -208,7 +207,7 @@ export class TemplatesFormComponent {
 
   addKeyUsage() {
     let extension = new CertificateExtension();
-    extension.extensionName = CertificateExtensionType.KEY_USAGE;
+    extension.certificateExtensionType = CertificateExtensionType.KEY_USAGE;
     extension.extensionValue = this.keyUsage.toString();
     extension.critical = this.keyChecked;
     this.extensionList.push(extension);
@@ -217,7 +216,7 @@ export class TemplatesFormComponent {
   addPrivateKeyUsagePeriod() {
 
     let extension = new CertificateExtension();
-    extension.extensionName = CertificateExtensionType.PRIVATE_KEY_USAGE_PERIOD;
+    extension.certificateExtensionType = CertificateExtensionType.PRIVATE_KEY_USAGE_PERIOD;
     extension.extensionValue = this.privateKeyPeriod;
     extension.critical = false;
     this.extensionList.push(extension);
@@ -226,7 +225,7 @@ export class TemplatesFormComponent {
   addSubjectAltName() {
 
     let extension = new CertificateExtension();
-    extension.extensionName = CertificateExtensionType.SUBJECT_ALT_NAME;
+    extension.certificateExtensionType = CertificateExtensionType.SUBJECT_ALT_NAME;
     extension.extensionValue = this.subjectAltNameInput;
     extension.critical = false;
     this.extensionList.push(extension);

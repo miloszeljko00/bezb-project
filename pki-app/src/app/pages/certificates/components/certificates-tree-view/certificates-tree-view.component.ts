@@ -79,8 +79,6 @@ export class CertificatesTreeViewComponent {
     }
   }
   openInfoDialog(node: ECONode) {
-    //tri dugmeta, download, createNewFromThis, checkValidity, revoke
-    //ispisati sve podatke u preview dialogu
     console.log(node.data)
     const dialogRef = this.dialog.open(CertificateOverviewDialog, {
       width: '50%',
@@ -92,7 +90,7 @@ export class CertificatesTreeViewComponent {
 
     dialogRef.afterClosed().subscribe({
       next: (result: any) => {
-
+        this.updateViewEvent.emit();
       },
       error: (error: any) => {
 

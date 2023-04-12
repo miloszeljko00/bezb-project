@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class CertificateOverviewDialog implements OnInit {
 
+  createCertificateRequest:any;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Certificate,
     public dialog: MatDialog,
@@ -26,7 +27,7 @@ export class CertificateOverviewDialog implements OnInit {
   checkIfCertificateIsValid(){
 
   }
-  downloadCertificate(){  
+  downloadCertificate(){
     this.certificateService.downloadCertificate(this.data.id).subscribe({
       next: (response: any) => {
         const downloadLink = document.createElement('a');
@@ -49,28 +50,39 @@ export class CertificateOverviewDialog implements OnInit {
       restoreFocus: false,
     });
 
-    //dialogRef.afterClosed().subscribe({
-      //next: (result: any) => {
-        // var createCertificateAuthorityRequest = new CreateCertificateAuthorityRequest(
-        //   email: string;
-        //   password: string;
-        //   commonName: string;
-        //   country: string;
-        //   state: string;
-        //   locality: string;
-        //   organization: string;
-        //   organizationalUnit: string;
-        // );
-    //     this.certificateService.createIntermediateCertificate(createCertificateAuthorityRequest).subscribe({
-    //       next: (result: any) => {
-    //         this.toastr.success("Root certificate created successfully!")
-    //         this.dialogRef.close(result);
-    //       }
-    //     })
-    //   },
-    //   error: (error: any) => {
-    //     this.toastr.error("Something went wrong while creating root certificate :/");
-    //   }
-    // })
+    dialogRef.afterClosed().subscribe({
+      next: (result: any) => {
+        if(result.type=="CA"){
+          this.createCertificateRequest = {
+            exp : result.exp,
+            parentCertificateSerialNumber : this.data.id,
+            subjectId: result.subject.id
+          };
+          console.log(this.createCertificateRequest);
+          this.certificateService.createIntermediateCertificate(this.createCertificateRequest).subscribe({
+            next: (result: any) => {
+              this.toastrService.success("CA certificate created successfully!")
+              this.dialogRef.close(result);
+            }
+          })
+        } else if(result.type == "Entity"){
+          this.createCertificateRequest = {
+            exp : result.exp,
+            parentCertificateSerialNumber : this.data.id,
+            subjectId: result.subject.id
+          };
+          this.certificateService.createEntityCertificate(this.createCertificateRequest).subscribe({
+            next: (result: any) => {
+              this.toastrService.success("Entity certificate created successfully!")
+              this.dialogRef.close(result);
+            }
+          })
+        }
+
+      },
+      error: (error: any) => {
+        this.toastrService.error("Something went wrong while creating root certificate :/");
+      }
+    })
   }
 }

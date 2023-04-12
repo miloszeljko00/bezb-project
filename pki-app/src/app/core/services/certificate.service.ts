@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { CreateRootCertificateRequest } from '../dtos/certificate/request/create-root-certificate-request';
-import { CreateIntermediateCertificateRequest } from '../dtos/certificate/request/create-intermediate-certificate-request';
 import { CreateEntityCertificateRequest } from '../dtos/certificate/request/create-entity-certificate-request';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -26,7 +25,7 @@ export class CertificateService {
   createRootCertificate(createRootCertificateRequest: CreateRootCertificateRequest) {
     return this.http.post<CreateRootCertificateResponse>(environment.apiUrl+"/api/certificates/actions/create-root-certificate", createRootCertificateRequest);
   }
-  createIntermediateCertificate(createIntermediateCertificateRequest: CreateIntermediateCertificateRequest) {
+  createIntermediateCertificate(createIntermediateCertificateRequest: any) {
     return this.http.post<CreateIntermediateCertificateResponse>(environment.apiUrl+"/api/certificates/actions/create-certificate-authority", createIntermediateCertificateRequest);
   }
   createEntityCertificate(createEntityCertificateRequest: CreateEntityCertificateRequest) {

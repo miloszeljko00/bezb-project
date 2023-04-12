@@ -39,13 +39,12 @@ const CERTIFICATE_HOLDERS: CertificateHolder[] = [
 })
 export class NewCertificateDialog {
 
- certificateTypes: SelectOption[] = []
+  certificateTypes: SelectOption[] = []
   certificateHolders: CertificateHolder[] = [];
   certificateHolderOptions: SelectOption[] = [];
 
   certificateForm = {
     type: null as CertificateType|null,
-    issuer: null as CertificateHolder|null,
     subject: null as CertificateHolder|null,
     exp: null as Date|null,
   }
@@ -77,24 +76,19 @@ export class NewCertificateDialog {
     })
   }
   createCertificate() {
+    console.log(this.certificateForm)
     this.dialogRef.close(this.certificateForm)
   }
 
-  issuerSelected(selected: CertificateHolder) {
-    this.certificateForm.issuer = selected
-    if(this.syncIssuerAndSubject) this.certificateForm.subject = selected
-  }
 
   subjectSelected(selected: CertificateHolder) {
     this.certificateForm.subject = selected
-    if(this.syncIssuerAndSubject) this.certificateForm.issuer = selected
   }
 
   adjustFormForCertificateType(selected: CertificateType) {
     if(selected == CertificateType.ROOT_CERTIFICATE) {
       this.direction_icon = '='
       this.syncIssuerAndSubject = true
-      this.certificateForm.subject = this.certificateForm.issuer
     }else {
       this.direction_icon = 'arrow_forward'
       this.syncIssuerAndSubject = false
@@ -125,10 +119,10 @@ export class NewCertificateDialog {
 
   private updateCertificateTypesForAdmin() {
     this.certificateTypes = [
-      {
-        value: CertificateType.ROOT_CERTIFICATE,
-        displayValue: 'ROOT CERTIFICATE',
-      },
+      // {
+      //   value: CertificateType.ROOT_CERTIFICATE,
+      //   displayValue: 'ROOT CERTIFICATE',
+      // },
       {
         value: CertificateType.INTERMEDIATE_CERTIFICATE,
         displayValue: 'INTERMEDIATE CERTIFICATE',

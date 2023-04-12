@@ -9,6 +9,9 @@ import {CertificateExtensionType} from "../../../../core/models/certificate-exte
 import {filter} from "rxjs";
 import {CertificateExtension} from "../../../../core/models/certificate-extension";
 import {MatTableDataSource} from "@angular/material/table";
+import {
+  IntermediateTemplateRequestDto
+} from "../../../../core/dtos/template-certificate/request/create-intermediate-template-request";
 
 const CERTIFICATE_HOLDERS: CertificateHolder[] = [
   {
@@ -94,9 +97,15 @@ export class TemplatesFormComponent {
   }
 
   createCertificate() {
-    console.log(this.extensionList);
+    let newIntermediate = new IntermediateTemplateRequestDto();
+    newIntermediate.subjectId = this.certificateForm.subject?.id;
+    newIntermediate.exp = this.certificateForm.exp;
+    newIntermediate.parentCertificateSerialNumber = this.certificateForm.issuer?.id;
+    newIntermediate.certificateExtensions = this.extensionList;
     this.extensionList = [];
-  //  this.certificateService.Create(this.certificateForm)
+
+    console.log(newIntermediate); //dobro jeeeee
+   // this.certificateService.createFromTemplate(newIntermediate).subscribe();
   }
 
   issuerSelected(selected: CertificateHolder) {

@@ -10,6 +10,9 @@ import { CreateIntermediateCertificateResponse } from '../dtos/certificate/respo
 import { CreateEntityCertificateResponse } from '../dtos/certificate/response/create-entity-certificate-response';
 import { Certificate } from '../models/certificate';
 import { Certificates } from '../models/certificates';
+import {
+  IntermediateTemplateRequestDto
+} from "../dtos/template-certificate/request/create-intermediate-template-request";
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +31,11 @@ export class CertificateService {
   createIntermediateCertificate(createIntermediateCertificateRequest: CreateIntermediateCertificateRequest) {
     return this.http.post<CreateIntermediateCertificateResponse>(environment.apiUrl+"/api/certificate-holders/actions/create-certificate-authority", createIntermediateCertificateRequest);
   }
+
   createEntityCertificate(createEntityCertificateRequest: CreateEntityCertificateRequest) {
     return this.http.post<CreateEntityCertificateResponse>(environment.apiUrl+"/api/certificate-holders/actions/create-certificate-authority", createEntityCertificateRequest);
+  }
+  createFromTemplate(template: IntermediateTemplateRequestDto) {
+    return this.http.post<IntermediateTemplateRequestDto>(environment.apiUrl+"/api/certificates/actions/create-intermediate-certificate", template);
   }
 }

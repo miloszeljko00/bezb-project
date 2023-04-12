@@ -401,4 +401,14 @@ public class CertificateService {
     public Certificate createCertificate(Certificate certificate){
         return certificateRepository.save(certificate);
     }
+
+    public boolean revoke(Certificate certificate) {
+        try{
+            certificate.setRevoked(true);
+            certificateRepository.save(certificate);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
+    }
 }

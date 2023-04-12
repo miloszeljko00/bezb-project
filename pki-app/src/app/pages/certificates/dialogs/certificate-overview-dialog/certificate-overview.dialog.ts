@@ -7,6 +7,8 @@ import { CertificateService } from 'src/app/core/services/certificate.service';
 import { ToastrService } from 'ngx-toastr';
 import { User } from 'src/app/core/auth/models/user';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { ConfirmDialog } from 'src/app/shared/ui/dialog/components/confirm-dialog/confirm.dialog';
+import { CertificateType } from 'src/app/core/models/certificate-type';
 
 @Component({
   selector: 'app-certificate-overview',
@@ -31,7 +33,15 @@ export class CertificateOverviewDialog implements OnInit {
     this.user = this.authService.getUser()
   }
   checkIfCertificateIsValid(){
-
+    this.certificateService.checkIfValid(this.data.id).subscribe({
+      next: (response: any) => {
+        if(response.valid){
+          this.toastrService.success("Certificate is valid.", "Success!");
+        }else {
+          this.toastrService.error("Certificate is not valid.", "Error!");
+        }
+      }
+    })
   }
   downloadCertificate(){
     this.certificateService.downloadCertificate(this.data.id).subscribe({
@@ -56,7 +66,28 @@ export class CertificateOverviewDialog implements OnInit {
     })
   }
   revokeCertificate(){
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      autoFocus: false,
+      restoreFocus: false,
+      data: { title: 'Revoke certificate?' }
+    });
 
+    dialogRef.afterClosed().subscribe({
+      next: (result: boolean) => {
+        if(result){
+          // TODO: Poslati zahtev za povlacenje sertifikata
+          this.certificateService.revokeCertificate(this.data.id).subscribe({
+            next: (result) => {
+              this.toastrService.success("Certificate revoked successfully", "Revoke certificate")
+              this.dialogRef.close(true);
+            },
+            error: (err) => {
+              this.toastrService.error("Error revoking certificate", "Revoke certificate")
+            }
+          })
+        }
+      }
+    })
   }
   createNewCertificateFromThis(){
     const dialogRef = this.dialog.open(NewCertificateDialog, {
@@ -64,11 +95,14 @@ export class CertificateOverviewDialog implements OnInit {
       height: auto,
       autoFocus: false,
       restoreFocus: false,
+      data: this.data
     });
 
     dialogRef.afterClosed().subscribe({
       next: (result: any) => {
-        if(result.type=="CA"){
+        console.log("BURAZ: ")
+        console.log(result)
+        if(result.type==CertificateType.INTERMEDIATE_CERTIFICATE){
           this.createCertificateRequest = {
             exp : result.exp,
             parentCertificateSerialNumber : this.data.id,
@@ -79,9 +113,12 @@ export class CertificateOverviewDialog implements OnInit {
             next: (result: any) => {
               this.toastrService.success("CA certificate created successfully!")
               this.dialogRef.close(result);
+            },
+            error: (error: any) => {
+              this.toastrService.error("Please enter a valid certificate configuration.", "Create Certificate Failed")
             }
           })
-        } else if(result.type == "Entity"){
+        } else if(result.type == CertificateType.ENTITY_CERTIFICATE){
           this.createCertificateRequest = {
             exp : result.exp,
             parentCertificateSerialNumber : this.data.id,
@@ -91,6 +128,9 @@ export class CertificateOverviewDialog implements OnInit {
             next: (result: any) => {
               this.toastrService.success("Entity certificate created successfully!")
               this.dialogRef.close(result);
+            },
+            error: (error: any) => {
+              this.toastrService.error("Please enter a valid certificate configuration.", "Create Certificate Failed")
             }
           })
         }

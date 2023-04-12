@@ -9,7 +9,7 @@
       <hr>
     </div>
   </ng-container>
-  <ng-container *ngIf="data.length==0">
+  <ng-container *ngIf="data.length==0 && user && user.roles.includes('ROLE_ADMIN')">
     <div class="plus-icon-div" (click)="openNewRootCertificateDialog()">
       <mat-icon>add</mat-icon><br>
       <p>Add root certificate</p>

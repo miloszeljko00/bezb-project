@@ -26,6 +26,7 @@ export class DateFieldComponent {
   @Input() value: Date|null = null;
   @Input() min: Date|null = null;
   @Input() max: Date|null = null;
+  @Input() disabled = false;
   @Output() valueChange: EventEmitter<Date> = new EventEmitter<Date>();
 
   constructor(private dateAdapter: DateAdapter<Date>) {

@@ -10,6 +10,8 @@ import { CertificateService } from 'src/app/core/services/certificate.service';
 import { CreateRootCertificateRequest } from 'src/app/core/dtos/certificate/request/create-root-certificate-request';
 import { NewRootCertificateDialog } from '../../dialogs/new-root-certificate-dialog/new-root-certificate.dialog';
 import { CertificateOverviewDialog } from '../../dialogs/certificate-overview-dialog/certificate-overview.dialog';
+import { User } from 'src/app/core/auth/models/user';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-certificates-tree-view',
@@ -18,7 +20,7 @@ import { CertificateOverviewDialog } from '../../dialogs/certificate-overview-di
 })
 export class CertificatesTreeViewComponent {
   nodeSelected: ECONode|null = null;
-
+  user: User|null = null
   @Input() certificates$: Observable<Certificate[]> = of([])
   @Output() updateViewEvent = new EventEmitter();
   @ViewChildren('treeView') treeViews?: QueryList<any>;
@@ -29,9 +31,11 @@ export class CertificatesTreeViewComponent {
     public dialog : MatDialog,
     public toastr: ToastrService,
     public certificateService: CertificateService,
+    private authService: AuthService,
     ) {}
 
   ngOnInit() {
+    this.user = this.authService.getUser();
     this.certificates$.subscribe({
       next: (certificates: Certificate[]) => {
         this.data = this.convertCertificatesToNodes(certificates);

@@ -58,7 +58,6 @@ export class CertificatesPage implements OnDestroy{
     this.newCertificateDialogClosedSubscription = dialogRef.afterClosed().subscribe({
       next: (result: any) => {
         // TODO: Poslati zahtev za kreiranje sertifikata
-
         switch(result.type) {
           case CertificateType.ROOT_CERTIFICATE:
             break
@@ -85,7 +84,15 @@ export class CertificatesPage implements OnDestroy{
     this.newCertificateDialogClosedSubscription = dialogRef.afterClosed().subscribe({
       next: (result: boolean) => {
         if(result){
-          // TODO: Poslati zahtev za povlacenje sertifikata
+          this.certificateService.revokeCertificate(certificate.id).subscribe({
+            next: (result) => {
+              this.toastr.success("Certificate revoked successfully", "Revoke certificate")
+              this.updateView()
+            },
+            error: (err) => {
+              this.toastr.error("Error revoking certificate", "Revoke certificate")
+            }
+          })
         }
       }
     })

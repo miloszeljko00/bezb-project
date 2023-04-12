@@ -26,8 +26,16 @@ export class CertificateOverviewDialog implements OnInit {
   checkIfCertificateIsValid(){
 
   }
-  downloadCertificate(){
-
+  downloadCertificate(){  
+    this.certificateService.downloadCertificate(this.data.id).subscribe({
+      next: (response: any) => {
+        const downloadLink = document.createElement('a');
+        const blob = new Blob([response], { type: 'blob' }); // replace with the MIME type of your file
+        downloadLink.href = window.URL.createObjectURL(blob);
+        downloadLink.download = 'certificate.crt'; // replace with the name of your file
+        downloadLink.click();
+      }
+    })
   }
 
   revokeCertificate(){

@@ -1,6 +1,7 @@
 package com.dreamteam.pki.service.certificate;
 
 import com.dreamteam.pki.model.*;
+import com.dreamteam.pki.model.enums.CertificateHolderType;
 import com.dreamteam.pki.model.enums.CertificateType;
 import com.dreamteam.pki.repository.ICertificateExtensionRepository;
 import com.dreamteam.pki.repository.ICertificateHolderRepository;
@@ -13,17 +14,23 @@ import com.dreamteam.pki.service.generators.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.dreamteam.pki.model.Certificate;
+import org.apache.logging.log4j.message.StringMapMessage;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.x509.*;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -64,10 +71,10 @@ public class CertificateService {
 
 
 
-            var keyStore = keyStoreRepository.findById(certificate.getSubject().getId().toString()).orElse(null);
+            var keyStore = keyStoreRepository.findById(certificate.getSubject().getId()).orElse(null);
 
             if(keyStore == null){
-                keyStore = new KeyStore(certificate.getSubject().getId().toString(), "src/main/resources/static/" + certificate.getSubject().getId().toString() + ".jks", passwordGenerator.generate(20));
+                keyStore = new KeyStore(certificate.getSubject().getId(), "src/main/resources/static/" + certificate.getSubject().getId().toString() + ".jks", passwordGenerator.generate(20));
                 keyStoreRepository.save(keyStore);
                 keyStoreWriter.loadKeyStore(null, keyStore.getPassword());
             }else{
@@ -115,10 +122,10 @@ public class CertificateService {
                     certificate.getSerialNumber(),
                     extensions);
 
-            var keyStore = keyStoreRepository.findById(certificate.getSubject().getId().toString()).orElse(null);
+            var keyStore = keyStoreRepository.findById(certificate.getSubject().getId()).orElse(null);
 
             if(keyStore == null){
-                keyStore = new KeyStore(certificate.getSubject().getId().toString(), "src/main/resources/static/" + certificate.getSubject().getId().toString() + ".jks", passwordGenerator.generate(20));
+                keyStore = new KeyStore(certificate.getSubject().getId(), "src/main/resources/static/" + certificate.getSubject().getId().toString() + ".jks", passwordGenerator.generate(20));
                 keyStoreRepository.save(keyStore);
                 keyStoreWriter.loadKeyStore(null, keyStore.getPassword());
             }else{
@@ -167,10 +174,10 @@ public class CertificateService {
                     certificate.getSerialNumber(),
                     extensions);
 
-            var keyStore = keyStoreRepository.findById(certificate.getSubject().getId().toString()).orElse(null);
+            var keyStore = keyStoreRepository.findById(certificate.getSubject().getId()).orElse(null);
 
             if(keyStore == null){
-                keyStore = new KeyStore(certificate.getSubject().getId().toString(), "src/main/resources/static/" + certificate.getSubject().getId().toString() + ".jks", passwordGenerator.generate(20));
+                keyStore = new KeyStore(certificate.getSubject().getId(), "src/main/resources/static/" + certificate.getSubject().getId().toString() + ".jks", passwordGenerator.generate(20));
                 keyStoreRepository.save(keyStore);
                 keyStoreWriter.loadKeyStore(null, keyStore.getPassword());
             }else{
@@ -187,6 +194,35 @@ public class CertificateService {
 
     public Certificate findBySerialNumber(BigInteger serialNumber) {
         return certificateRepository.findById(serialNumber).orElse(null);
+    }
+
+    public boolean extractCertificate(Certificate certificate) {
+        var keystore = keyStoreRepository.findById(certificate.getSubject().getId()).orElse(null);
+        if(keystore == null) return false;
+
+        var x509certificate = keyStoreReader.readCertificate("src/main/resources/static" + keystore.getSubjectId() + ".jks", keystore.getPassword(), certificate.getSerialNumber().toString());
+        try {
+            FileOutputStream os = new FileOutputStream(certificate.getSerialNumber() + ".crt");
+            os.write("-----BEGIN CERTIFICATE-----\n".getBytes(StandardCharsets.US_ASCII));
+            os.write(Base64.getEncoder().encode(x509certificate.getEncoded()));
+            os.write("\n-----END CERTIFICATE-----\n".getBytes(StandardCharsets.US_ASCII));
+            os.close();
+            if(certificate.getSubject().getType().equals(CertificateHolderType.ENTITY)) return true;
+
+            PrivateKey key = keyStoreReader.readPrivateKey("src/main/resources/static" + keystore.getSubjectId() + ".jks", keystore.getPassword(), certificate.getSerialNumber().toString(), keystore.getPassword());
+            os = new FileOutputStream(certificate.getSerialNumber() + "-key" + ".pem");
+            os.write("-----BEGIN PRIVATE KEY-----\n".getBytes(StandardCharsets.US_ASCII));
+            os.write(Base64.getEncoder().encode(key.getEncoded()));
+            os.write("\n-----END PRIVATE KEY-----\n".getBytes(StandardCharsets.US_ASCII));
+            os.close();
+        } catch (IOException | CertificateEncodingException e) {
+            StringMapMessage message = new StringMapMessage();
+            message.put("msg", "Error extracting certificate: " + e.getMessage());
+            message.put("serial", certificate.getSerialNumber().toString());
+            log.error(message.toString());
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
 

@@ -20,11 +20,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.util.ArrayList;
@@ -52,6 +57,12 @@ public class CertificateController {
 
         if(certificate == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
+        var extensions = new ArrayList<CertificateExtensionDto>();
+
+        for(var extension : certificate.getCertificateExtensions()) {
+            extensions.add(new CertificateExtensionDto(extension.getExtensionType(), extension.getExtensionValue(), extension.isCritical()));
+        }
+
         var response = GetCertificateResponse.builder()
                 .id(certificate.getSerialNumber().toString())
                 .type(certificate.getType().toString())
@@ -61,6 +72,7 @@ public class CertificateController {
                 .exp(certificate.getDateRange().getEndDate())
                 .revoked(certificate.isRevoked())
                 .issuedCertificates(new ArrayList<>())
+                .extensions(extensions)
                 .build();
 
         if(user.getType() == CertificateHolderType.ADMIN) {
@@ -116,6 +128,7 @@ public class CertificateController {
         if(dateRange == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         KeyPair keys = keyPairGenerator.generateKeyPair();
+        if(createRootCertificateRequest.getCertificateExtensions() == null) createRootCertificateRequest.setCertificateExtensions(new ArrayList<>());
 
         var rootCertificate = RootCertificate.builder()
                 .issuedCertificates(new ArrayList<>())
@@ -184,6 +197,7 @@ public class CertificateController {
         if(dateRange == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         KeyPair keys = keyPairGenerator.generateKeyPair();
+        if(createIntermediateCertificateRequest.getCertificateExtensions() == null) createIntermediateCertificateRequest.setCertificateExtensions(new ArrayList<>());
 
         var intermediateCertificate = IntermediateCertificate.builder()
                 .parentCertificate(parentCertificate)
@@ -252,6 +266,8 @@ public class CertificateController {
 
         KeyPair keys = keyPairGenerator.generateKeyPair();
 
+        if(createEntityCertificateRequest.getCertificateExtensions() == null) createEntityCertificateRequest.setCertificateExtensions(new ArrayList<>());
+
         var entityCertificate = EntityCertificate.builder()
                 .parentCertificate(parentCertificate)
                 .privateKey(keys.getPrivate())
@@ -294,9 +310,20 @@ public class CertificateController {
     }
 
     @GetMapping("{certificateId}/actions/download")
-    public ResponseEntity<Object> downloadCertificate(@PathVariable String certificateId) {
+    public ResponseEntity<Object> downloadCertificate(@PathVariable String certificateId) throws FileNotFoundException {
         // TODO: Vratiti sertifikat sa trazenim Id-em kao .pem datoteku na zahtev vlasnika ili izdavaoca
 
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        var certificate = certificateService.findBySerialNumber(new BigInteger(certificateId));
+
+        certificateService.extractCertificate(certificate);
+        File file = new File(certificate.getSerialNumber() + ".crt");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        file.deleteOnExit();
+
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+
     }
 }

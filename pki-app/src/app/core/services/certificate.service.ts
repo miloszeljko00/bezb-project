@@ -13,6 +13,9 @@ import { Certificates } from '../models/certificates';
   providedIn: 'root'
 })
 export class CertificateService {
+  downloadCertificate(id: string) {
+    return this.http.get(environment.apiUrl+"/api/certificates/" + id + "/actions/download");
+  }
 
   constructor(private http: HttpClient) {}
 

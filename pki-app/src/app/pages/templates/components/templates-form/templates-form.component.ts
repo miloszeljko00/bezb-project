@@ -13,31 +13,6 @@ import {
   IntermediateTemplateRequestDto
 } from "../../../../core/dtos/template-certificate/request/create-intermediate-template-request";
 
-const CERTIFICATE_HOLDERS: CertificateHolder[] = [
-  {
-    id: 'axdasdxas-dxa-dax-sdx-asxasx',
-    email: 'ca@email.com',
-    type: CertificateHolderType.CERTIFICATE_AUTHORITY,
-    commonName: 'Pera Peric',
-    country: 'Serbia',
-    locality: 'Novi Sad',
-    state: 'Vojvodina',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'WebTeam',
-  },
-  {
-    id: 'asdafgfa-dasd-asdasa-hhgds-gasfsas',
-    email: 'entity@email.com',
-    type: CertificateHolderType.ENTITY,
-    commonName: 'Djoka Djokic',
-    country: 'Bosna i Hercegovina',
-    locality: 'Banjaluka',
-    state: 'Republika Srpska',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'AITeam',
-  }
-]
-
 @Component({
   selector: 'app-templates-form',
   templateUrl: './templates-form.component.html',
@@ -46,16 +21,10 @@ const CERTIFICATE_HOLDERS: CertificateHolder[] = [
 export class TemplatesFormComponent {
 
   certificateTypes: SelectOption[] = []
-  certificateHolders: SelectOption[] = CERTIFICATE_HOLDERS.map((certificateHolder) => {
-    return {value: certificateHolder, displayValue: certificateHolder.commonName}
-  })
-
   extensionList: CertificateExtension[] = [];
 
   certificateForm = {
     type: null as CertificateType|null,
-    issuer: null as CertificateHolder|null,
-    subject: null as CertificateHolder|null,
     exp: null as Date|null,
   }
 
@@ -74,8 +43,7 @@ export class TemplatesFormComponent {
   privateKeyPeriod2 = new Date
   keyUsage = 1
   issuerInput = ''
-  crlInput1 = ''
-  crlInput2 = ''
+  crlInput = ''
   crlChecked = false
   issuerChecked = false
   keyChecked = false
@@ -91,33 +59,32 @@ export class TemplatesFormComponent {
 
   }
 
+
+
+
+
   createCertificate() {
     let newIntermediate = new IntermediateTemplateRequestDto();
-    newIntermediate.subjectId = this.certificateForm.subject?.id;
     newIntermediate.exp = this.certificateForm.exp;
-    newIntermediate.parentCertificateSerialNumber = this.certificateForm.issuer?.id;
     newIntermediate.certificateExtensions = this.extensionList;
     this.extensionList = [];
 
     console.log(newIntermediate); //dobro jeeeee
-   // this.certificateService.createFromTemplate(newIntermediate).subscribe();
+    this.certificateService.createFromTemplate(newIntermediate).subscribe();
+    //pokusala da napravim intermediate sertifikat :(
   }
 
-  issuerSelected(selected: CertificateHolder) {
-    this.certificateForm.issuer = selected
-    if(this.syncIssuerAndSubject) this.certificateForm.subject = selected
-  }
 
-  subjectSelected(selected: CertificateHolder) {
-    this.certificateForm.subject = selected
-    if(this.syncIssuerAndSubject) this.certificateForm.issuer = selected
-  }
+
+
+
+
+
 
   adjustFormForCertificateType(selected: CertificateType) {
     if(selected == CertificateType.ROOT_CERTIFICATE) {
       this.direction_icon = '='
       this.syncIssuerAndSubject = true
-      this.certificateForm.subject = this.certificateForm.issuer
     }else {
       this.direction_icon = 'arrow_forward'
       this.syncIssuerAndSubject = false
@@ -190,11 +157,9 @@ export class TemplatesFormComponent {
   }
 
   addCrl() {
-
     let extension = new CertificateExtension();
     extension.certificateExtensionType = CertificateExtensionType.CRL_DISTRIBUTION_POINTS;
-    let crlInput =this.crlInput1 +','+this.crlInput2
-    extension.extensionValue = crlInput;
+    extension.extensionValue = this.crlInput;
     extension.critical = this.crlChecked;
     this.extensionList.push(extension);
   }

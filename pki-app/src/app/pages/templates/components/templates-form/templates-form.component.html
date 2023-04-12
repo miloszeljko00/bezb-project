@@ -11,17 +11,7 @@
       <app-date-field [min]="todayDate" [(value)]="certificateForm.exp">Expires At</app-date-field>
     </td>
   </tr>
-  <tr>
-    <td>
-      <app-autocomplete-input-field [disabled]="canEditIssuer" [options]="certificateHolders" [selected]="certificateForm.issuer" [selectedText]="certificateForm.issuer && certificateForm.issuer.commonName ? certificateForm.issuer.commonName : ''" (selectedChange)="issuerSelected($event)" label="Issuer"></app-autocomplete-input-field>
-    </td>
-    <td class="arrow-td">
-      <mat-icon class="arrow-icon">{{direction_icon}}</mat-icon>
-    </td>
-    <td>
-      <app-autocomplete-input-field [options]="certificateHolders" [selected]="certificateForm.subject" [selectedText]="certificateForm.subject && certificateForm.subject.commonName ? certificateForm.subject.commonName : ''" (selectedChange)="subjectSelected($event)" label="Subject"></app-autocomplete-input-field>
-    </td>
-  </tr>
+
   <tr>
     <td colspan="3">
       <h1>Choose extensions</h1>  </td>
@@ -30,9 +20,7 @@
     <td>
       <mat-label>PRIVATE_KEY_USAGE_PERIOD</mat-label>  </td>
     <td>
-      <app-date-field [min]="todayDate" name="fieldName" ngDefaultControl   [(value)]="privateKeyPeriod1"></app-date-field>
-    </td>
-    <td>
+      <app-date-field [min]="todayDate"  name="fieldName" ngDefaultControl   [(value)]="privateKeyPeriod1"></app-date-field>
       <app-date-field [min]="todayDate" name="fieldName" ngDefaultControl   [(value)]="privateKeyPeriod2"></app-date-field>
     </td>
     <td>
@@ -47,10 +35,7 @@
     <td>
       <mat-label>CRL_DISTRIBUTION_POINTS</mat-label>  </td>
     <td class="inputs">
-      <app-input-field name="fieldName" ngDefaultControl [(ngModel)]="crlInput1"></app-input-field>
-    </td>
-    <td class="inputs">
-      <app-input-field name="fieldName" ngDefaultControl   [(ngModel)]="crlInput2"></app-input-field>
+      <app-input-field name="fieldName" ngDefaultControl [(ngModel)]="crlInput"></app-input-field>
     </td>
     <td>
       <label>critical</label>
@@ -82,7 +67,7 @@
     <td>
       <mat-label>ISSUER_ALT_NAME</mat-label>  </td>
     <td>
-      <app-input-field  name="fieldName" ngDefaultControl   [(ngModel)]="issuerInput">text</app-input-field>
+      <app-input-field  name="fieldName" ngDefaultControl   [(ngModel)]="issuerInput"></app-input-field>
     </td>
     <td>
 <label>critical</label>
@@ -96,7 +81,7 @@
     <td>
       <mat-label>KEY_USAGE</mat-label>  </td>
     <td>
-      <app-number-input-field name="fieldName" ngDefaultControl  [(ngModel)]="keyUsage"></app-number-input-field>
+      <app-number-input-field name="fieldName" ngDefaultControl [(ngModel)]="keyUsage"></app-number-input-field>
     </td>
     <td>
       <label>critical</label>
@@ -115,7 +100,7 @@
       <app-input-field
         name="fieldName"
         ngDefaultControl
-        [(ngModel)]="subjectAltNameInput">,</app-input-field>
+        [(ngModel)]="subjectAltNameInput"></app-input-field>
     </td>
     <td>
       <label>critical</label>
@@ -128,6 +113,13 @@
   </tr>
   <tr><td>
     <mat-label>BASIC_CONSTRAINTS</mat-label>  </td>
+
+    <td>
+      <app-input-field
+        name="fieldName"
+        ngDefaultControl
+      ></app-input-field>
+    </td>
     <td>
       <label>critical</label>
       <input type="checkbox"  disabled = "disabled" checked = "checked" >

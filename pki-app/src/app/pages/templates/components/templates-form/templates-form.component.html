@@ -26,34 +26,21 @@
     <td colspan="3">
       <h1>Choose extensions</h1>  </td>
   </tr>
-
   <tr>
     <td>
-      <mat-label>AUTHORITY_INFO_ACCESS</mat-label> </td>
+      <mat-label>PRIVATE_KEY_USAGE_PERIOD</mat-label>  </td>
     <td>
-      <app-input-field name="fieldName"  ngDefaultControl  [(ngModel)]="authorityInput"></app-input-field>
-     </td>
-    <td>
-      <label>critical</label>
-      <input type="checkbox" disabled="disabled"> </td>
-    <td>
-      <app-primary-button (click)="addAuthorityInfoAccess()">Add</app-primary-button>
-
+      <app-date-field [min]="todayDate" name="fieldName" ngDefaultControl   [(value)]="privateKeyPeriod1"></app-date-field>
     </td>
-  </tr>
-
-  <tr><td>
-    <mat-label>BASIC_CONSTRAINTS</mat-label>  </td>
-    <td >
-      <app-number-input-field name="fieldName"  ngDefaultControl  [(ngModel)]="basicConstraintsValue"> 1 </app-number-input-field>
+    <td>
+      <app-date-field [min]="todayDate" name="fieldName" ngDefaultControl   [(value)]="privateKeyPeriod2"></app-date-field>
     </td>
     <td>
       <label>critical</label>
-      <input type="checkbox"  disabled = "disabled" checked = "checked" >
+      <input type="checkbox" disabled="disabled">
     </td>
     <td>
-      <app-primary-button (click)="addBasicConstraints()">Add</app-primary-button>
-
+      <app-primary-button (click)="addPrivateKeyUsagePeriod()">Add</app-primary-button>
     </td>
   </tr>
   <tr>
@@ -74,6 +61,23 @@
 
     </td>
   </tr>
+  <tr>
+    <td>
+      <mat-label>AUTHORITY_INFO_ACCESS</mat-label> </td>
+    <td>
+      <app-input-field name="fieldName"  ngDefaultControl  [(ngModel)]="authorityInput"></app-input-field>
+     </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox" disabled="disabled"> </td>
+    <td>
+      <app-primary-button (click)="addAuthorityInfoAccess()">Add</app-primary-button>
+
+    </td>
+  </tr>
+
+
+
   <tr>
     <td>
       <mat-label>ISSUER_ALT_NAME</mat-label>  </td>
@@ -98,25 +102,12 @@
       <label>critical</label>
       <input type="checkbox" [(ngModel)]="keyChecked"  >
     </td>
-    <td>     <app-primary-button (click)="addKeyUsage()">Add</app-primary-button>
+    <td>
+      <app-primary-button (click)="addKeyUsage()">Add</app-primary-button>
 
     </td>
   </tr>
-  <tr>
-    <td>
-      <mat-label>PRIVATE_KEY_USAGE_PERIOD</mat-label>  </td>
-    <td>
-      <app-input-field name="fieldName" ngDefaultControl   [(ngModel)]="privateKeyPeriod">,</app-input-field>
-    </td>
 
-    <td>
-      <label>critical</label>
-      <input type="checkbox" disabled="disabled">
-    </td>
-    <td>
-      <app-primary-button (click)="addPrivateKeyUsagePeriod()">Add</app-primary-button>
-    </td>
-  </tr>
   <tr>
     <td>
       <mat-label>SUBJECT_ALT_NAME</mat-label>  </td>
@@ -132,6 +123,17 @@
     </td>
     <td>
       <app-primary-button (click)="addSubjectAltName()">Add</app-primary-button>
+
+    </td>
+  </tr>
+  <tr><td>
+    <mat-label>BASIC_CONSTRAINTS</mat-label>  </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox"  disabled = "disabled" checked = "checked" >
+    </td>
+    <td>
+      <app-primary-button (click)="addBasicConstraints()">Add</app-primary-button>
 
     </td>
   </tr>

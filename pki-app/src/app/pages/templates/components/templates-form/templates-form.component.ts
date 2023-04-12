@@ -70,20 +70,15 @@ export class TemplatesFormComponent {
   authorityInput = ''
   basicConstraintsValue = 1
   subjectAltNameInput = ''
-  privateKeyPeriod = ''
+  privateKeyPeriod1 = new Date
+  privateKeyPeriod2 = new Date
   keyUsage = 1
   issuerInput = ''
-
   crlInput1 = ''
-
   crlInput2 = ''
   crlChecked = false
   issuerChecked = false
   keyChecked = false
-
-
-
-
 
 
 
@@ -181,8 +176,15 @@ export class TemplatesFormComponent {
   addBasicConstraints() {
 
     let extension = new CertificateExtension();
+
+    if(this.authService.isAdmin() || this.authService.isCertificateAuthority()){
+
+      extension.extensionValue = "1";
+    }
+    else{
+      extension.extensionValue = "0";
+    }
     extension.certificateExtensionType = CertificateExtensionType.BASIC_CONSTRAINTS;
-    extension.extensionValue = this.basicConstraintsValue.toString();
     extension.critical = true;
     this.extensionList.push(extension);
   }
@@ -208,7 +210,13 @@ export class TemplatesFormComponent {
   addKeyUsage() {
     let extension = new CertificateExtension();
     extension.certificateExtensionType = CertificateExtensionType.KEY_USAGE;
-    extension.extensionValue = this.keyUsage.toString();
+    if(this.keyUsage<10 && this.keyUsage>=0){
+
+      extension.extensionValue = this.keyUsage.toString();
+    }
+    else{
+      alert("enter number between 0 and 9")
+    }
     extension.critical = this.keyChecked;
     this.extensionList.push(extension);
   }
@@ -217,7 +225,7 @@ export class TemplatesFormComponent {
 
     let extension = new CertificateExtension();
     extension.certificateExtensionType = CertificateExtensionType.PRIVATE_KEY_USAGE_PERIOD;
-    extension.extensionValue = this.privateKeyPeriod;
+    extension.extensionValue = this.privateKeyPeriod1.toString()+"," + this.privateKeyPeriod2;
     extension.critical = false;
     this.extensionList.push(extension);
   }

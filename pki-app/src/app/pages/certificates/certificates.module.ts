@@ -14,6 +14,7 @@ import { CertificatesTreeViewComponent } from './components/certificates-tree-vi
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TreeViewComponent } from 'src/app/shared/ui/tree-view/tree-view.component';
 import { TreeViewModule } from 'src/app/shared/ui/tree-view/tree-view.module';
+import {TemplatesModule} from "../templates/templates.module";
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { TreeViewModule } from 'src/app/shared/ui/tree-view/tree-view.module';
     DialogModule,
     FormsModule,
     ReactiveFormsModule,
-    TreeViewModule
+    TreeViewModule,
+    TemplatesModule
   ]
 })
 export class CertificatesModule { }

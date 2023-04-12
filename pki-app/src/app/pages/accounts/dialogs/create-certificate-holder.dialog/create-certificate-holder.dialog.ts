@@ -47,7 +47,6 @@ export class CreateCertificateHolderDialogComponent {
         },
         error: (error: any) => {
           this.toastrService.error("Account with provided email already exist!");
-          console.log(error);
         }
       });
     }
@@ -59,7 +58,6 @@ export class CreateCertificateHolderDialogComponent {
         },
         error: (error: any) => {
           this.toastrService.error("Account with provided email already exist!");
-          console.log(error);
         }
       });
     }

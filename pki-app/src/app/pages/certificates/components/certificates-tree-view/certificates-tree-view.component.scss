@@ -27,3 +27,18 @@ hr {
 .hovered {
   opacity: 0.5;
 }
+
+.plus-icon-div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-top: 20%;
+}
+.plus-icon-div:hover{
+  cursor: pointer;
+}
+.plus-icon-div mat-icon {
+  transform: scale(3); /* scale by 2 times */
+}

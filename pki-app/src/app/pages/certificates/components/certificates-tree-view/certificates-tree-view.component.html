@@ -1,12 +1,20 @@
 
 <div class="container">
   <hr>
-  <div *ngFor="let element of data">
-    <tree-view #treeView [data]="element" [template]="treeTemplate" > 
+  <ng-container *ngIf="data.length!=0">
+    <div *ngFor="let element of data">
+      <tree-view #treeView [data]="element" [template]="treeTemplate" >
 
-    </tree-view>
-    <hr>
-  </div>
+      </tree-view>
+      <hr>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="data.length==0">
+    <div class="plus-icon-div" (click)="openNewRootCertificateDialog()">
+      <mat-icon>add</mat-icon><br>
+      <p>Add root certificate</p>
+    </div>
+  </ng-container>
   <ng-template #treeTemplate let-node>
     <div class="item" (mouseenter)="selectSlibingNodes($event,node)" (click)="openInfoDialog(node)" (mouseleave)="selectSlibingNodes($event,node)" [ngStyle]="node.isSelected?{'background-color':node.bc,color:node.c}:null">
     {{node.data.id}}

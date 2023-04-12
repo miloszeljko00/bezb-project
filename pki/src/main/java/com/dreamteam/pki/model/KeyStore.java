@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +17,7 @@ import lombok.*;
 public class KeyStore {
     @Id
     @Column(name = "subject_id")
-    private String SubjectId;
+    private UUID SubjectId;
 
     @Column(name = "file_name")
     private String fileName;

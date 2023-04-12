@@ -1,23 +1,35 @@
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable, of } from 'rxjs';
 import { Certificate } from 'src/app/core/models/certificate';
 import { CertificateType } from 'src/app/core/models/certificate-type';
-import { ECONode, IECONode, Orientation } from 'src/app/shared/ui/tree-view/econode';
-import { TreeViewComponent } from 'src/app/shared/ui/tree-view/tree-view.component';
+import { ECONode, IECONode } from 'src/app/shared/ui/tree-view/econode';
+import { auto } from '@popperjs/core';
+import { ToastrService } from 'ngx-toastr';
+import { CertificateService } from 'src/app/core/services/certificate.service';
+import { CreateRootCertificateRequest } from 'src/app/core/dtos/certificate/request/create-root-certificate-request';
+import { NewRootCertificateDialog } from '../../dialogs/new-root-certificate-dialog/new-root-certificate.dialog';
+import { CertificateOverviewDialog } from '../../dialogs/certificate-overview-dialog/certificate-overview.dialog';
 
 @Component({
   selector: 'app-certificates-tree-view',
   templateUrl: './certificates-tree-view.component.html',
   styleUrls: ['./certificates-tree-view.component.scss']
 })
-export class CertificatesTreeViewComponent {  
+export class CertificatesTreeViewComponent {
   nodeSelected: ECONode|null = null;
 
   @Input() certificates$: Observable<Certificate[]> = of([])
-
+  @Output() updateViewEvent = new EventEmitter();
   @ViewChildren('treeView') treeViews?: QueryList<any>;
-  
+
   data:IECONode[] = [];
+
+  constructor(
+    public dialog : MatDialog,
+    public toastr: ToastrService,
+    public certificateService: CertificateService,
+    ) {}
 
   ngOnInit() {
     this.certificates$.subscribe({
@@ -68,5 +80,47 @@ export class CertificatesTreeViewComponent {
   }
   openInfoDialog(node: ECONode) {
     console.log(node.data)
+    const dialogRef = this.dialog.open(CertificateOverviewDialog, {
+      width: '50%',
+      height: auto,
+      autoFocus: false,
+      restoreFocus: false,
+      data: node.data
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (result: any) => {
+        this.updateViewEvent.emit();
+      },
+      error: (error: any) => {
+
+      }
+    })
+  }
+
+  openNewRootCertificateDialog() {
+    const dialogRef = this.dialog.open(NewRootCertificateDialog, {
+      width: '50%',
+      height: auto,
+      autoFocus: false,
+      restoreFocus: false,
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (result: any) => {
+        var createRootCertificateRequest : CreateRootCertificateRequest = {
+          exp : result
+        }
+        this.certificateService.createRootCertificate(createRootCertificateRequest).subscribe({
+          next: (result: any) => {
+            this.toastr.success("Root certificate created successfully!")
+            this.updateViewEvent.emit();
+          }
+        })
+      },
+      error: (error: any) => {
+        this.toastr.error("Something went wrong while creating root certificate :/");
+      }
+    })
   }
 }

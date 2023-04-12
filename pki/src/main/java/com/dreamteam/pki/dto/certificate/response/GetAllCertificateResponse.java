@@ -1,6 +1,8 @@
 package com.dreamteam.pki.dto.certificate.response;
 
+import com.dreamteam.pki.dto.certificate.CertificateExtensionDto;
 import com.dreamteam.pki.model.Certificate;
+import com.dreamteam.pki.model.CertificateExtension;
 import com.dreamteam.pki.model.IntermediateCertificate;
 import com.dreamteam.pki.model.RootCertificate;
 import com.dreamteam.pki.model.enums.CertificateType;
@@ -14,7 +16,6 @@ import java.util.List;
 @Data
 public class GetAllCertificateResponse {
     private List<GetCertificateResponse> certificates;
-    private final ModelMapper mapper;
 
     public GetAllCertificateResponse() {
         certificates = new ArrayList<>();
@@ -24,6 +25,13 @@ public class GetAllCertificateResponse {
         this.certificates = new ArrayList<>();
 
         for(var certificate : certificates) {
+
+            var extensions = new ArrayList<CertificateExtensionDto>();
+
+            for(var extension : certificate.getCertificateExtensions()) {
+                extensions.add(new CertificateExtensionDto(extension.getExtensionType(), extension.getExtensionValue(), extension.isCritical()));
+            }
+
             var certificateDto = GetCertificateResponse.builder()
                     .id(certificate.getSerialNumber().toString())
                     .type(certificate.getType().toString())
@@ -33,7 +41,7 @@ public class GetAllCertificateResponse {
                     .exp(certificate.getDateRange().getEndDate())
                     .revoked(certificate.isRevoked())
                     .issuedCertificates(new ArrayList<>())
-                    .extensions()
+                    .extensions(extensions)
                 .build();
             if(certificate.getType() == CertificateType.ROOT_CERTIFICATE){
                 certificateDto.setIssuedCertificates(((RootCertificate) certificate).getIssuedCertificates());

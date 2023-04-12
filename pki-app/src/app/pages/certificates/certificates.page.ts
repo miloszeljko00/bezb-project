@@ -29,6 +29,13 @@ export class CertificatesPage implements OnDestroy{
   ) {}
 
   ngOnInit() {
+    this.updateView()
+  }
+
+  ngOnDestroy(): void {
+    this.newCertificateDialogClosedSubscription.unsubscribe()
+  }
+  updateView(){
     this.certificateService.getAllCertificates().subscribe({
       next: (certificates: Certificates) => {
         console.log(certificates);
@@ -38,10 +45,6 @@ export class CertificatesPage implements OnDestroy{
         this.toastr.error(error.message)
       }
     })
-  }
-
-  ngOnDestroy(): void {
-    this.newCertificateDialogClosedSubscription.unsubscribe()
   }
 
   openNewCertificateDialog() {
@@ -66,12 +69,12 @@ export class CertificatesPage implements OnDestroy{
           default:
             this.toastr.error("Invalid Certificate type: " + result.type);
         }
-        
+
 
       },
     })
   }
-  
+
   openConfirmRevokeDialog(certificate: Certificate) {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       autoFocus: false,

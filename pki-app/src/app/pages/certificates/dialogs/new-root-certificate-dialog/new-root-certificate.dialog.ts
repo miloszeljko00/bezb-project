@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 import { CertificateHolderType } from 'src/app/core/models/certificate-holder-type';
@@ -7,6 +8,7 @@ import { CertificateType } from 'src/app/core/models/certificate-type';
 import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
 import { SelectOption } from 'src/app/shared/ui/input/components/select-field/select-field.component';
 
+//dobaviti prave certificate holdere sa beka
 const CERTIFICATE_HOLDERS: CertificateHolder[] = [
   {
     id: 'axdasdxas-dxa-dax-sdx-asxasx',
@@ -33,23 +35,17 @@ const CERTIFICATE_HOLDERS: CertificateHolder[] = [
 ]
 
 @Component({
-  selector: 'app-new-certificate-dialog',
-  templateUrl: './new-certificate.dialog.html',
-  styleUrls: ['./new-certificate.dialog.scss']
+  selector: 'app-new-root-certificate',
+  templateUrl: './new-root-certificate.dialog.html',
+  styleUrls: ['./new-root-certificate.dialog.scss']
 })
-export class NewCertificateDialog {
+export class NewRootCertificateDialog {
 
   certificateTypes: SelectOption[] = []
   certificateHolders: CertificateHolder[] = [];
   certificateHolderOptions: SelectOption[] = [];
-
-  certificateForm = {
-    type: null as CertificateType|null,
-    subject: null as CertificateHolder|null,
-    exp: null as Date|null,
-  }
-
-  canEditIssuer = false
+  //@ts-ignore
+  expirationDate: Date;
 
   todayDate = new Date()
 
@@ -59,42 +55,26 @@ export class NewCertificateDialog {
 
   constructor(
     private authService: AuthService,
-    public dialogRef: MatDialogRef<NewCertificateDialog>,
-    public certificateHolderService : CertificateHolderService
+    public dialogRef: MatDialogRef<NewRootCertificateDialog>,
+    public certificateHolderService: CertificateHolderService,
+    public toastr: ToastrService
     ) {
-    this.updateCertificateTypes()
-    this.canEditIssuer = !this.authService.isAdmin()
-  }
-  ngOnInit(){
-    this.certificateHolderService.getAllCertificateHolders().subscribe({
-      next: (result: CertificateHolder[]) => {
-        this.certificateHolders = result;
-        this.certificateHolderOptions = this.certificateHolders.map((certificateHolder) => {
-          return {value: certificateHolder, displayValue: certificateHolder.commonName}
-        })
-      }
-    })
-  }
-  createCertificate() {
-    console.log(this.certificateForm)
-    this.dialogRef.close(this.certificateForm)
-  }
-
-
-  subjectSelected(selected: CertificateHolder) {
-    this.certificateForm.subject = selected
-  }
-
-  adjustFormForCertificateType(selected: CertificateType) {
-    if(selected == CertificateType.ROOT_CERTIFICATE) {
-      this.direction_icon = '='
-      this.syncIssuerAndSubject = true
-    }else {
-      this.direction_icon = 'arrow_forward'
-      this.syncIssuerAndSubject = false
+      this.updateCertificateTypes()
     }
-
+    ngOnInit(){
+      this.certificateHolderService.getAllCertificateHolders().subscribe({
+        next: (result: CertificateHolder[]) => {
+          this.certificateHolders = result;
+          this.certificateHolderOptions = this.certificateHolders.map((certificateHolder) => {
+            return {value: certificateHolder, displayValue: certificateHolder.commonName}
+          })
+        }
+      })
+    }
+  createCertificate() {
+    this.dialogRef.close(this.expirationDate)
   }
+
 
   private updateCertificateTypes() {
     if (this.authService.isAdmin()) {
@@ -119,10 +99,10 @@ export class NewCertificateDialog {
 
   private updateCertificateTypesForAdmin() {
     this.certificateTypes = [
-      // {
-      //   value: CertificateType.ROOT_CERTIFICATE,
-      //   displayValue: 'ROOT CERTIFICATE',
-      // },
+      {
+        value: CertificateType.ROOT_CERTIFICATE,
+        displayValue: 'ROOT CERTIFICATE',
+      },
       {
         value: CertificateType.INTERMEDIATE_CERTIFICATE,
         displayValue: 'INTERMEDIATE CERTIFICATE',

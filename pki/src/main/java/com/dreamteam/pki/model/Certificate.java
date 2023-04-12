@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.List;
 
 
 @Getter
@@ -47,4 +48,7 @@ public class Certificate {
 
     @Column(name = "private_key")
     private PrivateKey privateKey;
+
+    @OneToMany
+    List<CertificateExtension> certificateExtensions;
 }

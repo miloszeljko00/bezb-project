@@ -14,10 +14,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.dreamteam.pki.model.Certificate;
 import com.dreamteam.pki.repository.ICertificateRepository;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DERUTF8String;
+import org.bouncycastle.asn1.x509.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -39,6 +44,22 @@ public class CertificateService {
         subject.addCertificate(certificate);
         certificateHolderRepository.save(subject);
 
+        List<Extension> extensions = new ArrayList<>();
+
+        try {
+            for(var extension : certificate.getCertificateExtensions()) {
+                ASN1ObjectIdentifier customExtensionOID = new ASN1ObjectIdentifier(extension.getExtensionName());
+                DERUTF8String customExtensionValue = new DERUTF8String(extension.getExtensionValue());
+                boolean isCritical = extension.isCritical();
+                Extension customExtension = new Extension(customExtensionOID, isCritical, customExtensionValue.getEncoded());
+                extensions.add(customExtension);
+            }
+        }catch (Exception e) {
+            return null;
+        }
+
+
+
         var x509Certificate = certificateGenerator.generate(
                 certificate.getPrivateKey(),
                 certificate.getPublicKey(),
@@ -46,7 +67,8 @@ public class CertificateService {
                 certificate.getIssuer().getX500Name(),
                 certificate.getDateRange().getStartDate(),
                 certificate.getDateRange().getEndDate(),
-                certificate.getSerialNumber());
+                certificate.getSerialNumber(),
+                extensions);
 
         var keyStore = keyStoreRepository.findById(certificate.getSubject().getId().toString()).orElse(null);
 
@@ -82,6 +104,20 @@ public class CertificateService {
             return null;
         }
 
+        List<Extension> extensions = new ArrayList<>();
+
+        try {
+            for(var extension : certificate.getCertificateExtensions()) {
+                ASN1ObjectIdentifier customExtensionOID = new ASN1ObjectIdentifier(extension.getExtensionName());
+                DERUTF8String customExtensionValue = new DERUTF8String(extension.getExtensionValue());
+                boolean isCritical = extension.isCritical();
+                Extension customExtension = new Extension(customExtensionOID, isCritical, customExtensionValue.getEncoded());
+                extensions.add(customExtension);
+            }
+        }catch (Exception e) {
+            return null;
+        }
+
         var x509Certificate = certificateGenerator.generate(
                 certificate.getParentCertificate().getPrivateKey(),
                 certificate.getPublicKey(),
@@ -89,7 +125,8 @@ public class CertificateService {
                 certificate.getIssuer().getX500Name(),
                 certificate.getDateRange().getStartDate(),
                 certificate.getDateRange().getEndDate(),
-                certificate.getSerialNumber());
+                certificate.getSerialNumber(),
+                extensions);
 
         var keyStore = keyStoreRepository.findById(certificate.getSubject().getId().toString()).orElse(null);
 
@@ -125,6 +162,20 @@ public class CertificateService {
             return null;
         }
 
+        List<Extension> extensions = new ArrayList<>();
+
+        try {
+            for(var extension : certificate.getCertificateExtensions()) {
+                ASN1ObjectIdentifier customExtensionOID = new ASN1ObjectIdentifier(extension.getExtensionName());
+                DERUTF8String customExtensionValue = new DERUTF8String(extension.getExtensionValue());
+                boolean isCritical = extension.isCritical();
+                Extension customExtension = new Extension(customExtensionOID, isCritical, customExtensionValue.getEncoded());
+                extensions.add(customExtension);
+            }
+        }catch (Exception e) {
+            return null;
+        }
+
         var x509Certificate = certificateGenerator.generate(
                 certificate.getParentCertificate().getPrivateKey(),
                 certificate.getPublicKey(),
@@ -132,7 +183,8 @@ public class CertificateService {
                 certificate.getIssuer().getX500Name(),
                 certificate.getDateRange().getStartDate(),
                 certificate.getDateRange().getEndDate(),
-                certificate.getSerialNumber());
+                certificate.getSerialNumber(),
+                extensions);
 
         var keyStore = keyStoreRepository.findById(certificate.getSubject().getId().toString()).orElse(null);
 

@@ -235,7 +235,7 @@ public class CertificateController {
             if(!certificateService.isValid((RootCertificate) parentCertificate)) return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        var issuer = parentCertificate.getIssuer();
+        var issuer = parentCertificate.getSubject();
         var subject = certificateHolderService.findById(createEntityCertificateRequest.getSubjectId());
 
         if(user.getType() == CertificateHolderType.CERTIFICATE_AUTHORITY && user instanceof CertificateAuthority certificateAuthority){

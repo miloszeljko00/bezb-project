@@ -49,6 +49,6 @@ public class Certificate {
     @Column(name = "private_key")
     private PrivateKey privateKey;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     List<CertificateExtension> certificateExtensions;
 }

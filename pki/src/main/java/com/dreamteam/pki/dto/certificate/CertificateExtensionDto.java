@@ -1,10 +1,11 @@
 package com.dreamteam.pki.dto.certificate;
 
+import com.dreamteam.pki.model.enums.CertificateExtensionType;
 import lombok.Data;
 
 @Data
 public class CertificateExtensionDto {
-    private String extensionName;
+    private CertificateExtensionType extensionType;
     private String extensionValue;
     private boolean critical;
 }

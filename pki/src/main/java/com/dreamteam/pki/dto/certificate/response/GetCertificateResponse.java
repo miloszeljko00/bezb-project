@@ -1,5 +1,6 @@
 package com.dreamteam.pki.dto.certificate.response;
 
+import com.dreamteam.pki.dto.certificate.CertificateExtensionDto;
 import com.dreamteam.pki.dto.certificate_holder.UserInfo;
 import com.dreamteam.pki.model.Certificate;
 import com.dreamteam.pki.model.IntermediateCertificate;
@@ -23,6 +24,7 @@ public class GetCertificateResponse {
     private Date iat;
     private Date exp;
     private boolean revoked;
+    private List<CertificateExtensionDto> extensions;
     private List<GetCertificateResponse> issuedCertificates;
 
 

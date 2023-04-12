@@ -113,7 +113,8 @@ export class CertificatesTreeViewComponent {
     dialogRef.afterClosed().subscribe({
       next: (result: any) => {
         var createRootCertificateRequest : CreateRootCertificateRequest = {
-          exp : result
+          exp : result.exp,
+          certificateExtensions: result.extensions
         }
         this.certificateService.createRootCertificate(createRootCertificateRequest).subscribe({
           next: (result: any) => {

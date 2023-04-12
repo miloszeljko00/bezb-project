@@ -9,6 +9,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 export class CheckboxComponent implements OnInit {
 
   @Input() checked = false;
+  @Input() disabled = false;
   @Output() checkedChange = new EventEmitter<boolean>();
 
   @Input() fontIcon: string = '';

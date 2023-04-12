@@ -16,6 +16,8 @@ import { TreeViewModule } from 'src/app/shared/ui/tree-view/tree-view.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NewRootCertificateDialog } from './dialogs/new-root-certificate-dialog/new-root-certificate.dialog';
 import { CertificateOverviewDialog } from './dialogs/certificate-overview-dialog/certificate-overview.dialog';
+import { ExtensionsDialog } from './dialogs/extensions-dialog/extensions.dialog';
+import { CheckboxModule } from 'src/app/shared/ui/checkbox/checkbox.module';
 
 
 @NgModule({
@@ -25,7 +27,8 @@ import { CertificateOverviewDialog } from './dialogs/certificate-overview-dialog
     NewCertificateDialog,
     CertificatesTreeViewComponent,
     NewRootCertificateDialog,
-    CertificateOverviewDialog
+    CertificateOverviewDialog,
+    ExtensionsDialog
   ],
   imports: [
     CommonModule,
@@ -38,7 +41,8 @@ import { CertificateOverviewDialog } from './dialogs/certificate-overview-dialog
     FormsModule,
     ReactiveFormsModule,
     TreeViewModule,
-    MatDialogModule
+    MatDialogModule,
+    CheckboxModule
   ]
 })
 export class CertificatesModule { }

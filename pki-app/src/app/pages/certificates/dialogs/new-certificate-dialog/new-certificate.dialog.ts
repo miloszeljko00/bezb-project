@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { User } from 'src/app/core/auth/models/user';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
 import { Certificate } from 'src/app/core/models/certificate';
@@ -8,6 +8,7 @@ import { CertificateHolderType } from 'src/app/core/models/certificate-holder-ty
 import { CertificateType } from 'src/app/core/models/certificate-type';
 import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
 import { SelectOption } from 'src/app/shared/ui/input/components/select-field/select-field.component';
+import { ExtensionsDialog } from '../extensions-dialog/extensions.dialog';
 
 @Component({
   selector: 'app-new-certificate-dialog',
@@ -25,8 +26,8 @@ export class NewCertificateDialog {
     type: null as CertificateType|null,
     subject: null as CertificateHolder|null,
     exp: null as Date|null,
+    extensions: []
   }
-
   canEditIssuer = false
 
   todayDate = new Date()
@@ -39,7 +40,8 @@ export class NewCertificateDialog {
     @Inject(MAT_DIALOG_DATA) public data: Certificate,
     private authService: AuthService,
     public dialogRef: MatDialogRef<NewCertificateDialog>,
-    public certificateHolderService : CertificateHolderService
+    public certificateHolderService : CertificateHolderService,
+    public matDialog: MatDialog
     ) {
     this.updateCertificateTypes()
     this.canEditIssuer = !this.authService.isAdmin()
@@ -70,7 +72,19 @@ export class NewCertificateDialog {
       this.certificateHolderOptionsFiltered = new Array<SelectOption>(...this.certificateHolderOptions)
     }
   }
+  openCreateExtensionsDialog() {
+    const dialogRef = this.matDialog.open(ExtensionsDialog, {
+      autoFocus: false,
+      restoreFocus: false,
+      data: { type: this.certificateForm.type}
+    });
 
+    dialogRef.afterClosed().subscribe({
+      next: (result: any) => {
+        this.certificateForm.extensions = result;
+      }
+    })
+  }
   subjectSelected(selected: CertificateHolder) {
     this.certificateForm.subject = selected
   }

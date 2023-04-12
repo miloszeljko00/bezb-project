@@ -111,6 +111,14 @@ public class CertificateController {
     private Certificate filterRevoked(Certificate certificate) {
         if(certificate.isRevoked()) return null;
 
+        if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)){
+            if(!certificateService.isValid((RootCertificate) certificate)) return null;
+        }else if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)){
+            if(!certificateService.isValid((IntermediateCertificate) certificate)) return null;
+        }else if(certificate.getType().equals(CertificateType.ENTITY_CERTIFICATE)){
+            if(!certificateService.isValid((EntityCertificate) certificate)) return null;
+        }
+
         if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)) {
             var issuedCertificates = filterRevoked(((RootCertificate) certificate).getIssuedCertificates());
             ((RootCertificate) certificate).setIssuedCertificates(issuedCertificates);
@@ -139,6 +147,13 @@ public class CertificateController {
         var result = new ArrayList<Certificate>();
         for(var certificate : certificates) {
             if(certificate.isRevoked()) continue;
+            if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)){
+                if(!certificateService.isValid((RootCertificate) certificate)) continue;
+            }else if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)){
+                if(!certificateService.isValid((IntermediateCertificate) certificate)) continue;
+            }else if(certificate.getType().equals(CertificateType.ENTITY_CERTIFICATE)){
+                if(!certificateService.isValid((EntityCertificate) certificate)) continue;
+            }
             result.add(certificate);
 
             if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)) {

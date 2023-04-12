@@ -1,3 +1,4 @@
 export interface CreateRootCertificateRequest {
-  exp : Date
+  exp : Date,
+  certificateExtensions: any
 }

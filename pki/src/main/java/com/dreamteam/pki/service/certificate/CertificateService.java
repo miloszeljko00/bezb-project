@@ -200,7 +200,7 @@ public class CertificateService {
         var keystore = keyStoreRepository.findById(certificate.getSubject().getId()).orElse(null);
         if(keystore == null) return false;
 
-        var x509certificate = keyStoreReader.readCertificate("src/main/resources/static" + keystore.getSubjectId() + ".jks", keystore.getPassword(), certificate.getSerialNumber().toString());
+        var x509certificate = keyStoreReader.readCertificate("src/main/resources/static/" + keystore.getSubjectId() + ".jks", keystore.getPassword(), certificate.getSerialNumber().toString());
         try {
             FileOutputStream os = new FileOutputStream(certificate.getSerialNumber() + ".crt");
             os.write("-----BEGIN CERTIFICATE-----\n".getBytes(StandardCharsets.US_ASCII));
@@ -209,7 +209,7 @@ public class CertificateService {
             os.close();
             if(certificate.getSubject().getType().equals(CertificateHolderType.ENTITY)) return true;
 
-            PrivateKey key = keyStoreReader.readPrivateKey("src/main/resources/static" + keystore.getSubjectId() + ".jks", keystore.getPassword(), certificate.getSerialNumber().toString(), keystore.getPassword());
+            PrivateKey key = keyStoreReader.readPrivateKey("src/main/resources/static/" + keystore.getSubjectId() + ".jks", keystore.getPassword(), certificate.getSerialNumber().toString(), keystore.getPassword());
             os = new FileOutputStream(certificate.getSerialNumber() + "-key" + ".pem");
             os.write("-----BEGIN PRIVATE KEY-----\n".getBytes(StandardCharsets.US_ASCII));
             os.write(Base64.getEncoder().encode(key.getEncoded()));

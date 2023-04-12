@@ -13,7 +13,8 @@
   </div>
   <div class="buttons-div">
     <button mat-raised-button color="primary" (click)="checkIfCertificateIsValid()">Check Validity</button>
-    <button mat-raised-button color="primary" (click)="downloadCertificate()">Download</button>
+    <button mat-raised-button color="primary" (click)="downloadCertificate()">Download Certificate</button>
+    <button mat-raised-button color="primary" *ngIf="user && !user.roles.includes('ROLE_ENTITY')" (click)="downloadPrivateKey()">Download Private Key</button>
     <button mat-raised-button color="primary" (click)="revokeCertificate()">Revoke</button>
     <button mat-raised-button color="primary" (click)="createNewCertificateFromThis()">Create new from this</button>
   </div>

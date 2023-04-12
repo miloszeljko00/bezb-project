@@ -12,8 +12,11 @@ import { Certificates } from '../models/certificates';
   providedIn: 'root'
 })
 export class CertificateService {
+  downloadPrivateKey(id: string) {
+    return this.http.get(environment.apiUrl+"/api/certificates/" + id + "/actions/download-private-key",{ responseType: 'blob' });
+  }
   downloadCertificate(id: string) {
-    return this.http.get(environment.apiUrl+"/api/certificates/" + id + "/actions/download");
+    return this.http.get(environment.apiUrl+"/api/certificates/" + id + "/actions/download",{ responseType: 'blob' });
   }
 
   constructor(private http: HttpClient) {}

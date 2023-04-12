@@ -5,6 +5,8 @@ import { NewCertificateDialog } from '../new-certificate-dialog/new-certificate.
 import { auto } from '@popperjs/core';
 import { CertificateService } from 'src/app/core/services/certificate.service';
 import { ToastrService } from 'ngx-toastr';
+import { User } from 'src/app/core/auth/models/user';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-certificate-overview',
@@ -14,15 +16,19 @@ import { ToastrService } from 'ngx-toastr';
 export class CertificateOverviewDialog implements OnInit {
 
   createCertificateRequest:any;
+  user: User|null = null
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Certificate,
     public dialog: MatDialog,
     public dialogRef: MatDialogRef<CertificateOverviewDialog>,
     public certificateService : CertificateService,
-    public toastrService : ToastrService
+    public toastrService : ToastrService,
+    private authService : AuthService,
   ) { }
 
   ngOnInit() {
+    this.user = this.authService.getUser()
   }
   checkIfCertificateIsValid(){
 
@@ -38,7 +44,17 @@ export class CertificateOverviewDialog implements OnInit {
       }
     })
   }
-
+  downloadPrivateKey() {
+    this.certificateService.downloadPrivateKey(this.data.id).subscribe({
+      next: (response: any) => {
+        const downloadLink = document.createElement('a');
+        const blob = new Blob([response], { type: 'blob' }); // replace with the MIME type of your file
+        downloadLink.href = window.URL.createObjectURL(blob);
+        downloadLink.download = 'certificate-key.pem'; // replace with the name of your file
+        downloadLink.click();
+      }
+    })
+  }
   revokeCertificate(){
 
   }

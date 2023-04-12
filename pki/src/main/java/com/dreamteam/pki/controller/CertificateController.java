@@ -326,4 +326,22 @@ public class CertificateController {
                 .body(resource);
 
     }
+
+    @GetMapping("{certificateId}/actions/download-private-key")
+    public ResponseEntity<Object> downloadPrivateKey(@PathVariable String certificateId) throws FileNotFoundException {
+        // TODO: Vratiti sertifikat sa trazenim Id-em kao .pem datoteku na zahtev vlasnika ili izdavaoca
+
+        var certificate = certificateService.findBySerialNumber(new BigInteger(certificateId));
+
+        certificateService.extractCertificate(certificate);
+        File file = new File(certificate.getSerialNumber() + "-key.pem");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        file.deleteOnExit();
+
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+
+    }
 }

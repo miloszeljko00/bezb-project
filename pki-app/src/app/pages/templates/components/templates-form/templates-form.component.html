@@ -29,118 +29,110 @@
 
   <tr>
     <td>
-      <mat-label>AUTHORITY_INFO_ACCESS</mat-label>  </td>
-
+      <mat-label>AUTHORITY_INFO_ACCESS</mat-label> </td>
     <td>
-
-      <app-input-field></app-input-field>
+      <app-input-field name="fieldName"  ngDefaultControl  [(ngModel)]="authorityInput"></app-input-field>
      </td>
     <td>
-
       <label>critical</label>
       <input type="checkbox" disabled="disabled"> </td>
-    <td> <button>add</button>
+    <td>
+      <app-primary-button (click)="addAuthorityInfoAccess()">Add</app-primary-button>
+
     </td>
   </tr>
 
   <tr><td>
     <mat-label>BASIC_CONSTRAINTS</mat-label>  </td>
-
     <td >
-      <app-number-input-field> 1 </app-number-input-field>
+      <app-number-input-field name="fieldName"  ngDefaultControl  [(ngModel)]="basicConstraintsValue"> 1 </app-number-input-field>
     </td>
-
     <td>
-
       <label>critical</label>
       <input type="checkbox"  disabled = "disabled" checked = "checked" >
     </td>
-    <td> <button>add</button>
+    <td>
+      <app-primary-button (click)="addBasicConstraints()">Add</app-primary-button>
+
     </td>
   </tr>
   <tr>
     <td>
       <mat-label>CRL_DISTRIBUTION_POINTS</mat-label>  </td>
-
     <td class="inputs">
-      <app-input-field></app-input-field>
-
+      <app-input-field name="fieldName" ngDefaultControl [(ngModel)]="crlInput1"></app-input-field>
     </td>
     <td class="inputs">
-      <app-input-field></app-input-field>
+      <app-input-field name="fieldName" ngDefaultControl   [(ngModel)]="crlInput2"></app-input-field>
     </td>
     <td>
-
       <label>critical</label>
-      <input type="checkbox"  >
+      <input type="checkbox"  [(ngModel)]="crlChecked"  >
     </td>
-    <td> <button>add</button>
+    <td>
+      <app-primary-button (click)="addCrl()">Add</app-primary-button>
+
     </td>
   </tr>
   <tr>
     <td>
       <mat-label>ISSUER_ALT_NAME</mat-label>  </td>
-
     <td>
-
-      <app-input-field>text</app-input-field>
+      <app-input-field  name="fieldName" ngDefaultControl   [(ngModel)]="issuerInput">text</app-input-field>
     </td>
-
     <td>
 <label>critical</label>
-      <input type="checkbox"  >
+      <input type="checkbox" [(ngModel)]="issuerChecked"   >
     </td>
-    <td> <button>add</button>
+    <td>     <app-primary-button (click)="addIssuerAltName()">Add</app-primary-button>
+
     </td>
   </tr>
   <tr>
     <td>
       <mat-label>KEY_USAGE</mat-label>  </td>
-
     <td>
-<app-number-input-field></app-number-input-field>
+      <app-number-input-field name="fieldName" ngDefaultControl  [(ngModel)]="keyUsage"></app-number-input-field>
     </td>
-
     <td>
-
       <label>critical</label>
-      <input type="checkbox"  >
+      <input type="checkbox" [(ngModel)]="keyChecked"  >
     </td>
-    <td> <button>add</button>
+    <td>     <app-primary-button (click)="addKeyUsage()">Add</app-primary-button>
+
     </td>
   </tr>
   <tr>
     <td>
       <mat-label>PRIVATE_KEY_USAGE_PERIOD</mat-label>  </td>
-
     <td>
-
-      <app-input-field>,</app-input-field>
+      <app-input-field name="fieldName" ngDefaultControl   [(ngModel)]="privateKeyPeriod">,</app-input-field>
     </td>
 
     <td>
-
       <label>critical</label>
       <input type="checkbox" disabled="disabled">
     </td>
-    <td> <button>add</button>
+    <td>
+      <app-primary-button (click)="addPrivateKeyUsagePeriod()">Add</app-primary-button>
     </td>
   </tr>
   <tr>
     <td>
       <mat-label>SUBJECT_ALT_NAME</mat-label>  </td>
-
     <td>
-
-      <app-input-field>,</app-input-field>
+      <app-input-field
+        name="fieldName"
+        ngDefaultControl
+        [(ngModel)]="subjectAltNameInput">,</app-input-field>
     </td>
-
     <td>
-
       <label>critical</label>
       <input type="checkbox" disabled="disabled">
     </td>
-    <td> <button>add</button>
+    <td>
+      <app-primary-button (click)="addSubjectAltName()">Add</app-primary-button>
+
     </td>
   </tr>
   <app-primary-button (click)="createCertificate()">Create</app-primary-button>

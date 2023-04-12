@@ -46,6 +46,7 @@ export class TemplatesFormComponent {
   certificateHolders: SelectOption[] = CERTIFICATE_HOLDERS.map((certificateHolder) => {
     return {value: certificateHolder, displayValue: certificateHolder.commonName}
   })
+
   extensionList: CertificateExtension[] = [];
 
   certificateForm = {
@@ -63,6 +64,26 @@ export class TemplatesFormComponent {
 
   direction_icon = ''
 
+  authorityInput = ''
+  basicConstraintsValue = 1
+  subjectAltNameInput = ''
+  privateKeyPeriod = ''
+  keyUsage = 1
+  issuerInput = ''
+
+  crlInput1 = ''
+
+  crlInput2 = ''
+  crlChecked = false
+  issuerChecked = false
+  keyChecked = false
+
+
+
+
+
+
+
   constructor(
     private authService: AuthService,
     public certificateService: CertificateService
@@ -73,6 +94,8 @@ export class TemplatesFormComponent {
   }
 
   createCertificate() {
+    console.log(this.extensionList);
+    this.extensionList = [];
   //  this.certificateService.Create(this.certificateForm)
   }
 
@@ -134,5 +157,69 @@ export class TemplatesFormComponent {
         displayValue: 'ENTITY CERTIFICATE',
       }
     ];
+  }
+
+  addAuthorityInfoAccess() {
+
+    let extension = new CertificateExtension();
+    extension.extensionName = CertificateExtensionType.AUTHORITY_INFO_ACCESS;
+    extension.extensionValue = this.authorityInput;
+    extension.critical = false;
+    this.extensionList.push(extension);
+
+  }
+
+  addBasicConstraints() {
+
+    let extension = new CertificateExtension();
+    extension.extensionName = CertificateExtensionType.BASIC_CONSTRAINTS;
+    extension.extensionValue = this.basicConstraintsValue.toString();
+    extension.critical = true;
+    this.extensionList.push(extension);
+  }
+
+  addCrl() {
+
+    let extension = new CertificateExtension();
+    extension.extensionName = CertificateExtensionType.CRL_DISTRIBUTION_POINTS;
+
+    let crlInput =this.crlInput1+this.crlInput2
+    extension.extensionValue = crlInput;
+    extension.critical = this.crlChecked;
+    this.extensionList.push(extension);
+  }
+
+  addIssuerAltName() {
+    let extension = new CertificateExtension();
+    extension.extensionName = CertificateExtensionType.ISSUER_ALT_NAME;
+    extension.extensionValue = this.issuerInput;
+    extension.critical = this.issuerChecked;
+    this.extensionList.push(extension);
+  }
+
+  addKeyUsage() {
+    let extension = new CertificateExtension();
+    extension.extensionName = CertificateExtensionType.KEY_USAGE;
+    extension.extensionValue = this.keyUsage.toString();
+    extension.critical = this.keyChecked;
+    this.extensionList.push(extension);
+  }
+
+  addPrivateKeyUsagePeriod() {
+
+    let extension = new CertificateExtension();
+    extension.extensionName = CertificateExtensionType.PRIVATE_KEY_USAGE_PERIOD;
+    extension.extensionValue = this.privateKeyPeriod;
+    extension.critical = false;
+    this.extensionList.push(extension);
+  }
+
+  addSubjectAltName() {
+
+    let extension = new CertificateExtension();
+    extension.extensionName = CertificateExtensionType.SUBJECT_ALT_NAME;
+    extension.extensionValue = this.subjectAltNameInput;
+    extension.critical = false;
+    this.extensionList.push(extension);
   }
 }

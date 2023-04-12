@@ -12,13 +12,13 @@
   </tr>
   <tr>
     <td>
-      <app-autocomplete-input-field [disabled]="canEditIssuer" [options]="certificateHolders" [selected]="certificateForm.issuer" [selectedText]="certificateForm.issuer && certificateForm.issuer.commonName ? certificateForm.issuer.commonName : ''" (selectedChange)="issuerSelected($event)" label="Issuer"></app-autocomplete-input-field>
+      <app-autocomplete-input-field [disabled]="canEditIssuer" [options]="certificateHolderOptions" [selected]="certificateForm.issuer" [selectedText]="certificateForm.issuer && certificateForm.issuer.commonName ? certificateForm.issuer.commonName : ''" (selectedChange)="issuerSelected($event)" label="Issuer"></app-autocomplete-input-field>
     </td>
     <td class="arrow-td">
       <mat-icon class="arrow-icon">{{direction_icon}}</mat-icon>
     </td>
     <td>
-      <app-autocomplete-input-field [options]="certificateHolders" [selected]="certificateForm.subject" [selectedText]="certificateForm.subject && certificateForm.subject.commonName ? certificateForm.subject.commonName : ''" (selectedChange)="subjectSelected($event)" label="Subject"></app-autocomplete-input-field>
+      <app-autocomplete-input-field [options]="certificateHolderOptions" [selected]="certificateForm.subject" [selectedText]="certificateForm.subject && certificateForm.subject.commonName ? certificateForm.subject.commonName : ''" (selectedChange)="subjectSelected($event)" label="Subject"></app-autocomplete-input-field>
     </td>
   </tr>
 </table>

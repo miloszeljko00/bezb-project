@@ -2,4 +2,4 @@
   <app-certificates-table (addClicked)="openNewCertificateDialog()" (revokeClicked)="openConfirmRevokeDialog($event)"></app-certificates-table>
 -->
 
-<app-certificates-tree-view [certificates$]="certificates$"></app-certificates-tree-view>
+<app-certificates-tree-view [certificates$]="certificates$" (updateViewEvent)="updateView()"></app-certificates-tree-view>

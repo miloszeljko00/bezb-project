@@ -12,8 +12,10 @@ import { InputModule } from 'src/app/shared/ui/input/input.module';
 import { DialogModule } from 'src/app/shared/ui/dialog/dialog.module';
 import { CertificatesTreeViewComponent } from './components/certificates-tree-view/certificates-tree-view.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TreeViewComponent } from 'src/app/shared/ui/tree-view/tree-view.component';
 import { TreeViewModule } from 'src/app/shared/ui/tree-view/tree-view.module';
+import { MatDialogModule } from '@angular/material/dialog';
+import { NewRootCertificateDialog } from './dialogs/new-root-certificate-dialog/new-root-certificate.dialog';
+import { CertificateOverviewDialog } from './dialogs/certificate-overview-dialog/certificate-overview.dialog';
 
 
 @NgModule({
@@ -22,6 +24,8 @@ import { TreeViewModule } from 'src/app/shared/ui/tree-view/tree-view.module';
     CertificatesTableComponent,
     NewCertificateDialog,
     CertificatesTreeViewComponent,
+    NewRootCertificateDialog,
+    CertificateOverviewDialog
   ],
   imports: [
     CommonModule,
@@ -33,7 +37,8 @@ import { TreeViewModule } from 'src/app/shared/ui/tree-view/tree-view.module';
     DialogModule,
     FormsModule,
     ReactiveFormsModule,
-    TreeViewModule
+    TreeViewModule,
+    MatDialogModule
   ]
 })
 export class CertificatesModule { }

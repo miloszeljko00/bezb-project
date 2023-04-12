@@ -9,5 +9,5 @@ public class CreateEntityCertificateRequest {
     private Date exp;
     private String parentCertificateSerialNumber;
     private String subjectId;
-    private String issuerId;
+
 }

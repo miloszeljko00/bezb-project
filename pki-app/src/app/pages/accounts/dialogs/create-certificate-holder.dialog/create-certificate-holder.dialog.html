@@ -1,0 +1,20 @@
+<div>
+  <form (submit)="$event.preventDefault(); createCertificateHolder()">
+    <div class="form-div">
+      <div class="first-column">
+        <app-input-field autocomplete="email" [(value)]="createCertificateHolderForm.email">Email</app-input-field>
+        <app-password-input-field autocomplete="password" [(value)]="createCertificateHolderForm.password">Password</app-password-input-field>
+        <app-input-field [(value)]="createCertificateHolderForm.commonName">Common Name</app-input-field>
+        <app-input-field [(value)]="createCertificateHolderForm.country">Country</app-input-field>
+      </div>
+      <app-primary-button type="submit">Create</app-primary-button>
+      <div class="second-column">
+        <app-input-field [(value)]="createCertificateHolderForm.state">State</app-input-field>
+        <app-input-field [(value)]="createCertificateHolderForm.locality">Locality</app-input-field>
+        <app-input-field [(value)]="createCertificateHolderForm.organization">Organization</app-input-field>
+        <app-input-field [(value)]="createCertificateHolderForm.organizationalUnit">Organization Unit</app-input-field>
+        <app-radio-button label="Certificate Holder Type" [options]="radioOptions" [(selected)]="selectedRadioOption"></app-radio-button>
+      </div>
+    </div>
+  </form>
+</div>

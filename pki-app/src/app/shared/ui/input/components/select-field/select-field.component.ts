@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 
 export interface SelectOption {
@@ -11,19 +11,15 @@ export interface SelectOption {
   templateUrl: './select-field.component.html',
   styleUrls: ['./select-field.component.scss']
 })
-export class SelectFieldComponent implements OnInit {
+export class SelectFieldComponent  {
 
   @Input() disabled = false;
   @Input() options: SelectOption[] = [];
   @Input() selected: any;
   @Output() selectedChange: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor() { }
-
-  ngOnInit() {;
-  }
+  constructor() {}
   selectionChange(event: MatSelectChange){
-    console.log(event.value);
     this.selected=event.value;
     this.selectedChange.emit(this.selected);
   }

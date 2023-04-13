@@ -1,0 +1,21 @@
+<div class="certificate-overview-div">
+  <app-dialog-header class="header">Certificate overview</app-dialog-header>
+  <div class="type-div">
+    <app-input-field [disabled]="true" [value]="data.type">Type</app-input-field>
+  </div>
+  <div class="dates-div">
+    <app-date-field [disabled]="true" [value]="data.iat" style="margin-right: 10px;">Issued At</app-date-field>
+    <app-date-field [disabled]="true" [value]="data.exp">Expires At</app-date-field>
+  </div>
+  <div class="commonNames-div">
+    <app-input-field [disabled]="true" [value]="data.issuer.commonName" style="margin-right: 10px;">Issuer</app-input-field>
+    <app-input-field [disabled]="true" [value]="data.subject.commonName">Subject</app-input-field>
+  </div>
+  <div class="buttons-div">
+    <button mat-raised-button color="primary" (click)="checkIfCertificateIsValid()">Check Validity</button>
+    <button mat-raised-button color="primary" (click)="downloadCertificate()">Download Certificate</button>
+    <button mat-raised-button color="primary" *ngIf="user && !user.roles.includes('ROLE_ENTITY')" (click)="downloadPrivateKey()">Download Private Key</button>
+    <button mat-raised-button color="primary" (click)="revokeCertificate()">Revoke</button>
+    <button mat-raised-button color="primary" (click)="createNewCertificateFromThis()">Create new from this</button>
+  </div>
+</div>

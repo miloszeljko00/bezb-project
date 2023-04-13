@@ -1,16 +1,26 @@
 package com.dreamteam.pki.model;
 
+import com.dreamteam.pki.model.enums.CertificateType;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
-import lombok.Data;
+import lombok.*;
 
-@Data
+import java.security.PrivateKey;
+
 @Entity
-@Table(name = "admins")
-public class Admin {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-    @OneToOne
-    private Account account;
+@Data
+public class Admin extends CertificateHolder{
+    public boolean ownsCertificate(Certificate certificate) {
+        for(var ownedCertificate : super.getCertificates()) {
+            if(ownedCertificate.getSerialNumber().equals(certificate.getSerialNumber())) return true;
+
+            if(ownedCertificate.getType() == CertificateType.ROOT_CERTIFICATE && ownedCertificate instanceof RootCertificate rootCertificate){
+                if(rootCertificate.issuedCertificate(certificate)) return true;
+            }
+            if(ownedCertificate.getType() == CertificateType.INTERMEDIATE_CERTIFICATE && ownedCertificate instanceof IntermediateCertificate intermediateCertificate){
+                if(intermediateCertificate.issuedCertificate(certificate)) return true;
+            }
+        }
+        return false;
+    }
 }

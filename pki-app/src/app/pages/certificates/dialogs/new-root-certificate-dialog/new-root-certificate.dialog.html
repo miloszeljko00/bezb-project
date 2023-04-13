@@ -1,0 +1,25 @@
+<app-dialog-header>Create Certificate</app-dialog-header>
+<table>
+  <tr>
+    <td colspan="3">
+      <app-select-field [disabled]="false" [options]="templateOptions" (selectedChange)="templateChosen($event)">Choose Template</app-select-field>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <app-select-field [disabled]="true" [options]="certificateTypes" [selected]="certificateTypes[0].value">Certificate Type</app-select-field>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <app-date-field [min]="todayDate" [(value)]="expirationDate">Expires At</app-date-field>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <app-primary-button (click)="openCreateExtensionsDialog()" [disabled]="extensions.length!=0">Extensions</app-primary-button>
+    </td>
+  </tr>
+  
+</table>
+<app-dialog-footer (okClicked)="createCertificate()" [okDisabled]="expirationDate==undefined">Create</app-dialog-footer>

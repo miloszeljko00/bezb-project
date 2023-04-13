@@ -1,0 +1,40 @@
+.container {
+  width: 100%;
+}
+
+app-searchbar {
+  margin-right: 10px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actions-td {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 175px !important;
+  width: 175px !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  word-break: break-word;
+
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  position: relative;
+  app-remove-button {
+    position: absolute;
+    right: 10px;
+    top: 2px;
+  }
+  app-secondary-button {
+    position: absolute;
+    height: 100%;
+    left: 10px;
+    top: 0px;
+  }
+}

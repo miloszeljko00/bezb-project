@@ -25,6 +25,7 @@ export class AutocompleteInputFieldComponent implements OnInit {
 
   @Input() selectedText = '';
   @Input() selected: any;
+  @Input() disabled = false;
   @Output() selectedChange: EventEmitter<any> = new EventEmitter<any>();
 
   ngOnInit() {

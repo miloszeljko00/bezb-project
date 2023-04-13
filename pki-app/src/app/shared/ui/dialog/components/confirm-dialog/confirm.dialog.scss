@@ -1,0 +1,17 @@
+.content{
+  display: flex;
+  justify-content: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+app-primary-button, app-secondary-button{
+  height: 42px;
+}
+
+.container {
+  padding: 20px;
+}

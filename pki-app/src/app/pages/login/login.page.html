@@ -1,6 +1,10 @@
 <div>
-  <app-input-field [(value)]="loginForm.email">Email</app-input-field>
-  <app-input-field [(value)]="loginForm.password">Password</app-input-field>
-
-  <app-primary-button (click)="login()">Login</app-primary-button>
+  <form (submit)="$event.preventDefault();login()">
+    <app-input-field autocomplete="email" [(value)]="loginForm.email">Email</app-input-field>
+    <app-password-input-field autocomplete="password" [(value)]="loginForm.password">Password</app-password-input-field>
+  
+    <div>
+      <app-primary-button type="submit">Login</app-primary-button>
+    </div>
+  </form>
 </div>

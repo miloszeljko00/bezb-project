@@ -1,0 +1,44 @@
+p {
+  font-family: Lato;
+}
+.item{
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background-color:silver;
+  color:white;
+  overflow: hidden;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  border-radius:5px;
+  cursor:pointer;
+}
+
+
+hr {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.container hr:first-child {
+  margin-top: 0px;
+}
+
+.hovered {
+  opacity: 0.5;
+}
+
+.plus-icon-div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-top: 20%;
+}
+.plus-icon-div:hover{
+  cursor: pointer;
+}
+.plus-icon-div mat-icon {
+  transform: scale(3); /* scale by 2 times */
+}

@@ -48,7 +48,10 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToAccountsPage() {
     this.router.navigate(['/accounts'])
   }
-
+  goToTemplatesPage() {
+    this.router.navigate(['/certificates/template'])
+  }
+  
   goToCertificatesPage() {
     this.router.navigate(['/certificates'])
   }

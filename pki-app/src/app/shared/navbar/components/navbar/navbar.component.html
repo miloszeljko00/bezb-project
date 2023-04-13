@@ -11,6 +11,7 @@
             <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
             <app-navbar-button (click)="goToCertificatesPage()">Certificates</app-navbar-button>
             <app-navbar-button (click)="goToAccountsPage()">Accounts</app-navbar-button>
+            <app-navbar-button (click)="goToTemplatesPage()">Templates</app-navbar-button>
         </ng-container>
         <ng-container class="certificate-authority" *ngIf="user.roles.includes('ROLE_CERTIFICATE_AUTHORITY')">
             <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>

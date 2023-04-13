@@ -12,6 +12,8 @@ import {MatTableDataSource} from "@angular/material/table";
 import {
   IntermediateTemplateRequestDto
 } from "../../../../core/dtos/template-certificate/request/create-intermediate-template-request";
+import { TemplateService } from 'src/app/core/services/template.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-templates-form',
@@ -47,12 +49,15 @@ export class TemplatesFormComponent {
   crlChecked = false
   issuerChecked = false
   keyChecked = false
+  name = "";
 
 
 
   constructor(
     private authService: AuthService,
-    public certificateService: CertificateService
+    public certificateService: CertificateService,
+    public templateService: TemplateService,
+    public toastr: ToastrService
   ) {
     this.updateCertificateTypes()
     this.canEditIssuer = !this.authService.isAdmin()
@@ -66,21 +71,48 @@ export class TemplatesFormComponent {
   createCertificate() {
     let newIntermediate = new IntermediateTemplateRequestDto();
     newIntermediate.exp = this.certificateForm.exp;
-    newIntermediate.certificateExtensions = this.extensionList;
+    newIntermediate.name = this.name;
+    newIntermediate.extensions = this.extensionList;
+    this.checkForImprovizations();
     this.extensionList = [];
+    console.log(newIntermediate);
+    this.templateService.createTemplate(newIntermediate).subscribe({
+      next: (result:any) => {
+        this.toastr.success("Template created successfully")
+      },
+      error: (err:any) => {
+        this.toastr.error("Error creating template")
+      }
+    }) 
 
-    console.log(newIntermediate); //dobro jeeeee
-    this.certificateService.createFromTemplate(newIntermediate).subscribe();
-    //pokusala da napravim intermediate sertifikat :(
   }
+  private checkForImprovizations(){
+    const targetExtensionType = "PRIVATE_KEY_USAGE_PERIOD";
 
-
-
-
-
-
-
-
+  // Use a forEach loop to iterate through the list of certificate extension objects
+  this.extensionList.forEach((extension, index) => {
+    // Check if the current object's certificateExtensionType matches the target extension type
+    if (extension.extensionType === targetExtensionType) {
+      const newExtension = {
+        extensionType: targetExtensionType,
+        critical: extension.critical,
+        extensionValue: this.adaptDates(extension.extensionValue)
+      };
+      this.extensionList[index] = newExtension;
+    }
+});
+}
+private adaptDates(dateString: string): string {
+  const dateStrings = dateString.split(",");
+  const formattedDates = dateStrings.map((dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  });
+  return formattedDates.join(",");
+}
   adjustFormForCertificateType(selected: CertificateType) {
     if(selected == CertificateType.ROOT_CERTIFICATE) {
       this.direction_icon = '='
@@ -133,7 +165,7 @@ export class TemplatesFormComponent {
   addAuthorityInfoAccess() {
 
     let extension = new CertificateExtension();
-    extension.certificateExtensionType = CertificateExtensionType.AUTHORITY_INFO_ACCESS;
+    extension.extensionType = CertificateExtensionType.AUTHORITY_INFO_ACCESS;
     extension.extensionValue = this.authorityInput;
     extension.critical = false;
     this.extensionList.push(extension);
@@ -151,14 +183,14 @@ export class TemplatesFormComponent {
     else{
       extension.extensionValue = "0";
     }
-    extension.certificateExtensionType = CertificateExtensionType.BASIC_CONSTRAINTS;
+    extension.extensionType = CertificateExtensionType.BASIC_CONSTRAINTS;
     extension.critical = true;
     this.extensionList.push(extension);
   }
 
   addCrl() {
     let extension = new CertificateExtension();
-    extension.certificateExtensionType = CertificateExtensionType.CRL_DISTRIBUTION_POINTS;
+    extension.extensionType = CertificateExtensionType.CRL_DISTRIBUTION_POINTS;
     extension.extensionValue = this.crlInput;
     extension.critical = this.crlChecked;
     this.extensionList.push(extension);
@@ -166,7 +198,7 @@ export class TemplatesFormComponent {
 
   addIssuerAltName() {
     let extension = new CertificateExtension();
-    extension.certificateExtensionType = CertificateExtensionType.ISSUER_ALT_NAME;
+    extension.extensionType = CertificateExtensionType.ISSUER_ALT_NAME;
     extension.extensionValue = this.issuerInput;
     extension.critical = this.issuerChecked;
     this.extensionList.push(extension);
@@ -174,7 +206,7 @@ export class TemplatesFormComponent {
 
   addKeyUsage() {
     let extension = new CertificateExtension();
-    extension.certificateExtensionType = CertificateExtensionType.KEY_USAGE;
+    extension.extensionType = CertificateExtensionType.KEY_USAGE;
     if(this.keyUsage<10 && this.keyUsage>=0){
 
       extension.extensionValue = this.keyUsage.toString();
@@ -189,7 +221,7 @@ export class TemplatesFormComponent {
   addPrivateKeyUsagePeriod() {
 
     let extension = new CertificateExtension();
-    extension.certificateExtensionType = CertificateExtensionType.PRIVATE_KEY_USAGE_PERIOD;
+    extension.extensionType = CertificateExtensionType.PRIVATE_KEY_USAGE_PERIOD;
     extension.extensionValue = this.privateKeyPeriod1.toString()+"," + this.privateKeyPeriod2;
     extension.critical = false;
     this.extensionList.push(extension);
@@ -198,7 +230,7 @@ export class TemplatesFormComponent {
   addSubjectAltName() {
 
     let extension = new CertificateExtension();
-    extension.certificateExtensionType = CertificateExtensionType.SUBJECT_ALT_NAME;
+    extension.extensionType = CertificateExtensionType.SUBJECT_ALT_NAME;
     extension.extensionValue = this.subjectAltNameInput;
     extension.critical = false;
     this.extensionList.push(extension);

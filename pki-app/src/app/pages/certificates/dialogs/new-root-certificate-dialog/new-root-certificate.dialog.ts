@@ -9,6 +9,7 @@ import { CertificateType } from 'src/app/core/models/certificate-type';
 import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
 import { SelectOption } from 'src/app/shared/ui/input/components/select-field/select-field.component';
 import { ExtensionsDialog } from '../extensions-dialog/extensions.dialog';
+import { TemplateService } from 'src/app/core/services/template.service';
 
 @Component({
   selector: 'app-new-root-certificate',
@@ -29,12 +30,15 @@ export class NewRootCertificateDialog {
 
   direction_icon = ''
   extensions = [];
+  templates:any = [];
+  templateOptions:SelectOption[] = [];
   constructor(
     private authService: AuthService,
     public dialogRef: MatDialogRef<NewRootCertificateDialog>,
     public certificateHolderService: CertificateHolderService,
     public toastr: ToastrService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    public templateService: TemplateService
     ) {
       this.updateCertificateTypes()
     }
@@ -48,11 +52,25 @@ export class NewRootCertificateDialog {
           })
         }
       })
+      this.templateService.getAllTemplates().subscribe({
+        next: (result:any) => {
+          console.log(result);
+          this.templates = result;
+          this.createTemplateOptions();
+        },
+        error: (err:any) => {
+          this.toastr.error("Error getting templates")
+        }
+      })
     }
   createCertificate() {
     this.dialogRef.close({exp: this.expirationDate, extensions: this.extensions })
   }
-
+  createTemplateOptions() {
+    this.templateOptions = this.templates.map((template:any) => {
+      return {value: template, displayValue: template.name}
+    })
+  }
   openCreateExtensionsDialog() {
     const dialogRef = this.matDialog.open(ExtensionsDialog, {
       autoFocus: false,
@@ -103,5 +121,10 @@ export class NewRootCertificateDialog {
         displayValue: 'ENTITY CERTIFICATE',
       }
     ];
+  }
+  templateChosen(event: any) {
+    console.log(event);
+    this.expirationDate = event.exp;
+    this.extensions = event.extensions;
   }
 }

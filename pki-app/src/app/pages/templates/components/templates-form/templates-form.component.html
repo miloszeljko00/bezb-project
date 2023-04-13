@@ -3,6 +3,11 @@
 <table>
   <tr>
     <td colspan="3">
+      <app-input-field name="name"  ngDefaultControl  [(ngModel)]="name"></app-input-field>
+     </td>
+  </tr>
+  <tr>
+    <td colspan="3">
       <app-select-field [options]="certificateTypes" [(selected)]="certificateForm.type" (selectedChange)="adjustFormForCertificateType($event)">Certificate Type</app-select-field>
     </td>
   </tr>

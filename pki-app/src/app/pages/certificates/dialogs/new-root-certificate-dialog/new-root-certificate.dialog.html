@@ -10,5 +10,10 @@
       <app-date-field [min]="todayDate" [(value)]="expirationDate">Expires At</app-date-field>
     </td>
   </tr>
+  <tr>
+    <td colspan="3">
+      <app-primary-button (click)="openCreateExtensionsDialog()">Extensions</app-primary-button>
+    </td>
+  </tr>
 </table>
 <app-dialog-footer (okClicked)="createCertificate()" [okDisabled]="expirationDate==undefined">Create</app-dialog-footer>

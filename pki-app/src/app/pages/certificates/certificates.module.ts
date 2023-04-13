@@ -18,6 +18,8 @@ import {TemplatesModule} from "../templates/templates.module";
 import { MatDialogModule } from '@angular/material/dialog';
 import { NewRootCertificateDialog } from './dialogs/new-root-certificate-dialog/new-root-certificate.dialog';
 import { CertificateOverviewDialog } from './dialogs/certificate-overview-dialog/certificate-overview.dialog';
+import { ExtensionsDialog } from './dialogs/extensions-dialog/extensions.dialog';
+import { CheckboxModule } from 'src/app/shared/ui/checkbox/checkbox.module';
 
 
 
@@ -28,7 +30,8 @@ import { CertificateOverviewDialog } from './dialogs/certificate-overview-dialog
     NewCertificateDialog,
     CertificatesTreeViewComponent,
     NewRootCertificateDialog,
-    CertificateOverviewDialog
+    CertificateOverviewDialog,
+    ExtensionsDialog
   ],
   imports: [
     CommonModule,
@@ -43,6 +46,7 @@ import { CertificateOverviewDialog } from './dialogs/certificate-overview-dialog
     TreeViewModule,
     TemplatesModule,
     MatDialogModule
+    CheckboxModule
   ]
 })
 export class CertificatesModule { }

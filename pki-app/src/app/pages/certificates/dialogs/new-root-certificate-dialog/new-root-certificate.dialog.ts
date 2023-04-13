@@ -1,38 +1,14 @@
 import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { User } from 'src/app/core/auth/models/user';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 import { CertificateHolderType } from 'src/app/core/models/certificate-holder-type';
 import { CertificateType } from 'src/app/core/models/certificate-type';
 import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
 import { SelectOption } from 'src/app/shared/ui/input/components/select-field/select-field.component';
-
-//dobaviti prave certificate holdere sa beka
-const CERTIFICATE_HOLDERS: CertificateHolder[] = [
-  {
-    id: 'axdasdxas-dxa-dax-sdx-asxasx',
-    email: 'ca@email.com',
-    type: CertificateHolderType.CERTIFICATE_AUTHORITY,
-    commonName: 'Pera Peric',
-    country: 'Serbia',
-    locality: 'Novi Sad',
-    state: 'Vojvodina',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'WebTeam',
-  },
-  {
-    id: 'asdafgfa-dasd-asdasa-hhgds-gasfsas',
-    email: 'entity@email.com',
-    type: CertificateHolderType.ENTITY,
-    commonName: 'Djoka Djokic',
-    country: 'Bosna i Hercegovina',
-    locality: 'Banjaluka',
-    state: 'Republika Srpska',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'AITeam',
-  }
-]
+import { ExtensionsDialog } from '../extensions-dialog/extensions.dialog';
 
 @Component({
   selector: 'app-new-root-certificate',
@@ -40,7 +16,7 @@ const CERTIFICATE_HOLDERS: CertificateHolder[] = [
   styleUrls: ['./new-root-certificate.dialog.scss']
 })
 export class NewRootCertificateDialog {
-
+  user: User|null = null
   certificateTypes: SelectOption[] = []
   certificateHolders: CertificateHolder[] = [];
   certificateHolderOptions: SelectOption[] = [];
@@ -52,19 +28,21 @@ export class NewRootCertificateDialog {
   syncIssuerAndSubject = false
 
   direction_icon = ''
-
+  extensions = [];
   constructor(
     private authService: AuthService,
     public dialogRef: MatDialogRef<NewRootCertificateDialog>,
     public certificateHolderService: CertificateHolderService,
-    public toastr: ToastrService
+    public toastr: ToastrService,
+    private matDialog: MatDialog
     ) {
       this.updateCertificateTypes()
     }
     ngOnInit(){
+      this.user = this.authService.getUser()
       this.certificateHolderService.getAllCertificateHolders().subscribe({
         next: (result: CertificateHolder[]) => {
-          this.certificateHolders = result;
+          this.certificateHolders = result.filter(holder => holder.email != this.user?.email)
           this.certificateHolderOptions = this.certificateHolders.map((certificateHolder) => {
             return {value: certificateHolder, displayValue: certificateHolder.commonName}
           })
@@ -72,9 +50,22 @@ export class NewRootCertificateDialog {
       })
     }
   createCertificate() {
-    this.dialogRef.close(this.expirationDate)
+    this.dialogRef.close({exp: this.expirationDate, extensions: this.extensions })
   }
 
+  openCreateExtensionsDialog() {
+    const dialogRef = this.matDialog.open(ExtensionsDialog, {
+      autoFocus: false,
+      restoreFocus: false,
+      data: { type:  CertificateType.ROOT_CERTIFICATE}
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (result: any) => {
+        this.extensions = result;
+      }
+    })
+  }
 
   private updateCertificateTypes() {
     if (this.authService.isAdmin()) {

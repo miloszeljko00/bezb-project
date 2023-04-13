@@ -1,36 +1,14 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { User } from 'src/app/core/auth/models/user';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { Certificate } from 'src/app/core/models/certificate';
 import { CertificateHolder } from 'src/app/core/models/certificate-holder';
 import { CertificateHolderType } from 'src/app/core/models/certificate-holder-type';
 import { CertificateType } from 'src/app/core/models/certificate-type';
 import { CertificateHolderService } from 'src/app/core/services/certificate-holder.service';
 import { SelectOption } from 'src/app/shared/ui/input/components/select-field/select-field.component';
-
-const CERTIFICATE_HOLDERS: CertificateHolder[] = [
-  {
-    id: 'axdasdxas-dxa-dax-sdx-asxasx',
-    email: 'ca@email.com',
-    type: CertificateHolderType.CERTIFICATE_AUTHORITY,
-    commonName: 'Pera Peric',
-    country: 'Serbia',
-    locality: 'Novi Sad',
-    state: 'Vojvodina',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'WebTeam',
-  },
-  {
-    id: 'asdafgfa-dasd-asdasa-hhgds-gasfsas',
-    email: 'entity@email.com',
-    type: CertificateHolderType.ENTITY,
-    commonName: 'Djoka Djokic',
-    country: 'Bosna i Hercegovina',
-    locality: 'Banjaluka',
-    state: 'Republika Srpska',
-    organization: 'WeDoSOFTWARE',
-    organizationalUnit: 'AITeam',
-  }
-]
+import { ExtensionsDialog } from '../extensions-dialog/extensions.dialog';
 
 @Component({
   selector: 'app-new-certificate-dialog',
@@ -38,17 +16,18 @@ const CERTIFICATE_HOLDERS: CertificateHolder[] = [
   styleUrls: ['./new-certificate.dialog.scss']
 })
 export class NewCertificateDialog {
-
+  user: User|null = null
   certificateTypes: SelectOption[] = []
   certificateHolders: CertificateHolder[] = [];
   certificateHolderOptions: SelectOption[] = [];
+  certificateHolderOptionsFiltered: SelectOption[] = [];
 
   certificateForm = {
     type: null as CertificateType|null,
     subject: null as CertificateHolder|null,
     exp: null as Date|null,
+    extensions: []
   }
-
   canEditIssuer = false
 
   todayDate = new Date()
@@ -58,29 +37,54 @@ export class NewCertificateDialog {
   direction_icon = ''
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: Certificate,
     private authService: AuthService,
     public dialogRef: MatDialogRef<NewCertificateDialog>,
-    public certificateHolderService : CertificateHolderService
+    public certificateHolderService : CertificateHolderService,
+    public matDialog: MatDialog
     ) {
     this.updateCertificateTypes()
     this.canEditIssuer = !this.authService.isAdmin()
   }
   ngOnInit(){
+    this.user = this.authService.getUser()
     this.certificateHolderService.getAllCertificateHolders().subscribe({
       next: (result: CertificateHolder[]) => {
-        this.certificateHolders = result;
+        this.certificateHolders = result.filter(holder => holder.email != this.user?.email)
         this.certificateHolderOptions = this.certificateHolders.map((certificateHolder) => {
           return {value: certificateHolder, displayValue: certificateHolder.commonName}
         })
+        this.certificateHolderOptionsFiltered = this.certificateHolderOptions.filter(option => option.value.type != "ENTITY")
+        this.certificateForm.type = CertificateType.INTERMEDIATE_CERTIFICATE
       }
     })
   }
   createCertificate() {
-    console.log(this.certificateForm)
     this.dialogRef.close(this.certificateForm)
   }
 
+  changeSelectedCertificateType(event: CertificateType) {
+    this.certificateForm.type = event
+    console.log('%cMyProject%cline:66%cthis.certificateForm.type', 'color:#fff;background:#ee6f57;padding:3px;border-radius:2px', 'color:#fff;background:#1f3c88;padding:3px;border-radius:2px', 'color:#fff;background:rgb(38, 157, 128);padding:3px;border-radius:2px', this.certificateForm.type)
+    if(event == CertificateType.INTERMEDIATE_CERTIFICATE) {
+      this.certificateHolderOptionsFiltered = this.certificateHolderOptions.filter(option => option.value.type != CertificateHolderType.ENTITY)
+    }else{
+      this.certificateHolderOptionsFiltered = new Array<SelectOption>(...this.certificateHolderOptions)
+    }
+  }
+  openCreateExtensionsDialog() {
+    const dialogRef = this.matDialog.open(ExtensionsDialog, {
+      autoFocus: false,
+      restoreFocus: false,
+      data: { type: this.certificateForm.type}
+    });
 
+    dialogRef.afterClosed().subscribe({
+      next: (result: any) => {
+        this.certificateForm.extensions = result;
+      }
+    })
+  }
   subjectSelected(selected: CertificateHolder) {
     this.certificateForm.subject = selected
   }

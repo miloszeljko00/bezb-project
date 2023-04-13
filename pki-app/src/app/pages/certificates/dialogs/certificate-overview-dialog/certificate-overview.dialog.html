@@ -1,15 +1,15 @@
 <div class="certificate-overview-div">
   <app-dialog-header class="header">Certificate overview</app-dialog-header>
   <div class="type-div">
-    <app-input-field [value]="data.type">Type</app-input-field>
+    <app-input-field [disabled]="true" [value]="data.type">Type</app-input-field>
   </div>
   <div class="dates-div">
-    <app-date-field [value]="data.iat" style="margin-right: 10px;">Issued At</app-date-field>
-    <app-date-field [value]="data.exp">Expires At</app-date-field>
+    <app-date-field [disabled]="true" [value]="data.iat" style="margin-right: 10px;">Issued At</app-date-field>
+    <app-date-field [disabled]="true" [value]="data.exp">Expires At</app-date-field>
   </div>
   <div class="commonNames-div">
-    <app-input-field [value]="data.issuer.commonName" style="margin-right: 10px;">Issuer</app-input-field>
-    <app-input-field [value]="data.subject.commonName">Subject</app-input-field>
+    <app-input-field [disabled]="true" [value]="data.issuer.commonName" style="margin-right: 10px;">Issuer</app-input-field>
+    <app-input-field [disabled]="true" [value]="data.subject.commonName">Subject</app-input-field>
   </div>
   <div class="buttons-div">
     <button mat-raised-button color="primary" (click)="checkIfCertificateIsValid()">Check Validity</button>

@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HasRoleAdminGuard } from './core/auth/guards/has-role-admin.guard';
+import { HasRoleAdminOrCertificateAuthorityGuard } from './core/auth/guards/has-role-admin-or-certificate-authority.guard';
 
 const routes: Routes = [
   { path: '', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
   { path: 'login', loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule) },
-  { path: 'accounts', loadChildren: () => import('./pages/accounts/accounts.module').then(m => m.AccountsModule), canActivate: [HasRoleAdminGuard] },
+  { path: 'accounts', loadChildren: () => import('./pages/accounts/accounts.module').then(m => m.AccountsModule), canActivate: [HasRoleAdminOrCertificateAuthorityGuard] },
   { path: 'certificates', loadChildren: () => import('./pages/certificates/certificates.module').then(m => m.CertificatesModule) },
   { path: '**', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
 ];

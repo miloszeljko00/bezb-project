@@ -1,24 +1,26 @@
 <app-dialog-header>Create Certificate</app-dialog-header>
 <table>
   <tr>
+    <td>
+      <app-select-field [options]="certificateTypes" (selectedChange)="changeSelectedCertificateType($event)" [selected]="certificateTypes[0].value">Certificate Type</app-select-field>
+    </td>
+  </tr>
+  <tr>
     <td colspan="3">
-      <app-date-field [min]="todayDate" [(value)]="certificateForm.exp">Expires At</app-date-field>
+      <app-date-field [min]="todayDate" [max]="data.exp" [(value)]="certificateForm.exp">Expires At</app-date-field>
     </td>
   </tr>
   <tr>
     <td>
-      <app-autocomplete-input-field [options]="certificateHolderOptions" [selected]="certificateForm.subject" [selectedText]="certificateForm.subject && certificateForm.subject.commonName ? certificateForm.subject.commonName : ''" (selectedChange)="subjectSelected($event)" label="Subject"></app-autocomplete-input-field>
+      <app-autocomplete-input-field [options]="certificateHolderOptionsFiltered" [selected]="certificateForm.subject" [selectedText]="certificateForm.subject && certificateForm.subject.commonName ? certificateForm.subject.commonName : ''" (selectedChange)="subjectSelected($event)" label="Subject"></app-autocomplete-input-field>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <app-primary-button (click)="openCreateExtensionsDialog()">Extensions</app-primary-button>
     </td>
   </tr>
 </table>
-<div clas>
-  <div style="margin-left: 50px;">
-    <label>
-      <input type="radio" name="option" value="CA" [(ngModel)]="certificateForm.type"> CA
-    </label>
-    <label>
-      <input type="radio" name="option" value="Entity" [(ngModel)]="certificateForm.type"> Entity
-    </label>
-  </div>
+<div>
   <app-dialog-footer (okClicked)="createCertificate()">Create</app-dialog-footer>
 </div>

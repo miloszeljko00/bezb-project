@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +55,8 @@ public class CertificateController {
         if(user == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         var certificate = certificateService.findBySerialNumber(new BigInteger(serialNumber));
+
+        certificate = filterRevoked(certificate);
 
         if(certificate == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -105,15 +108,64 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    private Certificate filterRevoked(Certificate certificate) {
+        if(certificate.isRevoked()) return null;
+
+        if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)){
+            if(!certificateService.isValid((RootCertificate) certificate)) return null;
+        }else if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)){
+            if(!certificateService.isValid((IntermediateCertificate) certificate)) return null;
+        }else if(certificate.getType().equals(CertificateType.ENTITY_CERTIFICATE)){
+            if(!certificateService.isValid((EntityCertificate) certificate)) return null;
+        }
+
+        if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)) {
+            var issuedCertificates = filterRevoked(((RootCertificate) certificate).getIssuedCertificates());
+            ((RootCertificate) certificate).setIssuedCertificates(issuedCertificates);
+        }
+        if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)) {
+            var issuedCertificates = filterRevoked(((IntermediateCertificate) certificate).getIssuedCertificates());
+            ((IntermediateCertificate) certificate).setIssuedCertificates(issuedCertificates);
+        }
+        return certificate;
+    }
+
     @GetMapping
     public ResponseEntity<Object> getAllCertificate(Authentication authentication) {
         var user = certificateHolderService.findByEmail(authentication.getName());
 
         if(user == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-        var response = new GetAllCertificateResponse(user.getCertificates());
+        var certificates = filterRevoked(user.getCertificates());
+        
+        var response = new GetAllCertificateResponse(certificates);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<Certificate> filterRevoked(List<Certificate> certificates) {
+        var result = new ArrayList<Certificate>();
+        for(var certificate : certificates) {
+            if(certificate.isRevoked()) continue;
+            if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)){
+                if(!certificateService.isValid((RootCertificate) certificate)) continue;
+            }else if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)){
+                if(!certificateService.isValid((IntermediateCertificate) certificate)) continue;
+            }else if(certificate.getType().equals(CertificateType.ENTITY_CERTIFICATE)){
+                if(!certificateService.isValid((EntityCertificate) certificate)) continue;
+            }
+            result.add(certificate);
+
+            if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)) {
+                var issuedCertificates = filterRevoked(((RootCertificate) certificate).getIssuedCertificates());
+                ((RootCertificate) certificate).setIssuedCertificates(issuedCertificates);
+            }
+            if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)) {
+                var issuedCertificates = filterRevoked(((IntermediateCertificate) certificate).getIssuedCertificates());
+                ((IntermediateCertificate) certificate).setIssuedCertificates(issuedCertificates);
+            }
+        }
+        return result;
     }
 
     @AdminRole
@@ -300,19 +352,68 @@ public class CertificateController {
     }
 
     @PutMapping("{certificateId}/actions/revoke")
-    public ResponseEntity<Object> revokeCertificate(@PathVariable String certificateId) {
-        // TODO: Na zahtev admina proglasiti sertifikat nevazecim
-        //  ili na zahtev CA ukoliko je potpisan od strane njegovog sertifikata
-        //  napomena: Ukoliko je sertifikat korenski ili sredisnji bitno je proglasiti nevalidnim
-        //  sve sertifikate potpisane ovim sertifikatom!
+    public ResponseEntity<Object> revokeCertificate(@PathVariable String certificateId, Authentication authentication) {
+        var user = certificateHolderService.findByEmail(authentication.getName());
 
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        if(user == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        var certificate = certificateService.findBySerialNumber(new BigInteger(certificateId));
+
+        certificate = filterRevoked(certificate);
+
+        if(certificate == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        var extensions = new ArrayList<CertificateExtensionDto>();
+
+        for(var extension : certificate.getCertificateExtensions()) {
+            extensions.add(new CertificateExtensionDto(extension.getExtensionType(), extension.getExtensionValue(), extension.isCritical()));
+        }
+
+        var response = GetCertificateResponse.builder()
+                .id(certificate.getSerialNumber().toString())
+                .type(certificate.getType().toString())
+                .issuer(X500NameMapper.fromX500Name(certificate.getIssuer().getX500Name(), certificate.getIssuer().getType()))
+                .subject(X500NameMapper.fromX500Name(certificate.getSubject().getX500Name(), certificate.getSubject().getType()))
+                .iat(certificate.getDateRange().getStartDate())
+                .exp(certificate.getDateRange().getEndDate())
+                .revoked(true)
+                .issuedCertificates(new ArrayList<>())
+                .extensions(extensions)
+                .build();
+
+        if(user.getType() == CertificateHolderType.ADMIN) {
+
+            if(certificate.getType() == CertificateType.ROOT_CERTIFICATE){
+                response.setIssuedCertificates(((RootCertificate) certificate).getIssuedCertificates());
+            }
+            if(certificateService.revoke(certificate)) return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if(user.getType() == CertificateHolderType.CERTIFICATE_AUTHORITY) {
+            if(((CertificateAuthority) user).ownsCertificate(certificate)){
+                if(certificate.getType() == CertificateType.ROOT_CERTIFICATE){
+                    response.setIssuedCertificates(((RootCertificate) certificate).getIssuedCertificates());
+                }else if(certificate.getType() == CertificateType.INTERMEDIATE_CERTIFICATE){
+                    response.setIssuedCertificates(((IntermediateCertificate) certificate).getIssuedCertificates());
+                }
+                if(certificateService.revoke(certificate)) return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }else{
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        }
+
+        if(user.getType() == CertificateHolderType.ENTITY) {
+            if(user.getCertificates().contains(certificate)) return new ResponseEntity<>(response, HttpStatus.OK);
+            else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("{certificateId}/actions/download")
     public ResponseEntity<Object> downloadCertificate(@PathVariable String certificateId) throws FileNotFoundException {
-        // TODO: Vratiti sertifikat sa trazenim Id-em kao .pem datoteku na zahtev vlasnika ili izdavaoca
-
         var certificate = certificateService.findBySerialNumber(new BigInteger(certificateId));
 
         certificateService.extractCertificate(certificate);
@@ -329,8 +430,6 @@ public class CertificateController {
 
     @GetMapping("{certificateId}/actions/download-private-key")
     public ResponseEntity<Object> downloadPrivateKey(@PathVariable String certificateId) throws FileNotFoundException {
-        // TODO: Vratiti sertifikat sa trazenim Id-em kao .pem datoteku na zahtev vlasnika ili izdavaoca
-
         var certificate = certificateService.findBySerialNumber(new BigInteger(certificateId));
 
         certificateService.extractCertificate(certificate);
@@ -342,7 +441,24 @@ public class CertificateController {
                 .contentLength(file.length())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+    @GetMapping("{certificateId}/actions/check")
+    public ResponseEntity<Object> checkIfValid(@PathVariable String certificateId) {
+        var certificate = certificateService.findBySerialNumber(new BigInteger(certificateId));
 
+        if(certificate == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        var result = false;
+
+        if(certificate.getType().equals(CertificateType.ROOT_CERTIFICATE)) {
+            result = certificateService.isValid((RootCertificate) certificate);
+        } else if(certificate.getType().equals(CertificateType.INTERMEDIATE_CERTIFICATE)) {
+            result = certificateService.isValid((IntermediateCertificate) certificate);
+        }else if(certificate.getType().equals(CertificateType.ENTITY_CERTIFICATE)) {
+            result = certificateService.isValid((EntityCertificate) certificate);
+        }
+
+        return new ResponseEntity<>(new CheckIfValidResponse(result), HttpStatus.OK);
     }
 
 

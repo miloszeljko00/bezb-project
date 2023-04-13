@@ -7,14 +7,22 @@ import { CreateRootCertificateResponse } from '../dtos/certificate/response/crea
 import { CreateIntermediateCertificateResponse } from '../dtos/certificate/response/create-intermediate-certificate-response';
 import { CreateEntityCertificateResponse } from '../dtos/certificate/response/create-entity-certificate-response';
 import { Certificates } from '../models/certificates';
+
 import {
   IntermediateTemplateRequestDto
 } from "../dtos/template-certificate/request/create-intermediate-template-request";
+import { Certificate } from '../models/certificate';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CertificateService {
+  checkIfValid(id: string) {
+    return this.http.get(environment.apiUrl+"/api/certificates/" + id + "/actions/check");
+  }
+  revokeCertificate(id: string) {
+    return this.http.put(environment.apiUrl+"/api/certificates/" + id + "/actions/revoke", {});
+  }
   downloadPrivateKey(id: string) {
     return this.http.get(environment.apiUrl+"/api/certificates/" + id + "/actions/download-private-key",{ responseType: 'blob' });
   }
@@ -32,11 +40,11 @@ export class CertificateService {
     return this.http.post<CreateRootCertificateResponse>(environment.apiUrl+"/api/certificates/actions/create-root-certificate", createRootCertificateRequest);
   }
   createIntermediateCertificate(createIntermediateCertificateRequest: any) {
-    return this.http.post<CreateIntermediateCertificateResponse>(environment.apiUrl+"/api/certificates/actions/create-certificate-authority", createIntermediateCertificateRequest);
+    return this.http.post<CreateIntermediateCertificateResponse>(environment.apiUrl+"/api/certificates/actions/create-intermediate-certificate", createIntermediateCertificateRequest);
   }
 
   createEntityCertificate(createEntityCertificateRequest: CreateEntityCertificateRequest) {
-    return this.http.post<CreateEntityCertificateResponse>(environment.apiUrl+"/api/certificates/actions/create-entity", createEntityCertificateRequest);
+    return this.http.post<CreateEntityCertificateResponse>(environment.apiUrl+"/api/certificates/actions/create-entity-certificate", createEntityCertificateRequest);
   }
   createFromTemplate(template: IntermediateTemplateRequestDto) {
     return this.http.post<IntermediateTemplateRequestDto>(environment.apiUrl+"/api/certificates/actions/create-intermediate-certificate", template);

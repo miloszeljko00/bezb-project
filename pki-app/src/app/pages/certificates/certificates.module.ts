@@ -45,7 +45,7 @@ import { CheckboxModule } from 'src/app/shared/ui/checkbox/checkbox.module';
     ReactiveFormsModule,
     TreeViewModule,
     TemplatesModule,
-    MatDialogModule
+    MatDialogModule,
     CheckboxModule
   ]
 })

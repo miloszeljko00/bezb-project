@@ -7,17 +7,8 @@
           <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
       </div>
       <div *ngIf="user">
-        <ng-container class="admin" *ngIf="user.roles.includes('ROLE_ADMIN')">
-            <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
-        </ng-container>
-        <ng-container class="certificate-authority" *ngIf="user.roles.includes('ROLE_SOFTWARE_ENGINEER')">
-            <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
-        </ng-container>
-        <ng-container class="certificate-authority" *ngIf="user.roles.includes('ROLE_HR_MANAGER')">
-            <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
-        </ng-container>
-        <ng-container class="entity" *ngIf="user.roles.includes('ROLE_PROJECT_MANAGER')">
-            <app-navbar-button (click)="goToHomePage()">Home</app-navbar-button>
+        <ng-container>
+            <app-navbar-button *ngIf="user.hasPermission('TEST')" (click)="goToHomePage()">TEST</app-navbar-button>
         </ng-container>
       </div>
   </div>

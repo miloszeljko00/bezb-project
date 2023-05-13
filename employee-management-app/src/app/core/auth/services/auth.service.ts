@@ -104,8 +104,9 @@ export class AuthService {
 
   private extractUser(token: string) {
         const decodedToken: Token = jwtDecode(token)
-        const authorities = decodedToken.authorities.map((auth: any) => auth.authority)
-        return new User(decodedToken.sub, authorities)
+        const roles = decodedToken.roles.map((auth: any) => auth)
+        const permissions = decodedToken.authorities.map((auth: any) => auth.authority)
+        return new User(decodedToken.sub, roles, permissions)
   }
 
   private tokenValid(): boolean {

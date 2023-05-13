@@ -1,5 +1,6 @@
 package com.dreamteam.employeemanagement.auth.services;
 
+import com.dreamteam.employeemanagement.model.Account;
 import com.dreamteam.employeemanagement.repository.IBlacklistedTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -8,6 +9,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.KeyValuePair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.security.Key;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -34,8 +37,12 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwt) && !isTokenBlacklisted(jwt);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(Account account) {
+        HashMap<String, Object> claims = new HashMap<>();
+        List<String> roles = account.getRoleNames();
+
+        claims.put("roles", roles);
+        return generateToken(claims, account);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

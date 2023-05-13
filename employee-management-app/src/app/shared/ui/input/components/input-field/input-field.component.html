@@ -1,0 +1,6 @@
+<div style="font-size: 18px">
+  <mat-form-field appearance="outline" color="accent">
+    <mat-label><ng-content></ng-content></mat-label>
+    <input [autocomplete]="autocomplete" matInput [ngModel]="value" [disabled]="disabled" (ngModelChange)="valueChanged($event)">
+  </mat-form-field>
+</div>

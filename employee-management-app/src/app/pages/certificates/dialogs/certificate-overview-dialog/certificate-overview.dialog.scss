@@ -1,0 +1,22 @@
+.dates-div{
+  display: flex;
+  justify-content: center;
+}
+.commonNames-div{
+  display: flex;
+  justify-content: center;
+}
+.buttons-div{
+  margin-left: 50px;
+  margin-right: 50px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.type-div{
+  margin-left: 40%;
+  margin-top: 30px;
+}
+.certificate-overview-div{
+  overflow-y: hidden;
+}

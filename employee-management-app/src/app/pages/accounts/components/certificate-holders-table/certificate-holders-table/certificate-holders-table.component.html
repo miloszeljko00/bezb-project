@@ -1,0 +1,68 @@
+<div class="container">
+  <div class="actions">
+    <app-searchbar (valueChange)="applyFilter($event)" #search></app-searchbar>
+    <app-add-button (click)="addClicked.emit()"></app-add-button>
+  </div>
+  <table mat-table matSort  [dataSource]="dataSource" color="accent">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Id </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Email </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.email}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Type </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.type}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="commonName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Common Name </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.commonName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="country">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Country </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.country}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="state">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> State </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.state}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="locality">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Locality </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.locality}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="organization">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Organization </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.organization}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="organizationalUnit">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Organizational Unit </th>
+      <td mat-cell *matCellDef="let element" class="td"> {{element.organizationalUnit}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="actions-th"></th>
+      <td mat-cell *matCellDef="let element" class="actions-td"><app-remove-button (click)="deleteClicked.emit(element)"></app-remove-button> </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">No data matching the filter "{{search.value}}"</td>
+    </tr>
+  </table>
+  <mat-paginator [pageSizeOptions]="[10, 50, 100]" color="accent"
+                   showFirstLastButtons
+                   aria-label="Select page of certificate holders">
+  </mat-paginator>
+</div>

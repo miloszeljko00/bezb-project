@@ -1,0 +1,19 @@
+<mat-form-field appearance="outline" color="accent" style="font-size: 18px">
+  <mat-label>{{ label }}</mat-label>
+  <input type="text"
+        #input
+        placeholder="{{ placeholder }}"
+        matInput
+        [matAutocomplete]="auto"
+        name="from"
+        [value]="selectedOption.displayValue"
+        (input)="applyFilterOnInput($event)"
+        (change)="updateFilterOnLostFocus(input)"
+        [disabled]="disabled"
+        >
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event)" [displayWith]="displayFn" (opened)="updateFilterOnOpened(input)">
+    <mat-option *ngFor="let option of filteredOptions" [value]="option">
+      {{ option.displayValue }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

@@ -1,0 +1,6 @@
+<div style="font-size: 18px">
+  <h2><ng-content></ng-content></h2>
+  <mat-radio-group [(ngModel)]="selected" (ngModelChange)="selectionChange($event)" color="accent">
+    <mat-radio-button *ngFor="let option of options" [value]="option.value">{{ option.displayValue }}</mat-radio-button>
+  </mat-radio-group>
+</div>

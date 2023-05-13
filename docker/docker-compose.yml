@@ -28,7 +28,23 @@ services:
     volumes:
       - pki-db-data:/var/lib/postgresql/data
   #----------------------------------------------------------------
+  employee-db:
+    image: postgres:15.1
+    container_name: employee-db
+    expose:
+      - "54321"
+    ports:
+      - "54321:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: employee-db
+      POSTGRES_PASSWORD: user
+      POSTGRES_HOST: localhost
+    volumes:
+      - employee-db-data:/var/lib/postgresql/data
+  #----------------------------------------------------------------
 volumes:
   pgadmin-data:
   pki-db-data:
+  employee-db-data:
 #----------------------------------------------------------------

@@ -1,0 +1,10 @@
+<div style="font-size: 18px">
+  <mat-form-field appearance="outline" color="accent">
+    <mat-label><ng-content></ng-content></mat-label>
+    <mat-select [value]="selected" [disabled]="disabled" (selectionChange)="selectionChange($event)">
+      <mat-option *ngFor="let option of options" [value]="option.value">
+        {{ option.displayValue }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

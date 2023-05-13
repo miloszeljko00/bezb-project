@@ -1,0 +1,8 @@
+<div style="font-size: 18px">
+  <mat-form-field appearance="outline" color="accent">
+    <mat-label><ng-content></ng-content></mat-label>
+    <input matInput [min]="min" [max]="max" [matDatepicker]="picker" [disabled]="disabled" [ngModel]="value" (ngModelChange)="valueChanged($event)">
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker xPosition="end" #picker></mat-datepicker>
+  </mat-form-field>
+</div>

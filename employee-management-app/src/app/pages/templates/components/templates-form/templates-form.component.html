@@ -1,0 +1,146 @@
+
+<h1>Create Certificate using template</h1>
+<table>
+  <tr>
+    <td colspan="3">
+      <app-input-field name="name"  ngDefaultControl  [(ngModel)]="name">Template Name</app-input-field>
+     </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <app-select-field [options]="certificateTypes" [(selected)]="certificateForm.type" (selectedChange)="adjustFormForCertificateType($event)">Certificate Type</app-select-field>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <app-date-field [min]="todayDate" [(value)]="certificateForm.exp">Expires At</app-date-field>
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan="3">
+      <h1>Choose extensions</h1>  </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>PRIVATE_KEY_USAGE_PERIOD</mat-label>  </td>
+    <td>
+      <app-date-field [min]="todayDate"  name="fieldName" ngDefaultControl   [(value)]="privateKeyPeriod1"></app-date-field>
+      <app-date-field [min]="todayDate" name="fieldName" ngDefaultControl   [(value)]="privateKeyPeriod2"></app-date-field>
+    </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox" disabled="disabled">
+    </td>
+    <td>
+      <app-primary-button (click)="addPrivateKeyUsagePeriod()">Add</app-primary-button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>CRL_DISTRIBUTION_POINTS</mat-label>  </td>
+    <td class="inputs">
+      <app-input-field name="fieldName" ngDefaultControl [(ngModel)]="crlInput"></app-input-field>
+    </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox"  [(ngModel)]="crlChecked"  >
+    </td>
+    <td>
+      <app-primary-button (click)="addCrl()">Add</app-primary-button>
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>AUTHORITY_INFO_ACCESS</mat-label> </td>
+    <td>
+      <app-input-field name="fieldName"  ngDefaultControl  [(ngModel)]="authorityInput"></app-input-field>
+     </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox" disabled="disabled"> </td>
+    <td>
+      <app-primary-button (click)="addAuthorityInfoAccess()">Add</app-primary-button>
+
+    </td>
+  </tr>
+
+
+
+  <tr>
+    <td>
+      <mat-label>ISSUER_ALT_NAME</mat-label>  </td>
+    <td>
+      <app-input-field  name="fieldName" ngDefaultControl   [(ngModel)]="issuerInput"></app-input-field>
+    </td>
+    <td>
+<label>critical</label>
+      <input type="checkbox" [(ngModel)]="issuerChecked"   >
+    </td>
+    <td>     <app-primary-button (click)="addIssuerAltName()">Add</app-primary-button>
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-label>KEY_USAGE</mat-label>  </td>
+    <td>
+      <app-number-input-field name="fieldName" ngDefaultControl [(ngModel)]="keyUsage"></app-number-input-field>
+    </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox" [(ngModel)]="keyChecked"  >
+    </td>
+    <td>
+      <app-primary-button (click)="addKeyUsage()">Add</app-primary-button>
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <mat-label>SUBJECT_ALT_NAME</mat-label>  </td>
+    <td>
+      <app-input-field
+        name="fieldName"
+        ngDefaultControl
+        [(ngModel)]="subjectAltNameInput"></app-input-field>
+    </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox" disabled="disabled">
+    </td>
+    <td>
+      <app-primary-button (click)="addSubjectAltName()">Add</app-primary-button>
+
+    </td>
+  </tr>
+  <tr><td>
+    <mat-label>BASIC_CONSTRAINTS</mat-label>  </td>
+
+    <td>
+      <app-input-field
+        name="fieldName"
+        ngDefaultControl
+      ></app-input-field>
+    </td>
+    <td>
+      <label>critical</label>
+      <input type="checkbox"  disabled = "disabled" checked = "checked" >
+    </td>
+    <td>
+      <app-primary-button (click)="addBasicConstraints()">Add</app-primary-button>
+
+    </td>
+  </tr>
+
+
+</table>
+<app-primary-button class="create" (click)="createCertificate()">Create</app-primary-button>
+
+
+
+
+
+

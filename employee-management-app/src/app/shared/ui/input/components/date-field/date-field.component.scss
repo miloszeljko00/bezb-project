@@ -1,0 +1,16 @@
+
+:host ::ng-deep .mat-form-field-flex {
+  height: 71.25px;
+}
+:host ::ng-deep .mat-form-field-infix {
+  display: flex;
+  padding-top: 4px;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-icon-button{
+  margin-right: 5px;
+}

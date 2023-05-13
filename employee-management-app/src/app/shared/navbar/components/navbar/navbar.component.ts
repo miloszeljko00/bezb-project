@@ -16,7 +16,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
   user: User | null = null;
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -44,14 +44,16 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToHomePage() {
     this.router.navigate([''])
   }
-  
+  goToRegisterPage() {
+    this.router.navigate(['/register'])
+  }
   goToAccountsPage() {
     this.router.navigate(['/accounts'])
   }
   goToTemplatesPage() {
     this.router.navigate(['/certificates/template'])
   }
-  
+
   goToCertificatesPage() {
     this.router.navigate(['/certificates'])
   }

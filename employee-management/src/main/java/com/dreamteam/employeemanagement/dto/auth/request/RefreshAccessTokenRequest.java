@@ -1,4 +1,4 @@
-package com.dreamteam.employeemanagement.dto.auth.response;
+package com.dreamteam.employeemanagement.dto.auth.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponse {
-    private String accessToken;
+public class RefreshAccessTokenRequest {
+    private String email;
     private String refreshToken;
 }

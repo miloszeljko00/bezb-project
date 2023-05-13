@@ -7,8 +7,11 @@ import { LoginResponse } from '../dtos/login-response';
 import jwtDecode from 'jwt-decode';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Token } from '../models/token';
-import { Subject } from 'rxjs';
+import { AccessToken } from '../models/access-token';
+import { Subject, firstValueFrom } from 'rxjs';
+import { LogoutRequest } from '../dtos/logout-request';
+import { RefreshAccessTokenRequest } from '../dtos/refresh-access-token-request';
+import { RefreshAccessTokenResponse } from '../dtos/refresh-access-token-response';
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +20,16 @@ export class AuthService {
   private user$: Subject<User|null> = new Subject();
   private user: User|null = null
 
-  private token$: Subject<string|null> = new Subject();
-  private token: string|null = null
+  private accessToken$: Subject<string|null> = new Subject();
+  private accessToken: string|null = null
+
+  private refreshToken$: Subject<string|null> = new Subject();
+  private refreshToken: string|null = null
 
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {
     this.loadAuth()
 
-    if(this.tokenValid()){
+    if(this.accessTokenValid()){
       this.clearAuthAndRedirectHome()
     }
    }
@@ -33,7 +39,7 @@ export class AuthService {
   login(loginRequest: LoginRequest) {
     this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/login", loginRequest).subscribe({
       next: (response) => {
-        this.setAuth(response.token)
+        this.setAuth(response)
         this.toastr.success('Login successful.', "Login Success")
         this.redirectHome();
       },
@@ -42,9 +48,19 @@ export class AuthService {
       }
     })
   }
+  async refreshAccessToken(refreshAccessTokenRequest: RefreshAccessTokenRequest) {
+    try{
+      const response = await firstValueFrom(this.http.post<RefreshAccessTokenResponse>(environment.apiUrl+"/api/auth/actions/refresh-access-token", refreshAccessTokenRequest))
+      this.setAccessToken(response.accessToken)
+
+    }catch(err){
+      this.clearAuthAndRedirectHome()
+    }
+  }
 
   logout() {
-    this.http.get<LoginResponse>(environment.apiUrl+"/api/auth/actions/logout").subscribe({
+    const request = new LogoutRequest(this.accessToken, this.refreshToken)
+    this.http.post(environment.apiUrl+"/api/auth/actions/logout", request).subscribe({
       next: (response) => {
         this.clearAuthAndRedirectHome()
       },
@@ -56,17 +72,20 @@ export class AuthService {
 
   loadAuth() {
     this.loadUser()
-    this.loadToken()
+    this.loadAccessToken()
+    this.loadRefreshToken()
   }
 
-  setAuth(token: string) {
-    this.setUser(token)
-    this.setToken(token)
+  setAuth(tokens: {accessToken: string, refreshToken: string}) {
+    this.setUser(tokens.accessToken)
+    this.setAccessToken(tokens.accessToken)
+    this.setRefreshToken(tokens.refreshToken)
   }
 
   clearAuth() {
     this.clearUser()
-    this.clearToken()
+    this.clearAccessToken()
+    this.clearRefreshToken()
   }
 
   getUser() {
@@ -75,48 +94,50 @@ export class AuthService {
   getUserObservable() {
     return this.user$
   }
-  getToken() {
-    return this.token;
+  async getAccessToken() {
+    if(!this.accessToken) return null
+    const accessToken: AccessToken = jwtDecode(this.accessToken);
+    const expirationDate = new Date((accessToken.exp as number ) * 1000)
+    const currentDate = new Date()
+    if(expirationDate < currentDate) {
+      if(!this.refreshToken) return null
+      await this.refreshAccessToken(new RefreshAccessTokenRequest(this.refreshToken))
+    }
+    return this.accessToken;
   }
-  getTokenObservable() {
-    return this.token$;
+  getAccessTokenObservable() {
+    return this.accessToken$;
+  }
+  getRefreshToken() {
+    return this.refreshToken;
+  }
+  getRefreshTokenObservable() {
+    return this.refreshToken$;
   }
   isAuthenticated() {
-    return this.user != null && this.token != null && this.tokenValid()
-  }
-
-  isAdmin() {
-    return this.user != null && this.user.roles.includes('ROLE_ADMIN')
-  }
-
-  isCertificateAuthority() {
-    return this.user != null && this.user.roles.includes('ROLE_CERTIFICATE_AUTHORITY')
-  }
-
-  isEntity() {
-    return this.user != null && this.user.roles.includes('ROLE_ENTITY')
+    return this.user != null && this.refreshToken != null && this.accessToken != null && this.accessTokenValid()
   }
   
-  private clearAuthAndRedirectHome() {
+  clearAuthAndRedirectHome() {
     this.clearAuth()
     this.redirectHome()
   }
 
   private extractUser(token: string) {
-        const decodedToken: Token = jwtDecode(token)
+        const decodedToken: AccessToken = jwtDecode(token)
         const roles = decodedToken.roles.map((auth: any) => auth)
         const permissions = decodedToken.authorities.map((auth: any) => auth.authority)
         return new User(decodedToken.sub, roles, permissions)
   }
 
-  private tokenValid(): boolean {
-    if(!this.token) return true
-    const decodedToken: Token = jwtDecode(this.token)
+  private accessTokenValid(): boolean {
+    if(!this.accessToken) return false
+    const decodedToken: AccessToken = jwtDecode(this.accessToken)
 
     const expirationDate = new Date((decodedToken.exp as number ) * 1000)
     const currentDate = new Date()
 
-    return currentDate > expirationDate
+    return currentDate < expirationDate
   }
 
   private loadUser() {
@@ -127,27 +148,38 @@ export class AuthService {
     this.user$.next(this.user)
   }
 
-  private loadToken() {
-    const token = window.sessionStorage.getItem('token')
-    if(!token) return
+  private loadAccessToken() {
+    const accessToken = window.sessionStorage.getItem('accessToken')
+    if(!accessToken) return
 
-    this.token = token
-    this.token$.next(this.token)
+    this.accessToken = accessToken
+    this.accessToken$.next(this.accessToken)
   }
 
-  
-  private setUser(token: string) {
-    this.user = this.extractUser(token)
+  private loadRefreshToken() {
+    const refreshToken = window.sessionStorage.getItem('refreshToken')
+    if(!refreshToken) return
+
+    this.refreshToken = refreshToken
+    this.refreshToken$.next(this.refreshToken)
+  }
+
+  private setUser(accessToken: string) {
+    this.user = this.extractUser(accessToken)
     window.sessionStorage.setItem('user', JSON.stringify(this.user))
     this.user$.next(this.user)
   }
 
-  private setToken(token: string) {
-    this.token = token
-    window.sessionStorage.setItem('token', this.token)
-    this.token$.next(this.token)
+  private setAccessToken(accessToken: string) {
+    this.accessToken = accessToken
+    window.sessionStorage.setItem('accessToken', this.accessToken)
+    this.accessToken$.next(this.accessToken)
   }
-
+  private setRefreshToken(refreshToken: string) {
+    this.refreshToken = refreshToken
+    window.sessionStorage.setItem('refreshToken', this.refreshToken)
+    this.accessToken$.next(this.refreshToken)
+  }
   private redirectHome() {
     this.router.navigate(['']);
   }
@@ -158,9 +190,15 @@ export class AuthService {
     this.user$.next(this.user)
   }
   
-  private clearToken() {
-    window.sessionStorage.removeItem('token')
-    this.token = null
-    this.token$.next(this.token)
+  private clearAccessToken() {
+    window.sessionStorage.removeItem('accessToken')
+    this.accessToken = null
+    this.accessToken$.next(this.accessToken)
+  }
+
+  private clearRefreshToken() {
+    window.sessionStorage.removeItem('refreshToken')
+    this.refreshToken = null
+    this.refreshToken$.next(this.refreshToken)
   }
 }

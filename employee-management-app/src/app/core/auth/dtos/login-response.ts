@@ -1,7 +1,9 @@
 export class LoginResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 
-  constructor(token: string) {
-    this.token = token
+  constructor(accessToken: string, refreshToken: string) {
+    this.accessToken = accessToken
+    this.refreshToken = refreshToken
   }
 }

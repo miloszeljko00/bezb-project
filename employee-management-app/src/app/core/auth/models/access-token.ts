@@ -1,4 +1,4 @@
-export class Token {
+export class AccessToken {
   sub: string;
   roles: string[];
   authorities: string[];

@@ -8,14 +8,12 @@
       </div>
       <div *ngIf="user">
         <ng-container>
-            <app-navbar-button *ngIf="user.hasPermission('TEST')" (click)="goToHomePage()">TEST</app-navbar-button>
+            <app-navbar-button *ngIf="user.hasPermission('TEST')" (click)="test()">TEST</app-navbar-button>
         </ng-container>
       </div>
   </div>
-  <div *ngIf="!user">
-    <app-navbar-button (click)="goToRegisterPage()">Register</app-navbar-button>
-  </div>
   <div>
+      <app-navbar-button *ngIf="!user" (click)="goToRegisterPage()">Register</app-navbar-button>
       <app-navbar-button *ngIf="!user" (click)="login()">Login</app-navbar-button>
       <app-navbar-button *ngIf="user" (click)="logout()">Logout</app-navbar-button>
   </div>

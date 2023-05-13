@@ -38,6 +38,8 @@ public class SecurityFilterChainConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/actions/login")
                 .permitAll()
+                .requestMatchers("/api/auth/actions/refresh-access-token")
+                .permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll()
                 .anyRequest()

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Designation } from './models/Designation';
+import { RegisterUserInfoService } from 'src/app/core/services/register-user-info.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +15,10 @@ export class RegisterPage implements OnInit {
   registrationForm: FormGroup;
   designationOptions = Object.values(Designation);
   passwordMatchError: boolean = false;
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    public registerUserInfoService: RegisterUserInfoService,
+    public toastrService: ToastrService) { }
 
   ngOnInit() {
     this.registrationForm = this.formBuilder.group({
@@ -22,7 +27,7 @@ export class RegisterPage implements OnInit {
       confirmPassword: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      address: ['', Validators.required],
+      street: ['', Validators.required],
       city: ['', Validators.required],
       country: ['', Validators.required],
       phone: ['', Validators.required],
@@ -30,7 +35,6 @@ export class RegisterPage implements OnInit {
     });
   }
   passwordValidator(password: FormControl) {
-    console.log(password.value);
     const hasNumber = /[0-9]/.test(password.value);
     const hasSpecialChar = /[!*&$%]/.test(password.value);
 
@@ -45,7 +49,15 @@ export class RegisterPage implements OnInit {
   onSubmit() {
     if (this.registrationForm.valid) {
       // Ovde dodajte logiku za obradu podataka ili slanje forme
-      console.log(this.registrationForm.value);
+      this.registerUserInfoService.createRegistration(this.registrationForm.value).subscribe({
+        next: (result: any) => {
+          console.log(result);
+          this.toastrService.success("Registration Sent!");
+        },
+        error: (error: any) => {
+          this.toastrService.error(error);
+        }
+      })
     }
   }
   validatePasswordMatch() {

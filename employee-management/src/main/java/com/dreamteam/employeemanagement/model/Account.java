@@ -1,5 +1,6 @@
 package com.dreamteam.employeemanagement.model;
 
+import com.dreamteam.employeemanagement.model.enums.AccountStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,11 +34,8 @@ public class Account implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
-    public Account(String email, String password, List<Role> roles) {
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-    }
+    @Column(name = "status")
+    private AccountStatus status;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

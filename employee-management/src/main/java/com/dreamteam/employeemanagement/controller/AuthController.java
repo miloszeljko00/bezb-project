@@ -2,6 +2,9 @@ package com.dreamteam.employeemanagement.controller;
 
 import com.dreamteam.employeemanagement.auth.services.AuthenticationService;
 import com.dreamteam.employeemanagement.dto.auth.request.LoginRequest;
+import com.dreamteam.employeemanagement.dto.auth.request.LogoutRequest;
+import com.dreamteam.employeemanagement.dto.auth.request.RefreshAccessTokenRequest;
+import com.dreamteam.employeemanagement.dto.auth.response.RefreshAccessTokenResponse;
 import com.dreamteam.employeemanagement.dto.auth.response.LoginResponse;
 import com.dreamteam.employeemanagement.repository.IAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +26,22 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         var email = loginRequest.getEmail();
         var password = loginRequest.getPassword();
-        var jwt = authenticationService.login(email, password);
+        var loginResponse = authenticationService.login(email, password);
 
-        var response = new LoginResponse(jwt);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/actions/logout")
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authorizationHeader) {
-       var jwt = authorizationHeader.substring(7);
-       authenticationService.logout(jwt);
+    @PostMapping("/actions/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequest logoutRequest) {
+       authenticationService.logout(logoutRequest);
        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/actions/refresh-access-token")
+    public ResponseEntity<RefreshAccessTokenResponse> refreshAccessToken(@RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest) {
+        var accessToken = authenticationService.refreshAccessToken(refreshAccessTokenRequest);
+        if(accessToken == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        var refreshAccessTokenResponse = new RefreshAccessTokenResponse(accessToken);
+        return new ResponseEntity<>(refreshAccessTokenResponse, HttpStatus.OK);
     }
 }

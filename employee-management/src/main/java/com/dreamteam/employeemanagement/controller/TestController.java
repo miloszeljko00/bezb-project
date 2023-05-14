@@ -14,7 +14,7 @@ public class TestController {
     @PreAuthorize("hasRole('TEST')")
     @GetMapping
     public ResponseEntity<Object> test() {
-        return new ResponseEntity<>("WORKS!", HttpStatus.OK);
+        return new ResponseEntity<>("{\"result\": \"WORKS!\"}", HttpStatus.OK);
     }
 
 }

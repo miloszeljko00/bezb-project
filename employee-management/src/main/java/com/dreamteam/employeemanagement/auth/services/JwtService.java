@@ -1,7 +1,9 @@
 package com.dreamteam.employeemanagement.auth.services;
 
 import com.dreamteam.employeemanagement.model.Account;
+import com.dreamteam.employeemanagement.model.RefreshToken;
 import com.dreamteam.employeemanagement.repository.IBlacklistedTokenRepository;
+import com.dreamteam.employeemanagement.repository.IRefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,17 +11,13 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.event.KeyValuePair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -31,25 +29,34 @@ public class JwtService {
     private String secretKey;
 
     private final IBlacklistedTokenRepository blacklistedTokenRepository;
+    private final IRefreshTokenRepository refreshTokenRepository;
 
     public boolean isTokenValid(String jwt, UserDetails userDetails) {
         final String username = extractUsername(jwt);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwt) && !isTokenBlacklisted(jwt);
     }
 
-    public String generateToken(Account account) {
+    public String generateAccessToken(Account account) {
         HashMap<String, Object> claims = new HashMap<>();
         List<String> roles = account.getRoleNames();
 
         claims.put("roles", roles);
-        return generateToken(claims, account);
+        return generateAccessToken(claims, account);
+    }
+    public RefreshToken generateRefreshToken(Account account) {
+        var refreshToken = new RefreshToken();
+        refreshToken.setAccount(account);
+        refreshToken.setIat(new Date(System.currentTimeMillis()));
+        refreshToken.setExp(new Date(refreshToken.getIat().toInstant().plus(1, ChronoUnit.DAYS).toEpochMilli()));
+        refreshToken.setValid(true);
+        return refreshTokenRepository.save(refreshToken);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         var sub = userDetails.getUsername();
         var roles = userDetails.getAuthorities();
         var iat = new Date(System.currentTimeMillis());
-        var exp = new Date(iat.toInstant().plus(1, ChronoUnit.DAYS).toEpochMilli());
+        var exp = new Date(iat.toInstant().plus(15, ChronoUnit.MINUTES).toEpochMilli());
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(sub)

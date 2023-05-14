@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "blacklisted_tokens")
-public class BlacklistedToken {
+@Table(name = "blacklisted_access_tokens")
+public class BlacklistedAccessToken {
     @Id
     @Lob
     private String token;

@@ -1,8 +1,11 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/auth/models/user';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +20,9 @@ export class NavbarComponent implements OnInit, OnDestroy{
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient,
+    private toastr: ToastrService
   ) {}
 
   ngOnDestroy(): void {
@@ -47,14 +52,16 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToRegisterPage() {
     this.router.navigate(['/register'])
   }
-  goToAccountsPage() {
-    this.router.navigate(['/accounts'])
-  }
-  goToTemplatesPage() {
-    this.router.navigate(['/certificates/template'])
+ 
+  test() {
+    this.http.get(environment.apiUrl + '/api/test').subscribe({
+      next: () =>{
+        this.toastr.success("Working!")
+      },
+      error: (err: HttpErrorResponse) =>{
+        this.toastr.error("Error: " + err.message)
+      }
+    })
   }
 
-  goToCertificatesPage() {
-    this.router.navigate(['/certificates'])
-  }
 }

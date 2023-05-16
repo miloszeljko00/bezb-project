@@ -40,6 +40,8 @@ public class SecurityFilterChainConfig {
                 .permitAll()
                 .requestMatchers("/api/auth/actions/refresh-access-token")
                 .permitAll()
+                .requestMatchers("/api/test")
+                .permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll()
                 .anyRequest()

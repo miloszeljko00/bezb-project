@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TestController {
 
-    @PreAuthorize("hasRole('TEST')")
     @GetMapping
     public ResponseEntity<Object> test() {
         return new ResponseEntity<>("{\"result\": \"WORKS!\"}", HttpStatus.OK);

@@ -3,6 +3,7 @@ package com.dreamteam.employeemanagement.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -26,4 +27,8 @@ public class RegisterUserInfo {
     private Address address;
     @Column(name = "phone_number")
     private String phoneNumber;
+    @Column(name = "revision_date")
+    private Date revisionDate;
+    @Embedded
+    private RegistrationToken registrationToken;
 }

@@ -1,0 +1,44 @@
+<table mat-table [dataSource]="dataSource">
+
+  <!-- Email Column -->
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef>Email</th>
+    <td mat-cell *matCellDef="let element">{{ element.account.email }}</td>
+  </ng-container>
+
+  <!-- First Name Column -->
+  <ng-container matColumnDef="firstName">
+    <th mat-header-cell *matHeaderCellDef>First Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.firstName }}</td>
+  </ng-container>
+
+  <!-- Last Name Column -->
+  <ng-container matColumnDef="lastName">
+    <th mat-header-cell *matHeaderCellDef>Last Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.lastName }}</td>
+  </ng-container>
+
+  <!-- Roles Column -->
+  <ng-container matColumnDef="roles">
+    <th mat-header-cell *matHeaderCellDef>Roles</th>
+    <td mat-cell *matCellDef="let element">
+      <ng-container *ngFor="let role of element.account.roles; let last = last">
+        {{ role.name }}{{ last ? '' : ', ' }}
+      </ng-container>
+    </td>
+  </ng-container>
+
+  <!-- Button Column -->
+  <ng-container matColumnDef="buttons">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element">
+      <button mat-raised-button style="margin-right: 10px;" (click)="acceptRegistration(element)">Accept</button>
+      <button mat-raised-button (click)="declineRegistration(element)">Decline</button>
+    </td>
+  </ng-container>
+
+  <!-- Define table rows -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>

@@ -30,7 +30,8 @@ public class SecurityConfig {
     // TODO: Add salt to password encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10, new SecureRandom());
+        String salt = "posoliii_gaaa_veljooooo";
+        return new BCryptPasswordEncoder(10, new SecureRandom(salt.getBytes()));
     }
 
     @Bean

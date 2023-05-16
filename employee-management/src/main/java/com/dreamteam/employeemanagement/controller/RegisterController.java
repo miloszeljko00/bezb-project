@@ -3,23 +3,22 @@ package com.dreamteam.employeemanagement.controller;
 import com.dreamteam.employeemanagement.dto.auth.request.LoginRequest;
 import com.dreamteam.employeemanagement.dto.auth.response.LoginResponse;
 import com.dreamteam.employeemanagement.dto.register.RegisterUserInfoRequest;
-import com.dreamteam.employeemanagement.model.Account;
-import com.dreamteam.employeemanagement.model.Address;
-import com.dreamteam.employeemanagement.model.RegisterUserInfo;
-import com.dreamteam.employeemanagement.model.Role;
+import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.model.enums.AccountStatus;
 import com.dreamteam.employeemanagement.repository.IAccountRepository;
 import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
 import com.dreamteam.employeemanagement.repository.IRoleRepository;
+import com.dreamteam.employeemanagement.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/register")
@@ -29,6 +28,7 @@ public class RegisterController {
     private final IAccountRepository accountRepository;
     private final IRegisterUserInfoRepository registerUserInfoRepository;
     private final IRoleRepository roleRepository;
+    private final EmailService emailService;
 
     @PostMapping
     public ResponseEntity<RegisterUserInfo> register(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) {
@@ -36,6 +36,7 @@ public class RegisterController {
         //Create Role
         var role = new Role();
         role.setName(registerUserInfoRequest.getDesignation());
+        role.setPermissions(new ArrayList<>());
         role = roleRepository.save(role);
         //Create account
         var account = new Account();
@@ -56,9 +57,9 @@ public class RegisterController {
         //Create RegisterUserInfo
         var registerUserInfo = new RegisterUserInfo();
         registerUserInfo.setAccount(account);
-        registerUserInfo.setFirstName(registerUserInfo.getFirstName());
-        registerUserInfo.setLastName(registerUserInfo.getLastName());
-        registerUserInfo.setPhoneNumber(registerUserInfo.getPhoneNumber());
+        registerUserInfo.setFirstName(registerUserInfoRequest.getFirstName());
+        registerUserInfo.setLastName(registerUserInfoRequest.getLastName());
+        registerUserInfo.setPhoneNumber(registerUserInfoRequest.getPhone());
         registerUserInfo.setAddress(address);
         registerUserInfo = registerUserInfoRepository.save(registerUserInfo);
         return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
@@ -67,22 +68,88 @@ public class RegisterController {
     public ResponseEntity<List<RegisterUserInfo>> getAllUnconfirmedRegistrations() {
         return new ResponseEntity<>(registerUserInfoRepository.findByAccount_Status(AccountStatus.PENDING), HttpStatus.OK);
     }
-    @PutMapping("/accept-registration/{id}")
-    public ResponseEntity<RegisterUserInfo> acceptRegistration(@PathVariable("id") UUID id){
-        var registrationRequest = registerUserInfoRepository.findById(id);
-        var account = registrationRequest.get().getAccount();
-        account.setStatus(AccountStatus.ACCEPTED);
-        account = accountRepository.save(account);
-        registrationRequest.get().setAccount(account);
-        return new ResponseEntity<>(registerUserInfoRepository.save(registrationRequest.get()), HttpStatus.OK);
+    @GetMapping("/confirm-registration")
+    public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token, @RequestParam("registerUserInfoId") String registerUserInfoId) {
+        // Retrieve the RegisterUserInfo object using the provided registerUserInfoId
+        Optional<RegisterUserInfo> userInfoOptional = registerUserInfoRepository.findById(UUID.fromString(registerUserInfoId));
+
+        // Check if the RegisterUserInfo exists and the token matches
+        if (userInfoOptional.isPresent()) {
+            RegisterUserInfo userInfo = userInfoOptional.get();
+            RegistrationToken registrationToken = userInfo.getRegistrationToken();
+
+            // Check if the token is expired
+            if (registrationToken.getExpirationDate().before(new Date())) {
+                return ResponseEntity.badRequest().body("Token has expired.");
+            }
+
+            // Check if the token has been used before
+            if (registrationToken.isUsed()) {
+                return ResponseEntity.badRequest().body("Token has already been used.");
+            }
+
+            // Generate the expected HMAC for the token and registerUserInfoId
+            String expectedHmac = HmacUtil.generateHmac(userInfo.getRegistrationToken().getToken() + registerUserInfoId, "veljin-tajni-kljuc");
+            String encodedToken;
+            try{
+                assert expectedHmac != null;
+                encodedToken = URLDecoder.decode(expectedHmac, StandardCharsets.UTF_8);
+            }catch(Exception e){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            // Verify if the provided HMAC matches the expected HMAC
+            if (encodedToken.equals(token)) {
+                // Activate the user account
+                var account = userInfo.getAccount();
+                account.setStatus(AccountStatus.ACCEPTED);
+                account = accountRepository.save(account);
+                userInfo.setAccount(account);
+                registrationToken.setUsed(true);
+                userInfo.setRegistrationToken(registrationToken);
+                registerUserInfoRepository.save(userInfo);
+
+                return ResponseEntity.ok("User activated successfully.");
+            }
+        }
+
+        return ResponseEntity.badRequest().body("Invalid activation link.");
     }
-    @PutMapping("/decline-registration/{id}")
-    public ResponseEntity<RegisterUserInfo> denyRegistration(@PathVariable("id") UUID id){
+
+    @PutMapping("/accept-registration")
+    public ResponseEntity<RegisterUserInfo> acceptRegistration(@RequestBody String idString) {
+        UUID id = UUID.fromString(idString);
+        var registrationRequest = registerUserInfoRepository.findById(id);
+
+        RegistrationToken token = RegistrationToken.builder()
+                .token(UUID.randomUUID())
+                .expirationDate(getExpirationDate())
+                .isUsed(false) // Set it to false initially
+                .build();
+        registrationRequest.get().setRegistrationToken(token);
+        var updatedRegistrationRequest = registerUserInfoRepository.save(registrationRequest.get());
+
+        // Generate the HMAC for the token and registerUserInfoId
+        String hmac = HmacUtil.generateHmac(token.getToken().toString() + idString, "veljin-tajni-kljuc");
+
+        String activationLink = "http://localhost:8080/api/register/confirm-registration?token=" + hmac + "&registerUserInfoId=" + idString;
+        emailService.sendEmail(registrationRequest.get().getAccount().getEmail(), "Obradjen zahtev za registraciju", "Vas zahtev za registraciju je prihvacen! Potvrdite pritiskom na link: " + activationLink);
+        return new ResponseEntity<>(updatedRegistrationRequest, HttpStatus.OK);
+    }
+    @PutMapping("/decline-registration")
+    public ResponseEntity<RegisterUserInfo> denyRegistration(@RequestBody String idString) {
+        UUID id = UUID.fromString(idString);
+
         var registrationRequest = registerUserInfoRepository.findById(id);
         var account = registrationRequest.get().getAccount();
         account.setStatus(AccountStatus.DENIED);
         account = accountRepository.save(account);
         registrationRequest.get().setAccount(account);
+        emailService.sendEmail(account.getEmail(), "Obradjen zahtev za registraciju", "Nazalost, vas zahtev je odbijen, za vise informacija kontaktirajte nas putem telefona: 123456789");
         return new ResponseEntity<>(registerUserInfoRepository.save(registrationRequest.get()), HttpStatus.OK);
+    }
+    private Date getExpirationDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 3);
+        return calendar.getTime();
     }
 }

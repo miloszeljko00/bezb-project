@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/auth/models/user';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { RegisterUserInfoService } from 'src/app/core/services/register-user-info.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -22,7 +23,8 @@ export class NavbarComponent implements OnInit, OnDestroy{
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private registerUserInfoService: RegisterUserInfoService
   ) {}
 
   ngOnDestroy(): void {
@@ -31,9 +33,13 @@ export class NavbarComponent implements OnInit, OnDestroy{
 
   ngOnInit() {
     this.user = this.authService.getUser();
+    if(this.user)this.user = new User(this.user.email, this.user.roles, this.user.permissions)
+
     this.getUserSubscription = this.authService.getUserObservable().subscribe({
       next: (result) => {
         this.user = result
+        if(this.user)this.user = new User(this.user.email, this.user.roles, this.user.permissions)
+        console.log(this.user);
       }
     })
   }
@@ -52,7 +58,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToRegisterPage() {
     this.router.navigate(['/register'])
   }
- 
+
   test() {
     this.http.get(environment.apiUrl + '/api/test').subscribe({
       next: () =>{
@@ -63,5 +69,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
       }
     })
   }
-
+  goToPreviewRegistrationRequest() {
+    this.router.navigate(['/previewRegistrationRequests'])
+  }
 }

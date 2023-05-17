@@ -9,6 +9,7 @@ import com.dreamteam.employeemanagement.repository.IAccountRepository;
 import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
 import com.dreamteam.employeemanagement.repository.IRoleRepository;
 import com.dreamteam.employeemanagement.service.EmailService;
+import com.dreamteam.employeemanagement.service.RegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +30,14 @@ public class RegisterController {
     private final IRegisterUserInfoRepository registerUserInfoRepository;
     private final IRoleRepository roleRepository;
     private final EmailService emailService;
+    private final RegisterService registerService;
 
     @PostMapping
-    public ResponseEntity<RegisterUserInfo> register(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) {
+    public ResponseEntity register(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) {
 
+        if(registerService.checkIfAccountWithThisEmailWasRecentlyDeclined(registerUserInfoRequest.getEmail())){
+            return ResponseEntity.badRequest().body("Registration request with this email was declined recently.");
+        }
         //Create Role
         var role = new Role();
         role.setName(registerUserInfoRequest.getDesignation());
@@ -106,6 +111,7 @@ public class RegisterController {
                 userInfo.setAccount(account);
                 registrationToken.setUsed(true);
                 userInfo.setRegistrationToken(registrationToken);
+                userInfo.setRevisionDate(new Date());
                 registerUserInfoRepository.save(userInfo);
 
                 return ResponseEntity.ok("User activated successfully.");
@@ -144,6 +150,7 @@ public class RegisterController {
         account.setStatus(AccountStatus.DENIED);
         account = accountRepository.save(account);
         registrationRequest.get().setAccount(account);
+        registrationRequest.get().setRevisionDate(new Date());
         emailService.sendEmail(account.getEmail(), "Obradjen zahtev za registraciju", "Nazalost, vas zahtev je odbijen, za vise informacija kontaktirajte nas putem telefona: 123456789");
         return new ResponseEntity<>(registerUserInfoRepository.save(registrationRequest.get()), HttpStatus.OK);
     }

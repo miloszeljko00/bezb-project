@@ -42,3 +42,4 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
 </table>
+<p *ngIf="dataSource.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>

@@ -27,7 +27,6 @@ public class SecurityConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }
 
-    // TODO: Add salt to password encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         String salt = "posoliii_gaaa_veljooooo";

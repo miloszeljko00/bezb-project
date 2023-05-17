@@ -54,7 +54,7 @@ export class RegisterPage implements OnInit {
           this.toastrService.success("Registration Sent!");
         },
         error: (error: any) => {
-          this.toastrService.error(error.message);
+          this.toastrService.error(error.error);
         }
       })
     }

@@ -31,8 +31,6 @@ export class AuthService {
 
    }
 
-
-
   login(loginRequest: LoginRequest) {
     this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/login", loginRequest).subscribe({
       next: (response) => {

@@ -20,5 +20,7 @@ export class LoginPage {
     const loginRequest = new LoginRequest(this.loginForm.email, this.loginForm.password)
     this.authService.login(loginRequest)
   }
-
+  magicLogin(email: string){
+    this.authService.magicLogin(email);
+  }
 }

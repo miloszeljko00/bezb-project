@@ -48,14 +48,13 @@ export class RegisterPage implements OnInit {
 
   onSubmit() {
     if (this.registrationForm.valid) {
-      // Ovde dodajte logiku za obradu podataka ili slanje forme
       this.registerUserInfoService.createRegistration(this.registrationForm.value).subscribe({
         next: (result: any) => {
           console.log(result);
           this.toastrService.success("Registration Sent!");
         },
         error: (error: any) => {
-          this.toastrService.error(error);
+          this.toastrService.error(error.error);
         }
       })
     }

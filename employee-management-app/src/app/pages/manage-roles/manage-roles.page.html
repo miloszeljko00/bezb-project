@@ -1,0 +1,26 @@
+<mat-accordion>
+  <div style="margin-top: 100px;">
+    <mat-expansion-panel (opened)="panelOpenState = true"
+                       (closed)="panelOpenState = false"
+                       *ngFor="let role of roles$ | async"
+                       style="width: 500px; margin: auto;">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ role.name }}
+        </mat-panel-title>
+        <mat-panel-description style="display: flex; justify-content: space-between;">
+          Total permissions: {{ role.permissions.length }}
+          <button mat-icon-button (click)="$event.stopPropagation(); addPermission(role)"><mat-icon>add</mat-icon></button>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div *ngFor="let permission of role.permissions"
+            class="permission-container">
+        <p style="margin: 0; 
+                  margin-left: 10px; 
+                  margin-right: 10px;"> {{ permission.name }}</p>
+        <button mat-icon-button (click)="removePermission(role, permission)"><mat-icon>delete</mat-icon></button>
+      </div>
+    </mat-expansion-panel>
+  </div>
+  
+</mat-accordion>

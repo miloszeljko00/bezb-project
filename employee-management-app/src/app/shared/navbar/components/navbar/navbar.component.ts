@@ -58,7 +58,9 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToRegisterPage() {
     this.router.navigate(['/register'])
   }
-
+  goToManageRoles() {
+    this.router.navigate(['/manage-roles'])
+  }
   test() {
     this.http.get(environment.apiUrl + '/api/test').subscribe({
       next: () =>{

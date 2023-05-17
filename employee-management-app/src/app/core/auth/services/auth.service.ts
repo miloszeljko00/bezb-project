@@ -28,7 +28,6 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {
     this.loadAuth()
-
    }
 
   login(loginRequest: LoginRequest) {
@@ -150,6 +149,9 @@ export class AuthService {
     if(!user) return
 
     this.user = JSON.parse(user)
+    if(this.user){
+      this.user = new User(this.user?.email, this.user?.roles, this.user?.permissions)
+    }
     this.user$.next(this.user)
   }
 

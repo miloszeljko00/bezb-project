@@ -1,0 +1,186 @@
+<form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="form">
+  <div class="first-column" style="margin-right: 20px;">
+    <mat-form-field>
+      <mat-label>User ID</mat-label>
+      <input matInput formControlName="id">
+    </mat-form-field><br>
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="firstName">
+      <mat-error *ngIf="f.firstName.hasError('required')">Name is required</mat-error>
+    </mat-form-field><br>
+
+    <mat-form-field>
+      <mat-label>Surname</mat-label>
+      <input matInput formControlName="lastName">
+      <mat-error *ngIf="f.lastName.hasError('required')">Surname is required</mat-error>
+    </mat-form-field><br>
+    <mat-form-field>
+      <mat-label>Email address</mat-label>
+      <input matInput formControlName="email" [disabled]="true">
+    </mat-form-field><br>
+
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" (focusout)="passwordValidator(f.password.value)">
+      <mat-error *ngIf="f.password.hasError('required')">Password is required</mat-error>
+      <mat-error *ngIf="f.password.hasError('minlength')">Minimum password length is 8 characters</mat-error>
+      <mat-error *ngIf="f.password.hasError('invalidPassword')" style="width: 100% !important;">One number and one of those symbols(!*&$%) are required</mat-error>
+    </mat-form-field><br>
+
+    <mat-form-field>
+      <mat-label>Confirm password</mat-label>
+      <input matInput type="password" formControlName="confirmPassword" (focusout)="validatePasswordMatch()">
+      <mat-error *ngIf="f.confirmPassword.hasError('required')">Confirm password is required</mat-error>
+      <mat-error *ngIf="f.confirmPassword.hasError('mismatch')">Passwords do not match</mat-error>
+    </mat-form-field><br>
+    <button  style="margin-left: -80px;" mat-raised-button color="primary" type="submit" [disabled]="updateForm.invalid">Update</button>
+
+  </div>
+  <div class="second-column">
+    <mat-form-field>
+      <mat-label>Street</mat-label>
+      <input matInput formControlName="street">
+      <mat-error *ngIf="f.street.hasError('required')">Street is required</mat-error>
+    </mat-form-field><br>
+
+    <mat-form-field>
+      <mat-label>City</mat-label>
+      <input matInput formControlName="city">
+      <mat-error *ngIf="f.city.hasError('required')">City is required</mat-error>
+    </mat-form-field><br>
+
+    <mat-form-field>
+      <mat-label>Country</mat-label>
+      <input matInput formControlName="country">
+      <mat-error *ngIf="f.country.hasError('required')">Country is required</mat-error>
+    </mat-form-field><br>
+
+    <mat-form-field>
+      <mat-label>Phone number</mat-label>
+      <input matInput formControlName="phone">
+      <mat-error *ngIf="f.phone.hasError('required')">Phone number is required</mat-error>
+    </mat-form-field><br>
+
+    <mat-form-field>
+      <mat-label>Designation</mat-label>
+      <mat-select formControlName="designation">
+        <mat-option *ngFor="let option of designationOptions" [value]="option">{{ option }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="f.designation.hasError('required')">Designation is required</mat-error>
+    </mat-form-field><br>
+
+  </div>
+</form>
+<div>
+  <div class="table-header">
+    <p class="table-title">Projects</p>
+  </div>
+
+<table mat-table [dataSource]="projectsData">
+  <!-- Id Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef>Id</th>
+    <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+  </ng-container>
+  <!-- Name Column -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+  </ng-container>
+
+  <!-- Duration Column -->
+  <ng-container matColumnDef="duration">
+    <th mat-header-cell *matHeaderCellDef>Duration</th>
+    <td mat-cell *matCellDef="let element">{{ element.duration }}</td>
+  </ng-container>
+
+  <!-- Caption Column -->
+  <ng-container matColumnDef="caption">
+    <th mat-header-cell *matHeaderCellDef>Caption</th>
+    <td mat-cell *matCellDef="let element">{{ element.caption }}</td>
+  </ng-container>
+
+
+  <!-- Button Column -->
+  <ng-container matColumnDef="buttons">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element">
+      <button mat-raised-button style="margin-right: 10px;" (click)="AddEmployee(element)">Add employee</button>
+    </td>
+  </ng-container>
+
+  <!-- Define table rows -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>
+<p *ngIf="projectsData.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
+
+
+<button mat-raised-button style="margin-right: 10px;" (click)="newProject()">New project</button>
+</div>
+
+<div>
+  <div class="table-header">
+    <p class="table-title">Employees</p>
+  </div>
+<table mat-table [dataSource]="employeesData">
+
+  <!-- Id Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef>Id</th>
+    <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+  </ng-container>
+  <!-- Name Column -->
+  <ng-container matColumnDef="firstName">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.firstName }}</td>
+  </ng-container>
+
+  <!-- Last name Column -->
+  <ng-container matColumnDef="lastName">
+    <th mat-header-cell *matHeaderCellDef>Last name</th>
+    <td mat-cell *matCellDef="let element">{{ element.lastName }}</td>
+  </ng-container>
+
+  <!-- City Column -->
+  <ng-container matColumnDef="city">
+    <th mat-header-cell *matHeaderCellDef>City</th>
+    <td mat-cell *matCellDef="let element">{{ element.city }}</td>
+  </ng-container>
+  <!-- Street Column -->
+  <ng-container matColumnDef="street">
+    <th mat-header-cell *matHeaderCellDef>Street</th>
+    <td mat-cell *matCellDef="let element">{{ element.street }}</td>
+  </ng-container>
+  <!-- Country Column -->
+  <ng-container matColumnDef="country">
+    <th mat-header-cell *matHeaderCellDef>Country</th>
+    <td mat-cell *matCellDef="let element">{{ element.country }}</td>
+  </ng-container>
+  <!-- Email Column -->
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef>Email</th>
+    <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+  </ng-container>
+  <!-- Phone Column -->
+  <ng-container matColumnDef="phone">
+    <th mat-header-cell *matHeaderCellDef>Phone number</th>
+    <td mat-cell *matCellDef="let element">{{ element.phone }}</td>
+  </ng-container>
+  <!-- Button Column -->
+  <ng-container matColumnDef="buttons">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element">
+      <button mat-raised-button style="margin-right: 10px;" (click)="AddEmployee(element)">Add employee</button>
+    </td>
+  </ng-container>
+
+  <!-- Define table rows -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumnsEmployees"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumnsEmployees;"></tr>
+
+</table>
+<p *ngIf="employeesData.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
+</div>

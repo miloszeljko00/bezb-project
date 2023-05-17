@@ -7,6 +7,7 @@ const routes: Routes = [
   { path: 'register', loadChildren: () => import('./pages/register/register.module').then(m => m.RegisterModule) },
   { path: 'previewRegistrationRequests', loadChildren: () => import('./pages/PreviewRegistrationRequests/PreviewRegistrationRequests.module').then(m => m.PreviewRegistrationRequestsModule) },
   { path: '**', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
+  { path: 'account', loadChildren: () => import('./pages/profile/profile.module').then(m => m.ProfileModule) },
 ];
 
 @NgModule({

@@ -10,7 +10,7 @@
         </mat-panel-title>
         <mat-panel-description style="display: flex; justify-content: space-between;">
           Total permissions: {{ role.permissions.length }}
-          <button mat-icon-button (click)="$event.stopPropagation(); addPermission(role)"><mat-icon>add</mat-icon></button>
+          <button mat-icon-button (click)="$event.stopPropagation(); openAddPermissionDialog(role)"><mat-icon>add</mat-icon></button>
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div *ngFor="let permission of role.permissions"
@@ -22,5 +22,4 @@
       </div>
     </mat-expansion-panel>
   </div>
-  
 </mat-accordion>

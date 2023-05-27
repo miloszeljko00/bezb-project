@@ -1,6 +1,7 @@
 package com.dreamteam.employeemanagement.controller;
 
 import com.dreamteam.employeemanagement.model.Permission;
+import com.dreamteam.employeemanagement.repository.IPermissionRepository;
 import com.dreamteam.employeemanagement.repository.IRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -17,6 +18,8 @@ public class RoleController {
 
     private final IRoleRepository roleRepository;
 
+    private final IPermissionRepository permissionRepository;
+
     @GetMapping
     public ResponseEntity<Object> getAllRoles() {
         return new ResponseEntity<>(roleRepository.findAll(), HttpStatus.OK);
@@ -25,10 +28,13 @@ public class RoleController {
     public ResponseEntity<Object> addPermission(@RequestBody Permission permission, @PathVariable UUID roleId) {
 
         var role = roleRepository.findById(roleId).orElse(null);
+        permission = permissionRepository.findById(permission.getId()).orElse(null);
 
         if(role == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(permission == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         var result = role.addPermission(permission);
+        roleRepository.save(role);
 
         if(result) return new ResponseEntity<>(HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -37,10 +43,13 @@ public class RoleController {
     public ResponseEntity<Object> removePermission(@RequestBody Permission permission, @PathVariable UUID roleId) {
 
         var role = roleRepository.findById(roleId).orElse(null);
+        permission = permissionRepository.findById(permission.getId()).orElse(null);
 
         if(role == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(permission == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         var result = role.removePermission(permission);
+        roleRepository.save(role);
 
         if(result) return new ResponseEntity<>(HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.CONFLICT);

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../environments/environment";
-import {Observable} from "rxjs";
-import {Project} from "../../pages/profile/models/project";
-import {UserSkills} from "../../pages/profile/models/userSkills";
-import {UserProject} from "../../pages/profile/models/userProject";
-import {UserProfile} from "../../pages/profile/models/userProfile";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../../environments/environment";
+import { Observable } from "rxjs";
+import { Project } from "../../pages/profile/models/project";
+import { UserSkills } from "../../pages/profile/models/userSkills";
+import { UserProject } from "../../pages/profile/models/userProject";
+import { UserProfile } from "../../pages/profile/models/userProfile";
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +34,9 @@ export class UserService {
     return this.http.get(environment.apiUrl + "/api/profile/employees-manager/"+ id);
   }
 
+  getUserSkills(userId: string) {
+    return this.http.get(environment.apiUrl + "/api/profile/user-skills/"+ userId);
+  }
   deleteUserProject(userProject: UserProject): Observable<any> {
     return this.http.put<any>(environment.apiUrl + "/api/profile/user-project", userProject);
   }
@@ -52,14 +55,14 @@ export class UserService {
   createUserProject(newCaption: UserProject) {
     return this.http.post(environment.apiUrl + "/api/profile/create-userProject", newCaption);
   }
-  updateUserProject(newCaption: UserProject) {
-    return this.http.put(environment.apiUrl + "/api/profile/update-userProject", newCaption);
+  updateUserProject(userProject: UserProject) {
+    return this.http.put(environment.apiUrl + "/api/profile/update-userProject/" + userProject.id + "/" + userProject.description, null);
   }
   updateProfile(newCaption: UserProfile) {
     return this.http.put(environment.apiUrl + "/api/profile/update-profile", newCaption);
   }
-  updateSkill(newCaption: UserSkills) {
-    return this.http.put(environment.apiUrl + "/api/profile/update-skill", newCaption);
+  updateSkill(userSkill: UserSkills) {
+    return this.http.put(environment.apiUrl + "/api/profile/update-skill", userSkill);
   }
 
 }

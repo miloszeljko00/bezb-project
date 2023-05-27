@@ -9,6 +9,7 @@
       <div *ngIf="user">
         <ng-container>
             <app-navbar-button *ngIf="user.hasPermission('TEST')" (click)="test()">TEST</app-navbar-button>
+            <app-navbar-button *ngIf="user.hasRole('Software Engineer')" (click)="goToEngineerAccount()">Account</app-navbar-button>
             <app-navbar-button *ngIf="user.hasRole('Administrator')" (click)="goToManageRoles()">Manage Roles</app-navbar-button>
         </ng-container>
       </div>

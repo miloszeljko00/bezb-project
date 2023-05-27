@@ -41,7 +41,7 @@ public class Account implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        var grantedAuthorities = new ArrayList<GrantedAuthority>();
+        var grantedAuthorities = new ArrayList<SimpleGrantedAuthority>();
         for(var role: roles) {
             for(var permission: role.getPermissions()){
                 grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + permission.getName()));

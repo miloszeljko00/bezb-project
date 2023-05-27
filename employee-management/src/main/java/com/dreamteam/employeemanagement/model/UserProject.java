@@ -17,7 +17,7 @@ public class UserProject {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "accountId")
     private Account user;
 
     @ManyToOne

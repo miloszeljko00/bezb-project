@@ -1,14 +1,8 @@
 package com.dreamteam.employeemanagement.service;
 
 import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
-import com.dreamteam.employeemanagement.model.Account;
-import com.dreamteam.employeemanagement.model.Project;
-import com.dreamteam.employeemanagement.model.UserProject;
-import com.dreamteam.employeemanagement.model.UserSkills;
-import com.dreamteam.employeemanagement.repository.IAccountRepository;
-import com.dreamteam.employeemanagement.repository.IProjectRepository;
-import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
-import com.dreamteam.employeemanagement.repository.IUserSkillsRepository;
+import com.dreamteam.employeemanagement.model.*;
+import com.dreamteam.employeemanagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +21,7 @@ public class ProfileService {
     private final IUserProjectRepository userProjectRepository;
     private final IUserSkillsRepository userSkillsRepository;
     private final IProjectRepository projectRepository;
+    private final IRegisterUserInfoRepository registerUserInfoRepository;
 
 
     public List<Project> getAllProjects() {
@@ -40,11 +35,11 @@ public class ProfileService {
 
     public List<UserProject> getUsersByProject(String projectId) {
         var project = projectRepository.getById(UUID.fromString(projectId));
-        return userProjectRepository.getUsersByProject(project);
+        return userProjectRepository.findAllByProject(project);
     }
-    public List<UserProject> getProjectsByUser(String userId) {
-        var user = accountRepository.getById(userId);
-        return userProjectRepository.getProjectsByUser(user);
+    public List<UserProject> getProjectsByUser(UUID id) {
+        var user = accountRepository.findById(id);
+        return userProjectRepository.findAllByUser(user.get());
     }
     public List<UserProject> getEmployeesByManager(List<Project> projectsByManager) {
         List<UserProject> allUserProjects = userProjectRepository.findAll();
@@ -85,11 +80,8 @@ public class ProfileService {
         oldUserProject.setEndDate(userProject.getEndDate());
         oldUserProject.setDescription(userProject.getDescription());
     }
-    public void updateProfile(UpdateProfileDto userUpdate) {
-        var user = accountRepository.getById(String.valueOf(userUpdate.getId()));
-        if (user != null) {
-            updateUser(user, userUpdate);
-            accountRepository.save(user);}
+    public void updateProfile(RegisterUserInfo registerUserInfo) {
+        registerUserInfoRepository.save(registerUserInfo);
     }
     private void updateUser(Account oldUser, UpdateProfileDto user) {
 

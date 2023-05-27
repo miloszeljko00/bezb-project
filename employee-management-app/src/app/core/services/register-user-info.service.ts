@@ -26,5 +26,8 @@ export class RegisterUserInfoService{
   declineRegistration(id: string) {
     return this.http.put(environment.apiUrl + "/api/register/decline-registration", id);
   }
+  getRegisterUserInfoByEmail(email: string) {
+    return this.http.get(environment.apiUrl + "/api/register/get-by-id/" + email)
+  }
 
 }

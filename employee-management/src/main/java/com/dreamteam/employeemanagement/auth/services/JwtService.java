@@ -9,8 +9,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -23,12 +26,15 @@ import java.util.function.Function;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+//@AllArgsConstructor
 public class JwtService {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    private final IBlacklistedTokenRepository blacklistedTokenRepository;
+
+    private final  IBlacklistedTokenRepository blacklistedTokenRepository;
+
     private final IRefreshTokenRepository refreshTokenRepository;
 
     public boolean isTokenValid(String jwt, UserDetails userDetails) {

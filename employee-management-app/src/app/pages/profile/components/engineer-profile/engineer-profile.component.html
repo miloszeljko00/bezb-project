@@ -74,7 +74,7 @@
 
 <div class="table">
   <div class="table-header">
-    <p class="table-title">Projects</p>
+    <p class="table-title">All projects you worked on</p>
 
     <app-input-field [(value)]="newCaption" >
       <mat-label>New caption</mat-label>
@@ -82,31 +82,28 @@
   </div>
 
 <table mat-table [dataSource]="dataSource">
-  <!-- Id Column -->
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef>Id</th>
-    <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+    <td mat-cell *matCellDef="let element">{{ element.project.id }}</td>
   </ng-container>
-  <!-- Name Column -->
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Name</th>
-    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    <td mat-cell *matCellDef="let element">{{ element.project.name }}</td>
   </ng-container>
-
-  <!-- Duration Column -->
-  <ng-container matColumnDef="duration">
-    <th mat-header-cell *matHeaderCellDef>Duration</th>
-    <td mat-cell *matCellDef="let element">{{ element.duration }}</td>
+  <ng-container matColumnDef="startDate">
+    <th mat-header-cell *matHeaderCellDef>Start date</th>
+    <td mat-cell *matCellDef="let element">{{ element.startDate }}</td>
   </ng-container>
-
-  <!-- Caption Column -->
+  <ng-container matColumnDef="endDate">
+    <th mat-header-cell *matHeaderCellDef>Start date</th>
+    <td mat-cell *matCellDef="let element">{{ element.endDate }}</td>
+  </ng-container>
   <ng-container matColumnDef="caption">
     <th mat-header-cell *matHeaderCellDef>Caption</th>
-    <td mat-cell *matCellDef="let element">{{ element.caption }}</td>
+    <td mat-cell *matCellDef="let element">{{ element.description }}</td>
   </ng-container>
 
 
-  <!-- Button Column -->
   <ng-container matColumnDef="buttons">
     <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let element">
@@ -120,4 +117,39 @@
 
 </table>
 <p *ngIf="dataSource.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
+</div>
+
+<div class="table">
+  <div class="table-header">
+    <p class="table-title">Your skills</p>
+    <app-input-field [(value)]="rating" >
+      <mat-label>Change rating</mat-label>
+    </app-input-field>
+  </div>
+
+  <table mat-table [dataSource]="dataSourceSkills">
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+    <!-- Rating Column -->
+    <ng-container matColumnDef="rating">
+      <th mat-header-cell *matHeaderCellDef>Rating</th>
+      <td mat-cell *matCellDef="let element">{{ element.rating }}</td>
+    </ng-container>
+    <!-- Button Column -->
+    <ng-container matColumnDef="buttons">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-raised-button style="margin-right: 10px;" (click)="changeRating(element)">Change rating</button>
+      </td>
+    </ng-container>
+
+    <!-- Define table rows -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsSkills"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsSkills;"></tr>
+
+  </table>
+  <p *ngIf="dataSource.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
 </div>

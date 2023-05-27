@@ -96,18 +96,13 @@
   </ng-container>
 
   <!-- Caption Column -->
-  <ng-container matColumnDef="caption">
-    <th mat-header-cell *matHeaderCellDef>Caption</th>
-    <td mat-cell *matCellDef="let element">{{ element.caption }}</td>
+  <ng-container matColumnDef="manager">
+    <th mat-header-cell *matHeaderCellDef>Manager</th>
+    <td mat-cell *matCellDef="let element">{{ element.manager.firstName }} {{ element.manager.lastName }}</td>
   </ng-container>
-
-
-  <!-- Button Column -->
-  <ng-container matColumnDef="buttons">
-    <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell *matCellDef="let element">
-      <button mat-raised-button style="margin-right: 10px;" (click)="AddEmployee(element)">Add employee</button>
-    </td>
+  <ng-container matColumnDef="managerId">
+    <th mat-header-cell *matHeaderCellDef>Manager ID</th>
+    <td mat-cell *matCellDef="let element">{{ element.manager.id }}</td>
   </ng-container>
 
   <!-- Define table rows -->
@@ -117,13 +112,11 @@
 </table>
 <p *ngIf="projectsData.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
 
-
-<button mat-raised-button style="margin-right: 10px;" (click)="newProject()">New project</button>
 </div>
 
 <div>
   <div class="table-header">
-    <p class="table-title">Employees</p>
+    <p class="table-title">All employees</p>
   </div>
 <table mat-table [dataSource]="employeesData">
 
@@ -166,16 +159,10 @@
   </ng-container>
   <!-- Phone Column -->
   <ng-container matColumnDef="phone">
-    <th mat-header-cell *matHeaderCellDef>Phone number</th>
-    <td mat-cell *matCellDef="let element">{{ element.phone }}</td>
+    <th mat-header-cell *matHeaderCellDef>Role</th>
+    <td mat-cell *matCellDef="let element">{{ element.designation }}</td>
   </ng-container>
-  <!-- Button Column -->
-  <ng-container matColumnDef="buttons">
-    <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell *matCellDef="let element">
-      <button mat-raised-button style="margin-right: 10px;" (click)="AddEmployee(element)">Add employee</button>
-    </td>
-  </ng-container>
+
 
   <!-- Define table rows -->
   <tr mat-header-row *matHeaderRowDef="displayedColumnsEmployees"></tr>
@@ -183,4 +170,98 @@
 
 </table>
 <p *ngIf="employeesData.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
+</div>
+
+
+<div>
+  <div class="table-header">
+    <p class="table-title">Employees and their projects</p>
+  </div>
+  <table mat-table [dataSource]="userProjectsData">
+    <ng-container matColumnDef="userId">
+      <th mat-header-cell *matHeaderCellDef>Employee Id & designation</th>
+      <td mat-cell *matCellDef="let element"> {{ element.user.id }} - {{ element.user.designation }}</td>
+    </ng-container>
+    <ng-container matColumnDef="user">
+      <th mat-header-cell *matHeaderCellDef>Employee name</th>
+      <td mat-cell *matCellDef="let element">  {{ element.user.firstName }} {{ element.user.lastname }}</td>
+    </ng-container>
+    <ng-container matColumnDef="project">
+      <th mat-header-cell *matHeaderCellDef>Project name</th>
+      <td mat-cell *matCellDef="let element">{{ element.project.name }}</td>
+    </ng-container>
+
+    <!-- Last name Column -->
+    <ng-container matColumnDef="startDate">
+      <th mat-header-cell *matHeaderCellDef>Start date</th>
+      <td mat-cell *matCellDef="let element">{{ element.startDate }}</td>
+    </ng-container>
+
+    <!-- City Column -->
+    <ng-container matColumnDef="endDate">
+      <th mat-header-cell *matHeaderCellDef>End date</th>
+      <td mat-cell *matCellDef="let element">{{ element.endDate }}</td>
+    </ng-container>
+    <!-- Street Column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>Description</th>
+      <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+    </ng-container>
+
+
+    <!-- Define table rows -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsUserProjects"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsUserProjects;"></tr>
+
+  </table>
+  <p *ngIf="employeesData.data.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
+</div>
+<div> <div>
+<h1>Create new project</h1>
+<table>
+  <tr>
+    <td colspan="3">
+      <app-input-field name="name"  ngDefaultControl  [(ngModel)]="name">Project name</app-input-field>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <app-select-field [options]="selectManager" [(selected)]="manager">Manager</app-select-field>
+    </td>
+  </tr>
+  <tr><td>
+    </td>
+    <td>
+      <app-input-field
+        name="fieldName"
+        ngDefaultControl
+        [(ngModel)]="duration">Duration</app-input-field>
+    </td>
+</table>
+<app-primary-button class="create" (click)="create()">Create</app-primary-button>
+</div>
+  <div>
+    <h1>Add employee to project</h1>
+    <table>
+      <tr>
+        <td colspan="3">
+          <app-select-field [options]="selectProject" [(selected)]="project">Project</app-select-field>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <app-select-field [options]="selectEmployee" [(selected)]="employee">Employee</app-select-field>
+        </td>
+      </tr>
+      <tr><td>
+      </td>
+        <td>
+          <app-input-field
+            name="fieldName"
+            ngDefaultControl
+            [(ngModel)]="description">Description</app-input-field>
+        </td>
+    </table>
+    <app-primary-button class="create" (click)="add()">Add</app-primary-button>
+  </div>
 </div>

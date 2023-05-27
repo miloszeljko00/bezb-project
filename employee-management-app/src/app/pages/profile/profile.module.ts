@@ -12,7 +12,7 @@ import {ManagerProfileComponent} from "./components/manager-profile/manager-prof
 import {ProfileRoutingModule} from "./profile-routing.module";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {RegisterRoutingModule} from "../register/register-routing.module";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MaterialModule} from "../../shared/material/material.module";
 
 
@@ -22,20 +22,21 @@ import {MaterialModule} from "../../shared/material/material.module";
     EngineerProfileComponent,
     ManagerProfileComponent
   ],
-  imports: [
-    CommonModule,
-    RegisterRoutingModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MaterialModule,
-    ButtonModule,
-    CheckboxModule,
-    InputModule,
-    RadioModule,
-    SearchBarModule,
-    ToggleModule,
-    ProfileRoutingModule,
-    MatFormFieldModule
-  ]
+    imports: [
+        CommonModule,
+        RegisterRoutingModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MaterialModule,
+        ButtonModule,
+        CheckboxModule,
+        InputModule,
+        RadioModule,
+        SearchBarModule,
+        ToggleModule,
+        ProfileRoutingModule,
+        MatFormFieldModule,
+        FormsModule
+    ]
 })
 export class ProfileModule { }

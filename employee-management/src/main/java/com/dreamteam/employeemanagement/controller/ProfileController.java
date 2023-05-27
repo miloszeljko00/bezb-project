@@ -85,9 +85,13 @@ public class ProfileController {
         return new ResponseEntity<>(registerUserInfoRepository.save(registerUserInfo), HttpStatus.OK);
     }
 
-    @PutMapping("/update-skill")
-    public ResponseEntity<UserSkills> updateSkill(@RequestBody UserSkills skill) {
-        return new ResponseEntity<>(userSkillsRepository.save(skill), HttpStatus.OK);
+    @PutMapping("/update-skill/{userProjectId}/{changedProperty}/{flag}")
+    public ResponseEntity<UserSkills> updateSkill(@PathVariable String userProjectId, @PathVariable String changedProperty, @PathVariable String flag) {
+        if(flag.equals("jedan")){
+            return new ResponseEntity<>(userSkillsRepository.save((userSkillsRepository.findById(UUID.fromString(userProjectId)).map(us-> {us.setName(changedProperty); return us;}).get())), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(userSkillsRepository.save((userSkillsRepository.findById(UUID.fromString(userProjectId)).map(us-> {us.setRating(Double.valueOf(changedProperty)); return us;}).get())), HttpStatus.OK);
+        }
     }
 
     @PostMapping(value = "/upload-cv/{userEmail}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -113,6 +113,7 @@
     <ng-container matColumnDef="buttons">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let element">
+        <button mat-raised-button style="margin-right: 10px;" (click)="changeSkillName(element)">Change skill name</button>
         <button mat-raised-button style="margin-right: 10px;" (click)="changeRating(element)">Change rating</button>
       </td>
     </ng-container>

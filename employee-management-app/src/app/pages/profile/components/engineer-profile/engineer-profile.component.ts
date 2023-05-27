@@ -9,6 +9,7 @@ import { UserService } from "../../../../core/services/user.service";
 import { UserProject } from "../../models/userProject";
 import { AuthService } from 'src/app/core/auth/services/auth.service';
 import { Validators } from '@angular/forms';
+import { UserSkills } from '../../models/userSkills';
 
 
 @Component({
@@ -152,9 +153,21 @@ export class EngineerProfileComponent implements OnInit{
     })
   }
 
+  changeSkillName(element : UserSkills) {
+    element.name = this.skillName;
+    this.updateUserService.updateSkill(element, 'jedan').subscribe({
+      next: (result: any) => {
+        this.toastrService.success("User skill changed successfully");
+        element=result;
+      },
+      error: (e: any) => {
+        this.toastrService.error(e.message);
+      }
+    })
+  }
   changeRating(element : any) {
     element.rating = this.rating;
-    this.updateUserService.updateSkill(element).subscribe({
+    this.updateUserService.updateSkill(element, 'bilosta').subscribe({
       next: (result: any) => {
         this.toastrService.success("User skill changed successfully");
         element=result;

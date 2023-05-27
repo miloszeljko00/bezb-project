@@ -36,6 +36,8 @@ public class Account implements UserDetails {
 
     @Column(name = "status")
     private AccountStatus status;
+    @Embedded
+    private MagicLoginToken magicLoginToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

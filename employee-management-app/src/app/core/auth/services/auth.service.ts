@@ -28,10 +28,7 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {
     this.loadAuth()
-    
    }
-
-  
 
   login(loginRequest: LoginRequest) {
     this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/login", loginRequest).subscribe({
@@ -42,6 +39,16 @@ export class AuthService {
       },
       error: (error: Error) => {
         this.toastr.error("Invalid credentials.", "Login Failed")
+      }
+    })
+  }
+  magicLogin(email: string){
+    this.http.post(environment.apiUrl+"/api/auth/actions/magic-login", email).subscribe({
+      next: (response) => {
+        this.toastr.success('Email sent.', "Magic Login Started");
+      },
+      error: (error: Error) => {
+        this.toastr.error("Something went wrong :/", "Magic Login Failed")
       }
     })
   }
@@ -85,7 +92,7 @@ export class AuthService {
     this.clearRefreshToken()
   }
 
-  getUser() {
+  getUser(): User|null {
     return this.user
   }
   getUserObservable() {
@@ -114,7 +121,7 @@ export class AuthService {
   isAuthenticated() {
     return this.user != null && this.refreshToken != null && this.accessToken != null && this.accessTokenValid()
   }
-  
+
   clearAuthAndRedirectHome() {
     this.clearAuth()
     this.redirectHome()
@@ -189,7 +196,7 @@ export class AuthService {
     this.user = null
     this.user$.next(this.user)
   }
-  
+
   private clearAccessToken() {
     window.sessionStorage.removeItem('accessToken')
     this.accessToken = null
@@ -201,4 +208,5 @@ export class AuthService {
     this.refreshToken = null
     this.refreshToken$.next(this.refreshToken)
   }
+
 }

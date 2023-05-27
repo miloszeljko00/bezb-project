@@ -14,6 +14,7 @@ export class AuthInterceptor implements HttpInterceptor {
     const excludedPaths = [
       '/api/auth/actions/login',
       '/api/auth/actions/refresh-access-token',
+      '/login/magicLoginCallback'
     ];
 
     const isExcluded = excludedPaths.some(path => request.url.includes(path))

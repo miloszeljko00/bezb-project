@@ -3,6 +3,7 @@ package com.dreamteam.employeemanagement.auth.services;
 import com.dreamteam.employeemanagement.dto.auth.request.LogoutRequest;
 import com.dreamteam.employeemanagement.dto.auth.request.RefreshAccessTokenRequest;
 import com.dreamteam.employeemanagement.dto.auth.response.LoginResponse;
+import com.dreamteam.employeemanagement.model.Account;
 import com.dreamteam.employeemanagement.model.BlacklistedAccessToken;
 import com.dreamteam.employeemanagement.repository.IAccountRepository;
 import com.dreamteam.employeemanagement.repository.IBlacklistedTokenRepository;
@@ -29,6 +30,12 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
         var account = accountRepository.findByEmail(email).orElseThrow();
+        var refreshToken = jwtService.generateRefreshToken(account);
+        var accessToken = jwtService.generateAccessToken(account);
+
+        return new LoginResponse(accessToken, refreshToken.getToken().toString());
+    }
+    public LoginResponse magicLogin(Account account) {
         var refreshToken = jwtService.generateRefreshToken(account);
         var accessToken = jwtService.generateAccessToken(account);
 

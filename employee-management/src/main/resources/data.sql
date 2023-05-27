@@ -34,7 +34,10 @@ VALUES ('84e5cc62-2b3b-4332-89ae-ba74f96f614a', 'GET-PERMISSIONS');
 INSERT INTO public.permissions(id, name)
 VALUES ('781a137c-e1b2-4f3b-8eed-b1d429f348fe', 'GET-ROLES');
 INSERT INTO public.permissions(id, name)
-VALUES ('8557bd2e-5e5c-4358-92d1-96331bd72af4', 'UPDATE-ROLE-PERMISSIONS');
+VALUES ('8557bd2e-5e5c-4358-92d1-96331bd72af4', 'ADD-PERMISSION-TO-ROLE');
+INSERT INTO public.permissions(id, name)
+VALUES ('08768507-67fa-4cde-963e-cf4c55f7d614', 'REMOVE-PERMISSION-TO-ROLE');
+
 
 -- GET-PERMISSIONS to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
@@ -42,9 +45,13 @@ VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '84e5cc62-2b3b-4332-89ae-ba74f96
 -- GET-ROLES to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '781a137c-e1b2-4f3b-8eed-b1d429f348fe');
--- UPDATE-ROLE-PERMISSIONS to Administrator
+-- ADD-PERMISSION-TO-ROLE to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '8557bd2e-5e5c-4358-92d1-96331bd72af4');
+-- REMOVE-PERMISSION-TO-ROLE to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '08768507-67fa-4cde-963e-cf4c55f7d614');
+
 --TEST to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'eaf64bf2-0604-4d44-88db-f14712e7c7ad');

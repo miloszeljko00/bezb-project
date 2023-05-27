@@ -22,4 +22,11 @@ public class Role {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Permission> permissions;
+
+    public boolean addPermission(Permission permission){
+        return permissions.add(permission);
+    }
+    public boolean removePermission(Permission permission){
+        return permissions.remove(permission);
+    }
 }

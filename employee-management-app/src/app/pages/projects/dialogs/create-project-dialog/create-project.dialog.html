@@ -1,0 +1,29 @@
+<div mat-dialog-title style="display: flex; justify-content: center; padding: 10px; padding-top: 20px;">
+    <h1 style="padding:0px; margin:0px;">Create new project</h1>
+</div>
+<div mat-dialog-content style="padding:10px;">
+    <table>
+      <tr>
+        <td colspan="3">
+          <app-input-field name="name"  ngDefaultControl  [(ngModel)]="name">Project name</app-input-field>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <app-select-field [options]="managerOptions" [(selected)]="manager">Manager</app-select-field>
+        </td>
+      </tr>
+      <tr><td>
+        </td>
+        <td>
+          <app-input-field
+            name="fieldName"
+            ngDefaultControl
+            [(ngModel)]="duration">Duration</app-input-field>
+        </td>
+    </table>
+</div>
+<div mat-dialog-actions style="display: flex; justify-content: space-between;">
+    <app-secondary-button mat-dialog-close>Cancel</app-secondary-button>
+    <app-primary-button (click)="create()">Create</app-primary-button>
+</div>

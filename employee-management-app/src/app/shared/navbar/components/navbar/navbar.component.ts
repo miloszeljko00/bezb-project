@@ -58,6 +58,18 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToRegisterPage() {
     this.router.navigate(['/register'])
   }
+  goToEmployees() {
+    this.router.navigate(['/employees'])
+  }
+  goToRegisterNewAdminPage() {
+    this.router.navigate(['/register-new-admin'])
+  }
+  goToProjects() {
+    this.router.navigate(['/projects'])
+  }
+  goToAdminProfile() {
+    this.router.navigate(['/account/admin'])
+  }
   goToManageRoles() {
     this.router.navigate(['/manage-roles'])
   }

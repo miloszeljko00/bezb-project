@@ -39,6 +39,9 @@ public class Account implements UserDetails {
     @Embedded
     private MagicLoginToken magicLoginToken;
 
+    @Column(name = "first_login")
+    private boolean firstLogin;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         var grantedAuthorities = new ArrayList<SimpleGrantedAuthority>();

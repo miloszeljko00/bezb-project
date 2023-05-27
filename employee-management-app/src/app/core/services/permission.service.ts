@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Role } from '../models/role';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { Permission } from '../models/permission';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Injectable({
@@ -11,27 +12,17 @@ import { Permission } from '../models/permission';
 })
 export class PermissionService {
 
-  constructor(private http: HttpClient) {}
+  private permissions$ = new BehaviorSubject<Permission[]>([]);
 
-  getAllPermissions() {
-    return of([
-      {
-        id: 'eaf64bf2-0604-4d44-88db-f14712e7c7ad',
-        name: 'TEST'
-      },
-      {
-        id: '84e5cc62-2b3b-4332-89ae-ba74f96f614a',
-        name: 'GET-PERMISSIONS'
-      },
-      {
-        id: '781a137c-e1b2-4f3b-8eed-b1d429f348fe',
-        name: 'GET-ROLES'
-      },
-      {
-        id: '8557bd2e-5e5c-4358-92d1-96331bd72af4',
-        name: 'UPDATE-ROLE-PERMISSIONS'
-      }
-    ] as Permission[])
+  constructor(private http: HttpClient, private toastr: ToastrService) {}
+
+  fetchPermissions() {
+    this.http.get<Permission[]>(environment.apiUrl + '/api/permissions').subscribe({
+      next: (response: Permission[]) => this.permissions$.next(response),
+      error: (error: HttpErrorResponse) => this.toastr.error(error.message)
+    })
   }
-
+  getPermissionsObservable() {
+    return this.permissions$.asObservable()
+  }
 }

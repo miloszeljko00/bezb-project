@@ -1,0 +1,40 @@
+<div *ngIf="projects$ | async as projects">
+    <table #table mat-table [dataSource]="projects" style="padding: 50px;">
+        <!-- Id Column -->
+        <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>Id</th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+        </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+        <!-- Duration Column -->
+        <ng-container matColumnDef="duration">
+        <th mat-header-cell *matHeaderCellDef>Duration</th>
+        <td mat-cell *matCellDef="let element">{{ element.duration }}</td>
+        </ng-container>
+        <!-- Caption Column -->
+        <ng-container matColumnDef="manager">
+        <th mat-header-cell *matHeaderCellDef>Manager</th>
+        <td mat-cell *matCellDef="let element">{{ element.manager.firstName }} {{ element.manager.lastName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="managerId">
+        <th mat-header-cell *matHeaderCellDef>Manager ID</th>
+        <td mat-cell *matCellDef="let element">{{ element.manager.id }}</td>
+        </ng-container>        
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+                <button mat-icon-button (click)="$event.stopPropagation();openCreateProjectDialog()"><mat-icon>add</mat-icon></button>
+            </th>
+            <td mat-cell *matCellDef="let element">
+                <button mat-icon-button color="accent" (click)="$event.stopPropagation();deleteProject(element)"><mat-icon>delete</mat-icon></button>
+            </td>
+            </ng-container>
+        <!-- Define table rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr class="project-row" (click)="goToProjectEmployeesPage(row)"  mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <p *ngIf="projects.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
+</div>

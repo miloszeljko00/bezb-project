@@ -5,7 +5,7 @@ import { CoreModule } from './core/core.module';
 import { NavbarModule } from './shared/navbar/navbar.module';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     AppRoutingModule,

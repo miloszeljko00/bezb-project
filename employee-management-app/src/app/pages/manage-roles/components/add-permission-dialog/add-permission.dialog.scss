@@ -1,0 +1,25 @@
+.permission-container {
+  border: 1px solid lightgray;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  padding: 0px 20px 0px 20px;
+  user-select: none;
+}
+
+.permission-container:hover {
+  cursor: pointer;
+  background-color: lightgreen;
+}
+
+.actions {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  padding: 20px;
+}

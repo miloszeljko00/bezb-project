@@ -1,0 +1,13 @@
+<div>
+  <div mat-dialog-title class="title">
+    Add Permission to {{role.name}}
+  </div>
+  <div mat-dialog-content class="content">
+    <div (click)="addPermission(permission)" class="permission-container" *ngFor="let permission of permissions$ | async">
+      {{ permission.name }}
+    </div>
+  </div>
+  <div mat-dialog-actions class="actions">
+    <button mat-raised-button color="accent" mat-dialog-close >Cancel</button>
+  </div>
+</div>

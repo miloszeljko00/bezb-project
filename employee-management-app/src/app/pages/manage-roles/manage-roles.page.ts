@@ -18,8 +18,8 @@ import { auto } from '@popperjs/core';
 })
 export class ManageRolesPage {
   panelOpenState = false;
-  roles$ = this.roleService.getAllRolesObservable()
-  permissions$ = this.permissionService.getAllPermissionsObservable()
+  roles$ = this.roleService.getRolesObservable()
+  permissions$ = this.permissionService.getPermissionsObservable()
 
   constructor(
     private roleService: RoleService,

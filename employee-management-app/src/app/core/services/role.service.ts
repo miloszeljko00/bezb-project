@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Role } from '../models/role';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { Permission } from '../models/permission';
 import { ToastrService } from 'ngx-toastr';
 
@@ -23,40 +23,51 @@ export class RoleService {
     })
   }
 
-  getAllRolesObservable() {
+  getRolesObservable() {
     return this.roles$.asObservable()
   }
-  
-  addPermission(roleId: string, permission: Permission) {
-    let roles = this.roles$.getValue()
-    roles.forEach(role => {
-      if(role.id === roleId) role.permissions.push(permission)
-    })
-    // TODO: API call to backend
-    this.http.put(environment.apiUrl + '/api/roles/' + roleId + '/actions/add-permission', permission).subscribe({
-      next: () => {
-
-      },
-      error: (error: HttpErrorResponse) => this.toastr.error(error.message)
-    })
-    this.roles$.next(roles)
-    return of(true)
+  getRoles(): Role[] {
+    return this.roles$.getValue();
   }
-  removePermission(roleId: string, permission: Permission) {
-    let roles = this.roles$.getValue()
-    roles.forEach(role => {
-      if(role.id === roleId){
-        role.permissions = role.permissions.filter(permission => permission.id !== permission.id)
-      }
-    })
-    // TODO: API call to backend
-    this.http.put(environment.apiUrl + '/api/roles/' + roleId + '/actions/remove-permission', permission).subscribe({
-      next: () => {
-
-      },
-      error: (error: HttpErrorResponse) => this.toastr.error(error.message)
-    })
-    this.roles$.next(roles)
-    return of(true)
+  getRole(roleId: string): Role|undefined {
+    return this.getRoles().find(r => r.id === roleId);
+  }
+  
+  addPermission(roleId: string, permission: Permission): Observable<boolean> {
+    const roles = this.getRoles();
+    const role = roles.find(r => r.id === roleId);
+    if (!role) {
+      return throwError(() => `Role with ID ${roleId} not found`);
+    }
+    role.permissions.push(permission);
+  
+    return this.http.put<boolean>(environment.apiUrl + '/api/roles/' + roleId + '/actions/add-permission', permission).pipe(
+      map(() => {
+        this.roles$.next(roles);
+        return true;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        role.permissions = role.permissions.filter(p => p.id !== permission.id);
+        return of(false);
+      })
+    );
+  }
+  removePermission(roleId: string, permission: Permission): Observable<boolean> {
+    const roles = this.getRoles();
+    const role = roles.find(r => r.id === roleId);
+    if (!role) {
+      return throwError(() => `Role with ID ${roleId} not found`);
+    }
+    role.permissions = role.permissions.filter(p => p.id !== permission.id);
+  
+    return this.http.put<boolean>(`${environment.apiUrl}/api/roles/${roleId}/actions/remove-permission`, permission).pipe(
+      tap(() => {
+        this.roles$.next(roles);
+      }),
+      map(() => true),
+      catchError((error: HttpErrorResponse) => {
+        return of(false);
+      })
+    );
   }
 }

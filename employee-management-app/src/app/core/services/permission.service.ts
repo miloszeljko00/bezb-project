@@ -22,7 +22,7 @@ export class PermissionService {
       error: (error: HttpErrorResponse) => this.toastr.error(error.message)
     })
   }
-  getAllPermissionsObservable() {
+  getPermissionsObservable() {
     return this.permissions$.asObservable()
   }
 }

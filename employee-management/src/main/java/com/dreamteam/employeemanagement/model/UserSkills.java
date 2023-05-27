@@ -20,7 +20,7 @@ public class UserSkills {
     private String name;
     private Double rating;
     @ManyToOne
-    @JoinColumn(name = userId)
+    @JoinColumn(name = "userId")
     private Account user;
 
     public String getId() {

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,10 +21,13 @@ public class RoleController {
 
     private final IPermissionRepository permissionRepository;
 
+    @PreAuthorize("hasRole('GET-ROLES')")
     @GetMapping
     public ResponseEntity<Object> getAllRoles() {
         return new ResponseEntity<>(roleRepository.findAll(), HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('ADD-PERMISSION-TO-ROLE')")
     @PutMapping("{roleId}/actions/add-permission")
     public ResponseEntity<Object> addPermission(@RequestBody Permission permission, @PathVariable UUID roleId) {
 
@@ -39,6 +43,7 @@ public class RoleController {
         if(result) return new ResponseEntity<>(HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
+    @PreAuthorize("hasRole('REMOVE-PERMISSION-TO-ROLE')")
     @PutMapping("{roleId}/actions/remove-permission")
     public ResponseEntity<Object> removePermission(@RequestBody Permission permission, @PathVariable UUID roleId) {
 

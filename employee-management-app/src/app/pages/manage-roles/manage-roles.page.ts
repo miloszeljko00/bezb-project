@@ -55,8 +55,9 @@ export class ManageRolesPage {
   }
   addPermission(roleId: string, permission: Permission): void {
     this.roleService.addPermission(roleId, permission).subscribe({
-      next: () => {
-        this.toastr.success("Permission added successfully!")
+      next: (result) => {
+        if(result) this.toastr.success("Permission added successfully!")
+          else this.toastr.error("Error has occurred while adding permission!")
       },
       error: () => {
         this.toastr.error("Error has occurred while adding permission!")
@@ -67,8 +68,8 @@ export class ManageRolesPage {
   removePermission(role: Role, permission: Permission): void {
     this.roleService.removePermission(role.id, permission).subscribe({
       next: (response) => {
-        if(!response) this.toastr.error("Error has occurred while removing permission!")
-        this.toastr.success("Permission removed successfully!")
+        if(response) this.toastr.success("Permission removed successfully!")
+        else this.toastr.error("Error has occurred while removing permission!")
       },
       error: () => {
         this.toastr.error("Error has occurred while removing permission!")

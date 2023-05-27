@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Designation} from "../../../register/models/Designation";
-import {RegisterUserInfoService} from "../../../../core/services/register-user-info.service";
-import {ToastrService} from "ngx-toastr";
-import {MatTableDataSource} from "@angular/material/table";
-import {UserProfile} from "../../models/userProfile";
-import {UserService} from "../../../../core/services/user.service";
-import {Project} from "../../models/project";
-import {UserSkills} from "../../models/userSkills";
-import {UserProject} from "../../models/userProject";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { Designation } from "../../../register/models/Designation";
+import { RegisterUserInfoService } from "../../../../core/services/register-user-info.service";
+import { ToastrService } from "ngx-toastr";
+import { MatTableDataSource } from "@angular/material/table";
+import { UserProfile } from "../../models/userProfile";
+import { UserService } from "../../../../core/services/user.service";
+import { UserProject } from "../../models/userProject";
+import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { Validators } from '@angular/forms';
 
 
 @Component({
@@ -33,7 +33,7 @@ export class EngineerProfileComponent implements OnInit{
   updateForm: FormGroup;
   designationOptions = Object.values(Designation);
   passwordMatchError: boolean = false;
-  projects: any;
+  projects: UserProject[] = [];
   skills: any;
   dataSource = new MatTableDataSource;
   displayedColumns = ['id', 'name', 'startDate','endDate', 'caption', 'buttons'];
@@ -42,46 +42,59 @@ export class EngineerProfileComponent implements OnInit{
   displayedColumnsSkills = ['name', 'rating', 'buttons'];
   private User: UserProfile | undefined;
   newCaption: string = ""
+  skillName: string = ""
   rating: string =""
 
+  registerUserInfo: any;
   constructor(
     private formBuilder: FormBuilder,
-    public registerUserInfoService: UserService,
-    public toastrService: ToastrService) { }
+    public updateUserService: UserService,
+    public toastrService: ToastrService,
+    public registerUserInfoService : RegisterUserInfoService,
+    public authService : AuthService) { }
 
   ngOnInit() {
-    this.User = new UserProfile('1','a@email.com','password','engineer','engineer','kolubarska','serbia','novi sad','00', Designation.Engineer)
     this.updateForm = this.formBuilder.group({
-      id: new FormControl({value: this.User.id, disabled: true}),
-      email: new FormControl({value: this.User.email, disabled: true}),
-      password: [this.User.password, [Validators.required, Validators.minLength(8), this.passwordValidator]],
-      confirmPassword: ['', Validators.required],
-      firstName: [this.User.firstName, Validators.required],
-      lastName: [this.User.lastName, Validators.required],
-      street: [this.User.street, Validators.required],
-      city: [this.User.city, Validators.required],
-      country: [this.User.country, Validators.required],
-      phone: [this.User.phone, Validators.required],
-      designation: [this.User.designation, Validators.required]
+      email: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      street: ['', Validators.required],
+      city: ['', Validators.required],
+      country: ['', Validators.required],
+      phoneNumber: ['', Validators.required]
     });
-    this.getProjectsForUser();
-    this.getUsersSkills();
-  }
-  passwordValidator(password: FormControl) {
-    const hasNumber = /[0-9]/.test(password.value);
-    const hasSpecialChar = /[!*&$%]/.test(password.value);
+    this.updateForm.get('email')!.disable();
+    this.registerUserInfoService.getRegisterUserInfoByEmail(this.authService.getUser()!.email).subscribe({
+      next: (result: any) => {
+        if(!result) {
+          this.toastrService.info("Server did not return response...")
+          return
+        }
+        this.registerUserInfo = result;
+        this.updateForm = this.formBuilder.group({
+          email: [this.registerUserInfo.account.email, Validators.required],
+          firstName: [this.registerUserInfo.firstName, Validators.required],
+          lastName: [this.registerUserInfo.lastName, Validators.required],
+          street: [this.registerUserInfo.address.street, Validators.required],
+          city: [this.registerUserInfo.address.city, Validators.required],
+          country: [this.registerUserInfo.address.country, Validators.required],
+          phoneNumber: [this.registerUserInfo.phoneNumber, Validators.required]
+        });
+        this.updateForm.get('email')!.disable();
 
-    if (hasNumber && hasSpecialChar) {
-      return null; // Password is valid
-    } else {
-      return { 'invalidPassword': true }; // Password is invalid
-    }
+        this.getProjectsForUser(this.registerUserInfo.account.id);
+        this.getUsersSkills(this.registerUserInfo.account.id);
+      },
+      error: (e:any) => {
+        this.toastrService.error(e.response);
+      }
+    })
   }
   get f() { return this.updateForm!.controls; }
 
   onSubmit() {
     if (this.updateForm.valid) {
-      this.registerUserInfoService.updateEngineer(this.updateForm.value).subscribe({
+      this.updateUserService.updateEngineer(this.updateForm.value).subscribe({
         next: (result: any) => {
           console.log(result);
           this.toastrService.success("Profile updated!");
@@ -92,72 +105,63 @@ export class EngineerProfileComponent implements OnInit{
       })
     }
   }
-  validatePasswordMatch() {
-    const password = this.updateForm.get('password')!.value;
-    const confirmPassword = this.updateForm.get('confirmPassword')!.value;
 
-    if (password !== confirmPassword) {
-      this.updateForm.get('confirmPassword')!.setErrors({ mismatch: true });
-    } else {
-      this.updateForm.get('confirmPassword')!.setErrors(null);
-    }
+  getProjectsForUser(id: any){
+    // let manager =new UserProfile('1', 'a@email.com', 'password', 'manager', 'manager', 'kolubarska', 'serbia', 'novi sad', '00', Designation.ProjectManager);
+    // let projekat1 = new Project("1", manager, "prvi projekat", 200);
+    // let projekat2 = new Project("2", manager, "drugi projekat", 200)
+    // let Userproject1 = new UserProject("1", this.User, projekat1,new Date(), new Date(), "tester")
+    // let Userproject2 = new UserProject("2", this.User, projekat2,new Date(), new Date(), "team leader")
+    this.updateUserService.getProjectsByUser(id).subscribe({
+      next: (result:any) => {
+        if(!result) {
+          this.toastrService.info('Server did not return resource...')
+        }
+        this.projects = result;
+        this.dataSource.data = this.projects;
+      },
+      error: (e: any) => {
+        this.toastrService.error(e.message);
+      }
+    })
   }
 
-
-  getProjectsForUser(){
-
-    let manager =new UserProfile('1', 'a@email.com', 'password', 'manager', 'manager', 'kolubarska', 'serbia', 'novi sad', '00', Designation.ProjectManager);
-    let projekat1 = new Project("1", manager, "prvi projekat", 200);
-    let projekat2 = new Project("2", manager, "drugi projekat", 200)
-    let Userproject1 = new UserProject("1", this.User, projekat1,new Date(), new Date(), "tester")
-    let Userproject2 = new UserProject("2", this.User, projekat2,new Date(), new Date(), "team leader")
-    this.projects = [Userproject1, Userproject2]
-    this.dataSource.data = this.projects;
-
-  /*   this.registerUserInfoService.getProjectsForUser().subscribe({
-         next: (result:any) => {
-           this.projects = result;
-           console.log(this.projects);
-           this.dataSource.data = result;
-         },
-         error: (error:any) => {
-           this.toastrService.error(error.message);
-         }
-       }) */
+  private getUsersSkills(userId: any) {
+    // let firstSkill = new UserSkills("1", this.User, "java", 5);
+    // let secondSkill = new UserSkills("2", this.User, "python", 5);
+    this.updateUserService.getUserSkills(userId).subscribe({
+      next: (result: any) => {
+        if(!result) {
+          this.toastrService.info("Server did not return response...");
+        }
+        this.skills = result;
+        this.dataSourceSkills = this.skills;
+      }
+    });
   }
   changeCaption(element: any) {
     element.description = this.newCaption;
-
-    /*
-    this.registerUserInfoService.changeCaption(element).subscribe({
-      next: (result:any) => {
-        this.getProjects();
-        this.toastrService.show("Caption changed.")
+    this.updateUserService.updateUserProject(element).subscribe({
+      next: (result: any) => {
+        this.toastrService.success("Project description changed successfully");
+        element=result;
       },
-      error: (error:any) => {
-        console.log(error.message);
+      error: (e: any) => {
+        this.toastrService.error(e.message);
       }
-    })*/
-  }
-
-  private getUsersSkills() {
-    let firstSkill = new UserSkills("1", this.User, "java", 5);
-    let secondSkill = new UserSkills("2", this.User, "python", 5);
-    this.skills = [firstSkill, secondSkill];
-    this.dataSourceSkills = this.skills;
+    })
   }
 
   changeRating(element : any) {
     element.rating = this.rating;
-    /*
-      this.registerUserInfoService.changeRating(element).subscribe({
-        next: (result:any) => {
-          this.getProjects();
-          this.toastrService.show("Caption changed.")
-        },
-        error: (error:any) => {
-          console.log(error.message);
-        }
-      })*/
+    this.updateUserService.updateSkill(element).subscribe({
+      next: (result: any) => {
+        this.toastrService.success("User skill changed successfully");
+        element=result;
+      },
+      error: (e: any) => {
+        this.toastrService.error(e.message);
+      }
+    })
   }
 }

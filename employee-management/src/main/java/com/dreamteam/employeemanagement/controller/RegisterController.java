@@ -73,6 +73,10 @@ public class RegisterController {
     public ResponseEntity<List<RegisterUserInfo>> getAllUnconfirmedRegistrations() {
         return new ResponseEntity<>(registerUserInfoRepository.findByAccount_Status(AccountStatus.PENDING), HttpStatus.OK);
     }
+    @GetMapping("/get-by-id/{userEmail}")
+    public ResponseEntity<RegisterUserInfo> getById(@PathVariable("userEmail") String userEmail) {
+        return new ResponseEntity<>(registerUserInfoRepository.findByAccount_Email(userEmail), HttpStatus.OK);
+    }
     @GetMapping("/confirm-registration")
     public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token, @RequestParam("registerUserInfoId") String registerUserInfoId) {
         // Retrieve the RegisterUserInfo object using the provided registerUserInfoId

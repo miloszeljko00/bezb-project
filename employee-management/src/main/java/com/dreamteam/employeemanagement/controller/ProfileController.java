@@ -1,11 +1,18 @@
 package com.dreamteam.employeemanagement.controller;
 import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
 import com.dreamteam.employeemanagement.model.*;
+import com.dreamteam.employeemanagement.repository.ICVRepository;
+import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
+import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
+import com.dreamteam.employeemanagement.repository.IUserSkillsRepository;
 import com.dreamteam.employeemanagement.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,61 +23,92 @@ import java.util.UUID;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final ICVRepository cvRepository;
+    private final IUserSkillsRepository userSkillsRepository;
+    private final IUserProjectRepository userProjectRepository;
+    private final IRegisterUserInfoRepository registerUserInfoRepository;
 
     @GetMapping("/project/all")
     public List<Project> getAllProject() {
         return profileService.getAllProjects();
     }
 
-   /* @GetMapping("/project/{id}")
-    public List<Project> getAllByManager(@PathVariable("id") String userId) {
-        return profileService.getAllByManager(userId);
-    }*/
+    /* @GetMapping("/project/{id}")
+     public List<Project> getAllByManager(@PathVariable("id") String userId) {
+         return profileService.getAllByManager(userId);
+     }*/
     @GetMapping("/user-project/{id}")
     public List<UserProject> getUsersByProject(@PathVariable("id") String projectId) {
         return profileService.getUsersByProject(projectId);
     }
-    @GetMapping("/project-user/{id}")
-    public List<UserProject> getProjectsByUser(@PathVariable("id") String userId) {
-        return profileService.getProjectsByUser(userId);
+    @GetMapping("/user-skills/{id}")
+    public ResponseEntity<List<UserSkills>> getUserSkills(@PathVariable("id") String id) {
+        return new ResponseEntity<>(this.userSkillsRepository.findByUserId(UUID.fromString(id)), HttpStatus.OK);
     }
-  /*  @GetMapping("/employees-manager/{id}")
-    public List<UserProject> getEmployeesByManager(@PathVariable("id") String userId) {
-        List<Project> projectsByManager =  getAllByManager(userId);
-        return profileService.getEmployeesByManager(projectsByManager);
-    }*/
-
+    @GetMapping("/project-user/{id}")
+    public ResponseEntity<List<UserProject>> getProjectsByUser(@PathVariable("id") String accountId) {
+        return new ResponseEntity<>(profileService.getProjectsByUser(UUID.fromString(accountId)), HttpStatus.OK);
+    }
     @PutMapping("/user-project")
-    public UserProject delete(@RequestBody UserProject user) { return profileService.deleteUserFromProject(user); }
+    public UserProject delete(@RequestBody UserProject user) {
+        return profileService.deleteUserFromProject(user);
+    }
 
     @PutMapping("/skill")
-    public UserSkills deleteSkill(@RequestBody UserSkills user) { return profileService.deleteUserSkill(user); }
+    public UserSkills deleteSkill(@RequestBody UserSkills user) {
+        return profileService.deleteUserSkill(user);
+    }
 
     @PostMapping("/create-project")
     public Project createProject(@RequestBody Project project) {
         return profileService.createProject(project);
     }
+
     @PostMapping("/create-userSkill")
     public UserSkills createUserSkill(@RequestBody UserSkills skill) {
         return profileService.createUserSkill(skill);
     }
+
     @PostMapping("/create-userProject")
     public UserProject addUserToProject(@RequestBody UserProject user) {
         return profileService.addUserToProject(user);
     }
 
 
-    @PutMapping("/update-userProject")
-    public void updateUserProject(@RequestBody UserProject userProject) {
-        profileService.updateUserProject(userProject);
-    }
-    @PutMapping("/update-profile")
-    public void updateProfile(@RequestBody UpdateProfileDto user) {
-        profileService.updateProfile(user);
-    }
-    @PutMapping("/update-skill")
-    public void updateSkill(@RequestBody UserSkills skill) {
-        profileService.updateSkill(skill);
+    @PutMapping("/update-userProject/{userProjectId}/{newDescription}")
+    public ResponseEntity<UserProject> updateUserProject(@PathVariable String userProjectId, @PathVariable String newDescription) {
+        return new ResponseEntity<>(userProjectRepository.save((userProjectRepository.findById(UUID.fromString(userProjectId)).map(up-> {up.setDescription(newDescription); return up;}).get())), HttpStatus.OK);
     }
 
+    @PutMapping("/update-profile")
+    public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
+        return new ResponseEntity<>(registerUserInfoRepository.save(registerUserInfo), HttpStatus.OK);
+    }
+
+    @PutMapping("/update-skill")
+    public ResponseEntity<UserSkills> updateSkill(@RequestBody UserSkills skill) {
+        return new ResponseEntity<>(userSkillsRepository.save(skill), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/upload-cv/{userEmail}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
+        // Check if the file is not empty
+        if (!file.isEmpty()) {
+            try {
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+                CV cv = new CV();
+                cv.setFileName(fileName);
+                cv.setUserEmail(userEmail);
+                cv.setData(file.getBytes());
+                cvRepository.save(cv);
+
+                return new ResponseEntity<>("CV saved successfully!", HttpStatus.OK);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity<>("Something went wrong while uploading CV...", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>("Empty file uploaded...", HttpStatus.BAD_REQUEST);
+    }
 }

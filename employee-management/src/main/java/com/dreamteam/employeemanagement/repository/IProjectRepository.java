@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IProjectRepository  extends JpaRepository<Project, UUID> {
-    List<Project> GetByManager(Account manager);
+    List<Project> findByManager_Id(UUID managerId);
   //  List<Project> findAllByManagerId(String userId);
 }

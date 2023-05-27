@@ -35,7 +35,7 @@ public class ProfileService {
   //  public List<Project> getAllByManager(String userId) {
   //      return projectRepository.findAllByManagerId(userId);
   //  }
-    public List<Project> getByManager(Account manager) {return projectRepository.GetByManager(manager);
+    public List<Project> getByManager(Account manager) {return projectRepository.findByManager_Id(manager.getId());
     }
 
     public List<UserProject> getUsersByProject(String projectId) {

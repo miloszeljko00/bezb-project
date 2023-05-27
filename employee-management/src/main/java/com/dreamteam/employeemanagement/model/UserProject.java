@@ -17,11 +17,11 @@ public class UserProject {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne
-    @Column(name = "user")
+    @JoinColumn(name = "userId")
     private Account user;
 
     @ManyToOne
-    @Column(name = "project")
+    @JoinColumn(name = "projectId")
     private Project project;
     @Column(name = "startDate")
     private LocalDateTime startDate;

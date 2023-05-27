@@ -9,13 +9,18 @@
       <div *ngIf="user">
         <ng-container>
             <app-navbar-button *ngIf="user.hasPermission('TEST')" (click)="test()">TEST</app-navbar-button>
-            <app-navbar-button *ngIf="user.hasRole('Administrator')" (click)="goToManageRoles()">Manage Roles</app-navbar-button>
+            <app-navbar-button *ngIf="user.hasPermission('GET-ROLES') && user.hasPermission('GET-PERMISSIONS')" (click)="goToManageRoles()">Manage Roles</app-navbar-button>
+            <app-navbar-button *ngIf="user.hasPermission('GET-PROJECTS')" (click)="goToProjects()">Projects</app-navbar-button>
+            <app-navbar-button *ngIf="user.hasPermission('GET-EMPLOYEES')" (click)="goToEmployees()">Employees</app-navbar-button>
+            <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToPreviewRegistrationRequest()">Review Registrations</app-navbar-button>
+            <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToRegisterNewAdminPage()">Register New Admin</app-navbar-button>
+
         </ng-container>
       </div>
   </div>
   <div>
-      <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToPreviewRegistrationRequest()">Review Registrations</app-navbar-button>
       <app-navbar-button *ngIf="!user" (click)="goToRegisterPage()">Register</app-navbar-button>
+      <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToAdminProfile()">Account</app-navbar-button>
       <app-navbar-button *ngIf="!user" (click)="login()">Login</app-navbar-button>
       <app-navbar-button *ngIf="user" (click)="logout()">Logout</app-navbar-button>
   </div>

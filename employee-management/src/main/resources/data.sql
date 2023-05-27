@@ -37,6 +37,10 @@ INSERT INTO public.permissions(id, name)
 VALUES ('8557bd2e-5e5c-4358-92d1-96331bd72af4', 'ADD-PERMISSION-TO-ROLE');
 INSERT INTO public.permissions(id, name)
 VALUES ('08768507-67fa-4cde-963e-cf4c55f7d614', 'REMOVE-PERMISSION-TO-ROLE');
+INSERT INTO public.permissions(id, name)
+VALUES ('3c27e735-8b39-42e3-8612-d90ca6c750a2', 'GET-PROJECTS');
+INSERT INTO public.permissions(id, name)
+VALUES ('fdc1213a-8760-4f5d-8ccb-689535b7d593', 'GET-EMPLOYEES');
 
 
 -- GET-PERMISSIONS to Administrator
@@ -51,6 +55,12 @@ VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '8557bd2e-5e5c-4358-92d1-96331bd
 -- REMOVE-PERMISSION-TO-ROLE to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '08768507-67fa-4cde-963e-cf4c55f7d614');
+-- GET-PROJECTS to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '3c27e735-8b39-42e3-8612-d90ca6c750a2');
+-- GET-EMPLOYEES to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'fdc1213a-8760-4f5d-8ccb-689535b7d593');
 
 --TEST to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)

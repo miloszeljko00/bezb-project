@@ -39,6 +39,9 @@ public class Account implements UserDetails {
     @Embedded
     private MagicLoginToken magicLoginToken;
 
+    @Column(name="require_password_change")
+    private boolean requirePasswordChange;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         var grantedAuthorities = new ArrayList<GrantedAuthority>();

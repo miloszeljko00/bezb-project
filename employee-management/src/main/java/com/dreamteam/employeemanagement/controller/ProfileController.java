@@ -1,4 +1,5 @@
 package com.dreamteam.employeemanagement.controller;
+import com.dreamteam.employeemanagement.dto.profile.RegisterUserInfoDto;
 import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
 import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.repository.ICVRepository;
@@ -81,8 +82,13 @@ public class ProfileController {
     }
 
     @PutMapping("/update-profile")
-    public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
-        return new ResponseEntity<>(registerUserInfoRepository.save(registerUserInfo), HttpStatus.OK);
+    public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfoDto registerUserInfoDto) {
+        var registerUserInfo = registerUserInfoRepository.findById(UUID.fromString(registerUserInfoDto.getId()));
+        registerUserInfo.get().setAddress(registerUserInfoDto.getAddress());
+        registerUserInfo.get().setPhoneNumber(registerUserInfoDto.getPhoneNumber());
+        registerUserInfo.get().setFirstName(registerUserInfoDto.getFirstName());
+        registerUserInfo.get().setLastName(registerUserInfoDto.getLastName());
+        return new ResponseEntity<>(registerUserInfoRepository.save(registerUserInfo.get()), HttpStatus.OK);
     }
 
     @PutMapping("/update-skill/{userProjectId}/{changedProperty}/{flag}")

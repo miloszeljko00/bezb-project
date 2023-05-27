@@ -95,9 +95,17 @@ export class EngineerProfileComponent implements OnInit{
 
   onSubmit() {
     if (this.updateForm.valid) {
-      this.updateUserService.updateEngineer(this.updateForm.value).subscribe({
+      this.registerUserInfo.account.email = this.updateForm.get('email')?.value;
+      this.registerUserInfo.firstName = this.updateForm.get('firstName')?.value;
+      this.registerUserInfo.lastName = this.updateForm.get('lastName')?.value;
+      this.registerUserInfo.address.street = this.updateForm.get('street')?.value;
+      this.registerUserInfo.address.city= this.updateForm.get('city')?.value;
+      this.registerUserInfo.address.country= this.updateForm.get('country')?.value;
+      this.registerUserInfo.phoneNumber= this.updateForm.get('phoneNumber')?.value;
+
+      this.updateUserService.updateProfile(this.registerUserInfo).subscribe({
         next: (result: any) => {
-          console.log(result);
+          this.registerUserInfo = result;
           this.toastrService.success("Profile updated!");
         },
         error: (error: any) => {

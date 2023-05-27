@@ -6,21 +6,25 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class RegisterUserInfoService {
+export class RegisterUserInfoService{
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAllWithAccountStatusPending() {
-    return this.http.get(environment.apiUrl+"/api/register/get-all-unconfirmed");
+    return this.http.get(environment.apiUrl + "/api/register/get-all-unconfirmed");
   }
 
   createRegistration(registerUserInfo: any) {
-    return this.http.post(environment.apiUrl+"/api/register", registerUserInfo);
+    return this.http.post(environment.apiUrl + "/api/register", registerUserInfo);
   }
+
   acceptRegistration(id: string) {
-    return this.http.put(environment.apiUrl+"/api/register/accept-registration", id);
+    return this.http.put(environment.apiUrl + "/api/register/accept-registration", id);
   }
+
   declineRegistration(id: string) {
-    return this.http.put(environment.apiUrl+"/api/register/decline-registration", id);
+    return this.http.put(environment.apiUrl + "/api/register/decline-registration", id);
   }
+
 }

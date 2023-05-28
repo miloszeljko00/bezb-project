@@ -1,4 +1,5 @@
 package com.dreamteam.employeemanagement.controller;
+import com.dreamteam.employeemanagement.dto.profile.CreateProjectDto;
 import com.dreamteam.employeemanagement.dto.profile.AddUserToProject;
 import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
 import com.dreamteam.employeemanagement.model.*;
@@ -12,19 +13,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
 public class ProfileController {
+
 
     private final ProfileService profileService;
     private final ICVRepository cvRepository;
@@ -41,6 +41,23 @@ public class ProfileController {
     public List<Project> getAllProject() {
         return profileService.getAllProjects();
     }
+    @GetMapping("/user/{id}")
+    public Optional<Account> getUser(@PathVariable("id")  String id) {
+        return profileService.getUser(id);
+    }
+
+   @GetMapping("/manager/{id}")
+    public List<Project> getAllByManager(@PathVariable("id") String id) {
+        return profileService.getByManager(id);
+    }
+
+    @GetMapping("/user-project/manager/{id}")
+    public List<UserProject> getUsersByManager(@PathVariable("id") String managerId) {
+
+        List<Project> projectsByManager = getAllByManager(managerId);
+        return profileService.getUsersByManager(projectsByManager);
+    }
+
 
     @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/users/all")
@@ -67,6 +84,7 @@ public class ProfileController {
      public List<Project> getAllByManager(@PathVariable("id") String userId) {
          return profileService.getAllByManager(userId);
      }*/
+  
     @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/user-project/{id}")
     public List<UserProject> getUsersByProject(@PathVariable("id") String projectId) {
@@ -111,8 +129,9 @@ public class ProfileController {
 
     @PreAuthorize("hasRole('CREATE-PROJECT')")
     @PostMapping("/create-project")
-    public Project createProject(@RequestBody Project project) {
-        return profileService.createProject(project);
+    public Project createProject(@RequestBody CreateProjectDto dto) {
+
+        return profileService.createProject(dto);
     }
 
     @PreAuthorize("hasRole('CREATE-SKILL')")

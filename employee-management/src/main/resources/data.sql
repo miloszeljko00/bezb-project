@@ -148,4 +148,3 @@ INSERT INTO public.skills(id, name, rating, user_id)
 VALUES ('f48a2463-303e-4ef1-8a83-4a3c7d03a4f8', 'skill name 1', '5', 'd206f89e-73cd-4388-ba29-8f528258db99');
 INSERT INTO public.skills(id, name, rating, user_id)
 VALUES ('3a6a9b34-7f34-4a56-b1d2-10cd7f0e8b21', 'skill name 2', '2', 'd206f89e-73cd-4388-ba29-8f528258db99');
-

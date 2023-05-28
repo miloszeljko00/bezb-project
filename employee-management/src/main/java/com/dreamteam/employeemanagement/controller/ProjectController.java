@@ -46,8 +46,11 @@ public class ProjectController {
     @PreAuthorize("hasRole('DELETE-PROJECT')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> createProject(@PathVariable UUID id) {
-       projectRepository.deleteById(id);
-       return new ResponseEntity<>(HttpStatus.OK);
+        var project = projectRepository.findById(id).orElseThrow();
+        var userProjects = userProjectRepository.findAllByProject(project);
+        userProjectRepository.deleteAll(userProjects);
+        projectRepository.delete(project);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

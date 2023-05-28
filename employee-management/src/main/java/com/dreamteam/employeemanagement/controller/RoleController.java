@@ -43,7 +43,7 @@ public class RoleController {
         if(result) return new ResponseEntity<>(HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
-    @PreAuthorize("hasRole('REMOVE-PERMISSION-TO-ROLE')")
+    @PreAuthorize("hasRole('REMOVE-PERMISSION-FROM-ROLE')")
     @PutMapping("{roleId}/actions/remove-permission")
     public ResponseEntity<Object> removePermission(@RequestBody Permission permission, @PathVariable UUID roleId) {
 

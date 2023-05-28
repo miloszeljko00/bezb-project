@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TestController {
 
+
     @GetMapping
     public ResponseEntity<Object> test() {
         return new ResponseEntity<>("{\"result\": \"WORKS!\"}", HttpStatus.OK);

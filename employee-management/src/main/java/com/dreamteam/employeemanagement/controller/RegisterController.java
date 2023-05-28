@@ -13,6 +13,7 @@ import com.dreamteam.employeemanagement.service.RegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -124,10 +125,12 @@ public class RegisterController {
 
         return ResponseEntity.badRequest().body("Invalid activation link.");
     }
+
+    @PreAuthorize("hasRole('REGISTER-ADMIN')")
     @PostMapping("/admin")
     public ResponseEntity registerAdmin(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) {
 
-            var role = roleRepository.findByName("Administrator");
+        var role = roleRepository.findByName("Administrator");
         var roles = new ArrayList<Role>();
         roles.add(role);
         //Create account

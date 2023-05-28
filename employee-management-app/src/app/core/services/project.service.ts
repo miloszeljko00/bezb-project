@@ -11,10 +11,14 @@ import { UserProject } from 'src/app/pages/profile/models/userProject';
 @Injectable({providedIn: 'root'})
 export class ProjectService {
     addUserToProject(result: any, projectId: string) {
-      return of(new UserProject('999', result, new Project(projectId, undefined, "project 1", 10), new Date(), new Date(), 'description'))
+      return this.http.post<UserProject>(environment.apiUrl + `/api/profile/user-project/${projectId}/add`, { userId: result.userId, from: result.from, to: result.to, description: result.description})
     }
-    removeUserFromProject(id: string) {
-      return of(true)
+    removeUserFromProject(projectId: string, userId: string) {
+      return this.http.delete(environment.apiUrl + `/api/profile/user-project/${projectId}/delete/${userId}`).pipe(
+        map(() => {
+          return true
+        })
+      )
     }
     deleteProject(id: string) {
         return this.http.delete(environment.apiUrl + "/api/projects/delete/" + id).pipe(
@@ -28,7 +32,6 @@ export class ProjectService {
         ))
     }
     createProject(name: string, duration: number, managerId: string) {
-      //TODO call backend
       return this.http.post<Project>(environment.apiUrl + "/api/projects/create", { managerId: managerId, name: name, duration: duration}).pipe(
         map((project: Project) => {
             const projects = this.projects$.getValue()
@@ -43,31 +46,7 @@ export class ProjectService {
     constructor(private http: HttpClient, private toastr: ToastrService) {}
   
     getEmployeesByProjectId(projectId: string): Observable<UserProject[]> {
-        return of([
-            new UserProject("1", new UserProfile(
-                "2",
-                "jane.doe@example.com",
-                "password",
-                "Jane",
-                "Doe",
-                "456 Elm St",
-                "USA",
-                "California",
-                "555-5678",
-                Designation.Engineer
-              ), new Project('1', new UserProfile(
-                "1",
-                "john.doe@example.com",
-                "password",
-                "John",
-                "Doe",
-                "123 Main St",
-                "USA",
-                "New York",
-                "555-1234",
-                Designation.ProjectManager), 'Project 1', 10),new Date(), new Date(), "tester")
-          ] as UserProject[])
-        //return this.http.get<UserProfile[]>(environment.apiUrl + `/api/projects/${projectId}/employees`);
+        return this.http.get<UserProject[]>(environment.apiUrl + `/api/profile/user-project/${projectId}`)
     }
 
     fetchProjects() {

@@ -28,19 +28,41 @@ VALUES ('d46fb741-5d9a-44dc-bc70-73ebea53dc25', 'b45881cf-a8d2-4bdf-bbb1-183dcba
 
 --ADD NEW PERMISSIONS HERE
 INSERT INTO public.permissions(id, name)
-VALUES ('eaf64bf2-0604-4d44-88db-f14712e7c7ad', 'TEST');
-INSERT INTO public.permissions(id, name)
 VALUES ('84e5cc62-2b3b-4332-89ae-ba74f96f614a', 'GET-PERMISSIONS');
 INSERT INTO public.permissions(id, name)
 VALUES ('781a137c-e1b2-4f3b-8eed-b1d429f348fe', 'GET-ROLES');
 INSERT INTO public.permissions(id, name)
 VALUES ('8557bd2e-5e5c-4358-92d1-96331bd72af4', 'ADD-PERMISSION-TO-ROLE');
 INSERT INTO public.permissions(id, name)
-VALUES ('08768507-67fa-4cde-963e-cf4c55f7d614', 'REMOVE-PERMISSION-TO-ROLE');
+VALUES ('08768507-67fa-4cde-963e-cf4c55f7d614', 'REMOVE-PERMISSION-FROM-ROLE');
 INSERT INTO public.permissions(id, name)
 VALUES ('3c27e735-8b39-42e3-8612-d90ca6c750a2', 'GET-PROJECTS');
 INSERT INTO public.permissions(id, name)
 VALUES ('fdc1213a-8760-4f5d-8ccb-689535b7d593', 'GET-EMPLOYEES');
+INSERT INTO public.permissions(id, name)
+VALUES ('2cb7a52c-cc57-4261-ae87-ae1bb36dd00b', 'REMOVE-EMPLOYEE-FROM-PROJECT');
+INSERT INTO public.permissions(id, name)
+VALUES ('5ae800df-a0a8-4eae-8b8b-edf838b55665', 'GET-USER-SKILLS');
+INSERT INTO public.permissions(id, name)
+VALUES ('6afe5cdf-e9f8-45f9-899b-29d28062c761', 'GET-SKILLS');
+INSERT INTO public.permissions(id, name)
+VALUES ('8c417449-e458-4934-a8a0-db1a94ed6985', 'CREATE-PROJECT');
+INSERT INTO public.permissions(id, name)
+VALUES ('7f87b4a0-19db-43fe-a6c3-e1b38950d1d2', 'CREATE-SKILL');
+INSERT INTO public.permissions(id, name)
+VALUES ('9d9eb54a-a317-4b34-bdee-42fdbf6c0ad7', 'ADD-EMPLOYEE-TO-PROJECT');
+INSERT INTO public.permissions(id, name)
+VALUES ('f37150ca-8f4e-4e50-bfa5-48c0797b469d', 'UPDATE-USER-PROJECT');
+INSERT INTO public.permissions(id, name)
+VALUES ('f061927b-5d87-4bb5-9ca4-af3b7252432e', 'UPDATE-REGISTER-USER-INFO');
+INSERT INTO public.permissions(id, name)
+VALUES ('e31a95dd-42b6-402c-8df1-6884293428b8', 'UPDATE-SKILL');
+INSERT INTO public.permissions(id, name)
+VALUES ('227e082c-78d9-4eef-bb0a-d22d8abbac70', 'UPLOAD-CV');
+INSERT INTO public.permissions(id, name)
+VALUES ('b534fa31-95d0-4c63-9a26-4d27696c2de6', 'DELETE-PROJECT');
+INSERT INTO public.permissions(id, name)
+VALUES ('43182ad7-6915-4aa3-bce5-d412b3d53551', 'REGISTER-ADMIN');
 
 
 -- GET-PERMISSIONS to Administrator
@@ -52,7 +74,7 @@ VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '781a137c-e1b2-4f3b-8eed-b1d429f
 -- ADD-PERMISSION-TO-ROLE to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '8557bd2e-5e5c-4358-92d1-96331bd72af4');
--- REMOVE-PERMISSION-TO-ROLE to Administrator
+-- REMOVE-PERMISSION-FROM-ROLE to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '08768507-67fa-4cde-963e-cf4c55f7d614');
 -- GET-PROJECTS to Administrator
@@ -61,19 +83,46 @@ VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '3c27e735-8b39-42e3-8612-d90ca6c
 -- GET-EMPLOYEES to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'fdc1213a-8760-4f5d-8ccb-689535b7d593');
+-- REMOVE-EMPLOYEE-FROM-PROJECT to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '2cb7a52c-cc57-4261-ae87-ae1bb36dd00b');
+-- GET-USER-SKILLS to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '5ae800df-a0a8-4eae-8b8b-edf838b55665');
+-- GET-SKILLS to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '6afe5cdf-e9f8-45f9-899b-29d28062c761');
+-- CREATE-PROJECT to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '8c417449-e458-4934-a8a0-db1a94ed6985');
+-- CREATE-SKILL to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '7f87b4a0-19db-43fe-a6c3-e1b38950d1d2');
+-- ADD-EMPLOYEE-TO-PROJECT to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '9d9eb54a-a317-4b34-bdee-42fdbf6c0ad7');
+-- UPDATE-USER-PROJECT to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'f37150ca-8f4e-4e50-bfa5-48c0797b469d');
+-- UPDATE-REGISTER-USER-INFO to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'f061927b-5d87-4bb5-9ca4-af3b7252432e');
+-- UPDATE-SKILL to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'e31a95dd-42b6-402c-8df1-6884293428b8');
+-- UPLOAD-CV to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '227e082c-78d9-4eef-bb0a-d22d8abbac70');
+-- DELETE-PROJECT to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'b534fa31-95d0-4c63-9a26-4d27696c2de6');
+-- REGISTER-ADMIN to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '43182ad7-6915-4aa3-bce5-d412b3d53551');
 
---TEST to Administrator
-INSERT INTO public.roles_permissions(role_id, permissions_id)
-VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'eaf64bf2-0604-4d44-88db-f14712e7c7ad');
---TEST to Software Engineer
-INSERT INTO public.roles_permissions(role_id, permissions_id)
-VALUES ('9a4d712a-2882-4278-b981-76d339fc6894', 'eaf64bf2-0604-4d44-88db-f14712e7c7ad');
---TEST to HR Manager
-INSERT INTO public.roles_permissions(role_id, permissions_id)
-VALUES ('3ad3288e-1fad-45cc-aa7f-8660ce4af4e4', 'eaf64bf2-0604-4d44-88db-f14712e7c7ad');
---TEST to Project Manager
-INSERT INTO public.roles_permissions(role_id, permissions_id)
-VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', 'eaf64bf2-0604-4d44-88db-f14712e7c7ad');
+
+
+
 
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
 VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9c', '9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'John', 'Doe', '123 Main St', 'New York', 'USA', '555-1234', '2022-01-01');

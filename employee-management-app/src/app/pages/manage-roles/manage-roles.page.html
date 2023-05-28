@@ -10,7 +10,7 @@
         </mat-panel-title>
         <mat-panel-description style="display: flex; justify-content: space-between;">
           Total permissions: {{ role.permissions.length }}
-          <button mat-icon-button (click)="$event.stopPropagation(); openAddPermissionDialog(role)"><mat-icon>add</mat-icon></button>
+          <button *ngIf="user.hasPermission('ADD-PERMISSION-TO-ROLE')" mat-icon-button (click)="$event.stopPropagation(); openAddPermissionDialog(role)"><mat-icon>add</mat-icon></button>
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div *ngFor="let permission of role.permissions"
@@ -18,7 +18,7 @@
         <p style="margin: 0; 
                   margin-left: 10px; 
                   margin-right: 10px;"> {{ permission.name }}</p>
-        <button mat-icon-button (click)="removePermission(role, permission)"><mat-icon>delete</mat-icon></button>
+        <button *ngIf="user.hasPermission('REMOVE-PERMISSION-FROM-ROLE')" mat-icon-button (click)="removePermission(role, permission)"><mat-icon>delete</mat-icon></button>
       </div>
     </mat-expansion-panel>
   </div>

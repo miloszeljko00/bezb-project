@@ -54,7 +54,7 @@ public class AuthController {
         // Generate the HMAC for the token and registerUserInfoId
         String hmac = HmacUtil.generateHmac(token.getToken().toString() + userEmail, "veljin-tajni-kljuc");
 
-        String activationLink = "http://localhost:4200/login/magicLoginCallback?token=" + hmac + "&userEmail=" + userEmail;
+        String activationLink = "https://localhost:4200/login/magicLoginCallback?token=" + hmac + "&userEmail=" + userEmail;
         emailService.sendEmail(userEmail, "Magican login", "Poslali ste zahtev za magican login? : " + activationLink);
         return new ResponseEntity<>(HttpStatus.OK);
     }

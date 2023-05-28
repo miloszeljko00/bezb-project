@@ -41,11 +41,15 @@ INSERT INTO public.permissions(id, name)
 VALUES ('3c27e735-8b39-42e3-8612-d90ca6c750a2', 'GET-PROJECTS');
 INSERT INTO public.permissions(id, name)
 VALUES ('fdc1213a-8760-4f5d-8ccb-689535b7d593', 'GET-EMPLOYEES');
-
+INSERT INTO public.permissions(id, name)
+VALUES ('f591b0ef-29a7-4e51-9c4f-83496dcfa8db', 'READ-CVs');
 
 -- GET-PERMISSIONS to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '84e5cc62-2b3b-4332-89ae-ba74f96f614a');
+-- READ-CVs permission to HR role
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('3ad3288e-1fad-45cc-aa7f-8660ce4af4e4', 'f591b0ef-29a7-4e51-9c4f-83496dcfa8db');
 -- GET-ROLES to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '781a137c-e1b2-4f3b-8eed-b1d429f348fe');

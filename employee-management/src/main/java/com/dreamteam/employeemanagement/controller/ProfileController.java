@@ -6,6 +6,7 @@ import com.dreamteam.employeemanagement.repository.ICVRepository;
 import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
 import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
 import com.dreamteam.employeemanagement.repository.IUserSkillsRepository;
+import com.dreamteam.employeemanagement.service.CVService;
 import com.dreamteam.employeemanagement.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,12 @@ import java.util.UUID;
 public class ProfileController {
 
     private final ProfileService profileService;
-    private final ICVRepository cvRepository;
     private final IUserSkillsRepository userSkillsRepository;
     private final IUserProjectRepository userProjectRepository;
     private final IRegisterUserInfoRepository registerUserInfoRepository;
+    private final CVService cvService;
+
+    private final ICVRepository cvRepository;
 
     @GetMapping("/project/all")
     public List<Project> getAllProject() {
@@ -100,25 +103,29 @@ public class ProfileController {
         }
     }
 
-    @PostMapping(value = "/upload-cv/{userEmail}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
-        // Check if the file is not empty
+    @PostMapping(value = "/upload-cv/{userEmail}")
+    public ResponseEntity<Object> uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
                 String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
+                var cvFileNameOnFileSystem = cvService.saveCV(file);
                 CV cv = new CV();
                 cv.setFileName(fileName);
+                cv.setFileNameOnFileSystem(cvFileNameOnFileSystem);
                 cv.setUserEmail(userEmail);
                 cv.setData(file.getBytes());
                 cvRepository.save(cv);
-
-                return new ResponseEntity<>("CV saved successfully!", HttpStatus.OK);
+                return new ResponseEntity<>("{\"message\": \"CV saved successfully!\"}", HttpStatus.OK);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity<>("Something went wrong while uploading CV...", HttpStatus.BAD_REQUEST);
             }
         }
         return new ResponseEntity<>("Empty file uploaded...", HttpStatus.BAD_REQUEST);
+    }
+    @GetMapping("/get-all-cvs")
+    public ResponseEntity<List<CV>> getAllCvs() {
+        return new ResponseEntity<>(cvRepository.findAll(), HttpStatus.OK);
     }
 }

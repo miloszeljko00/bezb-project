@@ -114,7 +114,23 @@ export class EngineerProfileComponent implements OnInit{
       })
     }
   }
+  onFileUpload(event: Event) {
+    const formData = new FormData();
+    //@ts-ignore
+    const file : File = event.target!.files[0];
+    formData.append("file", file);
+    this.updateUserService.uploadCv(formData, this.registerUserInfo.account.email).subscribe({
+      next: (result: any) => {
+        console.log(result);
+        this.toastrService.success("CV uploaded successfully")
+      },
+      error: (e:any) => {
+        console.log(e);
+        this.toastrService.error(e.message);
+      }
+    })
 
+};
   getProjectsForUser(id: any){
     // let manager =new UserProfile('1', 'a@email.com', 'password', 'manager', 'manager', 'kolubarska', 'serbia', 'novi sad', '00', Designation.ProjectManager);
     // let projekat1 = new Project("1", manager, "prvi projekat", 200);

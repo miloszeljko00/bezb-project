@@ -17,6 +17,7 @@ import {UserProject} from "../../models/userProject";
 import {SelectOption} from "../../../../shared/ui/input/components/select-field/select-field.component";
 import {CreateProjectDto} from "../../models/dto/createProjectDto";
 import {CreateUserProject} from "../../models/dto/createUserProject";
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-admin-profile',
@@ -60,31 +61,40 @@ export class AdminProfileComponent  implements OnInit {
   selectEmployee:SelectOption[] = []
   employee: any;
   description: any;
-
+  userId: any;
   constructor(
     private formBuilder: FormBuilder,
-    public registerUserInfoService: UserService,
+    public userService: UserService,
+    public registerUserInfoService: RegisterUserInfoService,
+    private authService: AuthService,
     public toastrService: ToastrService, private roleService: RoleService,
     private permissionService: PermissionService,
     private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
-    this.User = new UserProfile('1', 'a@email.com', 'password', 'admin', 'admin', 'admin', 'admin', 'novi sad', '00', Designation.HR)
-    this.updateForm = this.formBuilder.group({
-      id: new FormControl({value: this.User.id, disabled: true}),
-      email: [this.User.email, Validators.required],
-      password: [this.User.password, [Validators.required, Validators.minLength(8), this.passwordValidator]],
-      confirmPassword: ['', Validators.required],
-      firstName: [this.User.firstName, Validators.required],
-      lastName: [this.User.lastName, Validators.required],
-      street: [this.User.street, Validators.required],
-      city: [this.User.city, Validators.required],
-      country: [this.User.country, Validators.required],
-      phone: [this.User.phone, Validators.required],
-      designation: [this.User.designation, Validators.required]
-    });
-    this.Populate();
+    const user = this.authService.getUser()
+    if(!user) return
+    this.registerUserInfoService.getRegisterUserInfoByEmail(user?.email).subscribe({
+      next: (result: any) => {
+        this.userId = result.id;
+        console.log('%cMyProject%cline:79%cresult', 'color:#fff;background:#ee6f57;padding:3px;border-radius:2px', 'color:#fff;background:#1f3c88;padding:3px;border-radius:2px', 'color:#fff;background:rgb(1, 77, 103);padding:3px;border-radius:2px', result)
+        this.updateForm = this.formBuilder.group({
+          id: new FormControl({value: result.id, disabled: true}),
+          email: [result.account.username, Validators.required],
+          password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
+          confirmPassword: ['', Validators.required],
+          firstName: [result.firstName, Validators.required],
+          lastName: [result.lastName, Validators.required],
+          street: [result.address.street, Validators.required],
+          city: [result.address.city, Validators.required],
+          country: [result.address.country, Validators.required],
+          phone: [result.phoneNumber, Validators.required]
+        });
+      }
+    })
+
+    
   }
 
   newProject() {
@@ -108,7 +118,23 @@ export class AdminProfileComponent  implements OnInit {
 
   onSubmit() {
     if (this.updateForm.valid) {
-      this.registerUserInfoService.updateEngineer(this.updateForm.value).subscribe({
+      const request = {
+        id: this.userId,
+        account: {
+          username: this.updateForm.value.email,
+          password: this.updateForm.value.password
+        },
+        firstName: this.updateForm.value.firstName,
+        lastName: this.updateForm.value.lastName,
+        address: {
+          street: this.updateForm.value.street,
+          city: this.updateForm.value.city,
+          country: this.updateForm.value.country
+        },
+        phoneNumber: this.updateForm.value.phone,
+        revisionDate: new Date(),
+      }
+      this.userService.updateProfile(request).subscribe({
         next: (result: any) => {
           console.log(result);
           this.toastrService.success("Profile updated!");

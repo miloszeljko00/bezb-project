@@ -32,7 +32,7 @@ export class RegisterNewAdminComponent {
   }
   onSubmit() {
     if (this.form.valid) {
-      this.registerUserInfoService.createRegistration(this.form.value).subscribe({
+      this.registerUserInfoService.registerAdmin(this.form.value).subscribe({
         next: (result: any) => {
           console.log(result);
           this.toastr.success("New admin created!");

@@ -6,6 +6,7 @@ import { Project } from "../../pages/profile/models/project";
 import { UserSkills } from "../../pages/profile/models/userSkills";
 import { UserProject } from "../../pages/profile/models/userProject";
 import { UserProfile } from "../../pages/profile/models/userProfile";
+import { User } from '../auth/models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +22,18 @@ export class UserService {
   getProjects() {
     return this.http.get(environment.apiUrl + "/api/profile/project/all");
   }
+  
   getProjectById(id: string) {
     return this.http.get(environment.apiUrl + "/api/profile/project/"+ id);
   }
   getUsersByProject(id: string) {
     return this.http.get(environment.apiUrl + "/api/profile/user-project/"+ id);
+  }
+  getUsers() {
+    return this.http.get<UserProfile[]>(environment.apiUrl + "/api/profile/users/all");
+  }
+  getProjectManagers() {
+    return this.http.get<UserProfile[]>(environment.apiUrl + "/api/profile/users/pm");
   }
   getProjectsByUser(id: string) {
     return this.http.get(environment.apiUrl + "/api/profile/project-user/"+ id);
@@ -58,7 +66,7 @@ export class UserService {
   updateUserProject(userProject: UserProject) {
     return this.http.put(environment.apiUrl + "/api/profile/update-userProject/" + userProject.id + "/" + userProject.description, null);
   }
-  updateProfile(newCaption: UserProfile) {
+  updateProfile(newCaption: any) {
     return this.http.put(environment.apiUrl + "/api/profile/update-profile", newCaption);
   }
   updateSkill(userSkill: UserSkills) {

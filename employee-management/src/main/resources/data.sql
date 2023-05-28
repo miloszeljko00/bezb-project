@@ -1,5 +1,5 @@
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password
-VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'a@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
+INSERT INTO public.accounts(id, email, password, first_login) -- password=password1!
+VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'a@email.com', '$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password
 VALUES ('d206f89e-73cd-4388-ba29-8f528258db99', 'se@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password
@@ -75,13 +75,20 @@ VALUES ('3ad3288e-1fad-45cc-aa7f-8660ce4af4e4', 'eaf64bf2-0604-4d44-88db-f14712e
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', 'eaf64bf2-0604-4d44-88db-f14712e7c7ad');
 
+INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
+VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9c', '9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'John', 'Doe', '123 Main St', 'New York', 'USA', '555-1234', '2022-01-01');
 INSERT INTO public.register_user_info(id, city, country, street, first_name, last_name, phone_number, expiration_date, is_used, token, revision_date, account_id)
 VALUES ('ece1b3a6-6db9-4db1-a29a-1eae6e7a543a', 'Sabac', 'Srbija', 'Knez Ive od Semberije', 'Mihailo', 'Veljic', '+3812470650', null, null, null, null, 'd206f89e-73cd-4388-ba29-8f528258db99');
+INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
+VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9e', '3403bb0f-0d70-40b0-955d-2424d7a5699e', 'Bob', 'Smith', '789 Oak St', 'Chicago', 'USA', '555-9012', '2022-01-03');
+INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
+VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9f', 'd46fb741-5d9a-44dc-bc70-73ebea53dc25', 'Alice', 'Johnson', '321 Pine St', 'San Francisco', 'USA', '555-3456', '2022-01-04');
+
 
 INSERT INTO public.projects(id, duration, name, manager_id)
-VALUES ('3a6a9b34-7f34-4a56-b1d2-10cd7f0e8b21', 100, 'project name 1', 'd206f89e-73cd-4388-ba29-8f528258db99');
+VALUES ('3a6a9b34-7f34-4a56-b1d2-10cd7f0e8b21', 100, 'project name 1', 'd46fb741-5d9a-44dc-bc70-73ebea53dc25');
 INSERT INTO public.projects(id, duration, name, manager_id)
-VALUES ('f591b0ef-29a7-4e51-9c4f-83496dcfa8db', 200, 'project name 2', 'd206f89e-73cd-4388-ba29-8f528258db99');
+VALUES ('f591b0ef-29a7-4e51-9c4f-83496dcfa8db', 200, 'project name 2', 'd46fb741-5d9a-44dc-bc70-73ebea53dc25');
 
 INSERT INTO public.user_project(id, description, end_date, start_date, project_id, account_id)
 VALUES ('c0a67112-9c3e-4f15-9f86-6c14be9c0f3c', 'description 1', '2023-05-27T10:30:00', '2023-05-27T10:30:00', '3a6a9b34-7f34-4a56-b1d2-10cd7f0e8b21', 'd206f89e-73cd-4388-ba29-8f528258db99');

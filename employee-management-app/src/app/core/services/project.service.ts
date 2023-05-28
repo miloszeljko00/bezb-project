@@ -17,8 +17,7 @@ export class ProjectService {
       return of(true)
     }
     deleteProject(id: string) {
-        //TODO call backend
-        return of(true).pipe(
+        return this.http.delete(environment.apiUrl + "/api/projects/delete/" + id).pipe(
             map(() => {
                 const projects = this.projects$.getValue()
                 const index = projects.findIndex((project) => project.id === id)
@@ -28,9 +27,9 @@ export class ProjectService {
             }
         ))
     }
-    createProject(name: string, duration: number, manager: UserProfile) {
+    createProject(name: string, duration: number, managerId: string) {
       //TODO call backend
-      return of(new Project('999', manager, name, duration)).pipe(
+      return this.http.post<Project>(environment.apiUrl + "/api/projects/create", { managerId: managerId, name: name, duration: duration}).pipe(
         map((project: Project) => {
             const projects = this.projects$.getValue()
             projects.push(project)
@@ -39,63 +38,7 @@ export class ProjectService {
         }
       ))
     }
-    private projects$ = new BehaviorSubject<Project[]>([
-        new Project('1', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 1', 10),
-        new Project('2', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 2', 20),
-        new Project('3', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 3', 30),
-        new Project('4', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 4', 40),
-        new Project('5', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 5', 50),
-      ])
+    private projects$ = new BehaviorSubject<Project[]>([])
 
     constructor(private http: HttpClient, private toastr: ToastrService) {}
   
@@ -128,7 +71,7 @@ export class ProjectService {
     }
 
     fetchProjects() {
-      this.http.get<Project[]>(environment.apiUrl + '/api/projects').subscribe({
+      this.http.get<Project[]>(environment.apiUrl + "/api/profile/project/all").subscribe({
         next: (response: Project[]) => this.projects$.next(response),
         error: (error: HttpErrorResponse) => this.toastr.error(error.message)
       })

@@ -7,6 +7,9 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class RegisterUserInfoService{
+  registerAdmin(value: any) {
+    return this.http.post(environment.apiUrl + "/api/register/admin", value);
+  }
 
   constructor(private http: HttpClient) {
   }

@@ -10,10 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,9 +31,29 @@ public class ProfileController {
     private final IUserProjectRepository userProjectRepository;
     private final IRegisterUserInfoRepository registerUserInfoRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @GetMapping("/project/all")
     public List<Project> getAllProject() {
         return profileService.getAllProjects();
+    }
+
+    @GetMapping("/users/all")
+    public List<RegisterUserInfo> getAllUsers() {
+        return registerUserInfoRepository.findAll();
+    }
+    @GetMapping("/users/pm")
+    public List<RegisterUserInfo> getAllProjectManagers() {
+
+        var users = registerUserInfoRepository.findAll();
+
+        ArrayList<RegisterUserInfo> response = new ArrayList<>();
+        for (var user : users){
+            if(user.getAccount().getRoles().stream().findFirst().get().getName().equals("Project Manager")){
+                response.add(user);
+            }
+        }
+        return response;
     }
 
     /* @GetMapping("/project/{id}")
@@ -82,7 +105,16 @@ public class ProfileController {
 
     @PutMapping("/update-profile")
     public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
-        return new ResponseEntity<>(registerUserInfoRepository.save(registerUserInfo), HttpStatus.OK);
+        var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
+        var pass = registerUserInfo.getAccount().getPassword();
+        var encodedPass = passwordEncoder.encode(pass);
+        if(!userProfile.getAccount().getPassword().equals(encodedPass)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        userProfile.setAddress(registerUserInfo.getAddress());
+        userProfile.setFirstName(registerUserInfo.getFirstName());
+        userProfile.setLastName(registerUserInfo.getLastName());
+        userProfile.setPhoneNumber(registerUserInfo.getPhoneNumber());
+        userProfile.setRevisionDate(new Date());
+        return new ResponseEntity<>(registerUserInfoRepository.save(userProfile), HttpStatus.OK);
     }
 
     @PutMapping("/update-skill")

@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: 'employees', loadChildren: () => import('./pages/employees/employees.module').then(m => m.EmployeesModule) },
   { path: 'projects', loadChildren: () => import('./pages/projects/projects.module').then(m => m.ProjectsModule) },
   { path: 'register-new-admin', loadChildren: () => import('./pages/register-new-admin/register-new-admin.module').then(m => m.RegisterNewAdminModule) },
+  { path: 'change-password/:email', loadChildren: () => import('./pages/change-password/change-password.module').then(m => m.ChangePasswordModule) },
   { path: '**', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
 ];
 

@@ -11,6 +11,7 @@ import com.dreamteam.employeemanagement.repository.IRefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final IBlacklistedTokenRepository blacklistedTokenRepository;
     private final IRefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private final JwtService jwtService;
 
@@ -30,6 +32,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
         var account = accountRepository.findByEmail(email).orElseThrow();
+        if(account.isFirstLogin()) return new LoginResponse("password_change_required", null);
         var refreshToken = jwtService.generateRefreshToken(account);
         var accessToken = jwtService.generateAccessToken(account);
 
@@ -63,5 +66,18 @@ public class AuthenticationService {
                 refreshTokenRepository.save(refreshToken);
             }
         }
+    }
+
+    public LoginResponse changePassword(String email, String oldPassword, String newPassword) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, oldPassword));
+
+        var account = accountRepository.findByEmail(email).orElseThrow();
+        account.setFirstLogin(false);
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+        var refreshToken = jwtService.generateRefreshToken(account);
+        var accessToken = jwtService.generateAccessToken(account);
+
+        return new LoginResponse(accessToken, refreshToken.getToken().toString());
     }
 }

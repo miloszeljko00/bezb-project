@@ -33,12 +33,26 @@ export class AuthService {
   login(loginRequest: LoginRequest) {
     this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/login", loginRequest).subscribe({
       next: (response) => {
+        if(response.accessToken == 'password_change_required') this.router.navigate(['/change-password', loginRequest.email])
         this.setAuth(response)
         this.toastr.success('Login successful.', "Login Success")
         this.redirectHome();
       },
       error: (error: Error) => {
         this.toastr.error("Invalid credentials.", "Login Failed")
+      }
+    })
+  }
+  changePassword(request: any) {
+    this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/change-password", request).subscribe({
+      next: (response) => {
+        if(response.accessToken == 'password_change_required') this.router.navigate(['/change-password', request.email])
+        this.setAuth(response)
+        this.toastr.success('Login successful.', "Login Success")
+        this.redirectHome();
+      },
+      error: (error: Error) => {
+        this.toastr.error("Something went wrong :/", "Password Change Failed")
       }
     })
   }

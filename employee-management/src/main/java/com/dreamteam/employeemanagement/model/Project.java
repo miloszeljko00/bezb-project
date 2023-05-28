@@ -18,7 +18,7 @@ public class Project {
     private UUID id;
     private String name;
     private Double duration;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name="manager_id", nullable=false)
     private Account manager;
 }

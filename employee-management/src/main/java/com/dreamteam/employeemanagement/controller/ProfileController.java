@@ -175,7 +175,7 @@ public class ProfileController {
         var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
         var pass = registerUserInfo.getAccount().getPassword();
         var encodedPass = passwordEncoder.encode(pass);
-        if(!userProfile.getAccount().getPassword().equals(encodedPass)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        //if(!userProfile.getAccount().getPassword().equals(encodedPass)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         userProfile.setAddress(registerUserInfo.getAddress());
         userProfile.setFirstName(registerUserInfo.getFirstName());
         userProfile.setLastName(registerUserInfo.getLastName());

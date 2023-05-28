@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { GetProjectsGuard } from './core/auth/guards/get-projects.guard';
 import { GetEmployeesGuard } from './core/auth/guards/get-employees.guard';
 import { RegisterNewAdminGuard } from './core/auth/guards/register-new-admin.guard';
-import { GetRolesGuard } from './core/auth/guards/get-ROLES.guard';
+import { GetRolesGuard } from './core/auth/guards/get-roles.guard';
 
 const routes: Routes = [
   { path: '', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },

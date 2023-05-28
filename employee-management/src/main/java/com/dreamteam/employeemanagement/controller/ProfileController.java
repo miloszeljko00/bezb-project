@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,15 +36,19 @@ public class ProfileController {
 
     private final PasswordEncoder passwordEncoder;
 
+    @PreAuthorize("hasRole('GET-PROJECTS')")
     @GetMapping("/project/all")
     public List<Project> getAllProject() {
         return profileService.getAllProjects();
     }
 
+    @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/users/all")
     public List<RegisterUserInfo> getAllUsers() {
         return registerUserInfoRepository.findAll();
     }
+
+    @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/users/pm")
     public List<RegisterUserInfo> getAllProjectManagers() {
 
@@ -62,11 +67,13 @@ public class ProfileController {
      public List<Project> getAllByManager(@PathVariable("id") String userId) {
          return profileService.getAllByManager(userId);
      }*/
+    @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/user-project/{id}")
     public List<UserProject> getUsersByProject(@PathVariable("id") String projectId) {
         var userProjects = profileService.getUsersByProject(projectId);
         return userProjects;
     }
+    @PreAuthorize("hasRole('REMOVE-EMPLOYEE-FROM-PROJECT')")
     @DeleteMapping("/user-project/{projectId}/delete/{userId}")
     public ResponseEntity<Object> deleteUserFromProject(@PathVariable("projectId") String projectId, @PathVariable("userId") String userId) {
         var userProjects = profileService.getUsersByProject(projectId);
@@ -80,33 +87,42 @@ public class ProfileController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    @PreAuthorize("hasRole('GET-USER-SKILLS')")
     @GetMapping("/user-skills/{id}")
     public ResponseEntity<List<UserSkills>> getUserSkills(@PathVariable("id") String id) {
         return new ResponseEntity<>(this.userSkillsRepository.findByUserId(UUID.fromString(id)), HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/project-user/{id}")
     public ResponseEntity<List<UserProject>> getProjectsByUser(@PathVariable("id") String accountId) {
         return new ResponseEntity<>(profileService.getProjectsByUser(UUID.fromString(accountId)), HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @PutMapping("/user-project")
     public UserProject delete(@RequestBody UserProject user) {
         return profileService.deleteUserFromProject(user);
     }
 
+    @PreAuthorize("hasRole('GET-SKILLS')")
     @PutMapping("/skill")
     public UserSkills deleteSkill(@RequestBody UserSkills user) {
         return profileService.deleteUserSkill(user);
     }
 
+    @PreAuthorize("hasRole('CREATE-PROJECT')")
     @PostMapping("/create-project")
     public Project createProject(@RequestBody Project project) {
         return profileService.createProject(project);
     }
 
+    @PreAuthorize("hasRole('CREATE-SKILL')")
     @PostMapping("/create-userSkill")
     public UserSkills createUserSkill(@RequestBody UserSkills skill) {
         return profileService.createUserSkill(skill);
     }
+
+
+    @PreAuthorize("hasRole('ADD-EMPLOYEE-TO-PROJECT')")
     @PostMapping("/user-project/{projectId}/add")
     public UserProject addUserToProject(@PathVariable UUID projectId, @RequestBody AddUserToProject user) {
         var project = projectRepository.findById(projectId).orElseThrow();
@@ -121,17 +137,20 @@ public class ProfileController {
         return userProjectRepository.save(up);
     }
 
+    @PreAuthorize("hasRole('ADD-EMPLOYEE-TO-PROJECT')")
     @PostMapping("/create-userProject")
     public UserProject addUserToProject(@RequestBody UserProject user) {
         return profileService.addUserToProject(user);
     }
 
 
+    @PreAuthorize("hasRole('UPDATE-USER-PROJECT')")
     @PutMapping("/update-userProject/{userProjectId}/{newDescription}")
     public ResponseEntity<UserProject> updateUserProject(@PathVariable String userProjectId, @PathVariable String newDescription) {
         return new ResponseEntity<>(userProjectRepository.save((userProjectRepository.findById(UUID.fromString(userProjectId)).map(up-> {up.setDescription(newDescription); return up;}).get())), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('UPDATE-REGISTER-USER-INFO')")
     @PutMapping("/update-profile")
     public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
         var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
@@ -146,11 +165,13 @@ public class ProfileController {
         return new ResponseEntity<>(registerUserInfoRepository.save(userProfile), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('UPDATE-SKILL')")
     @PutMapping("/update-skill")
     public ResponseEntity<UserSkills> updateSkill(@RequestBody UserSkills skill) {
         return new ResponseEntity<>(userSkillsRepository.save(skill), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('UPLOAD-CV')")
     @PostMapping(value = "/upload-cv/{userEmail}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
         // Check if the file is not empty

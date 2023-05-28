@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ public class ProjectController {
     private final IAccountRepository accountRepository;
 
 
+    @PreAuthorize("hasRole('CREATE-PROJECT')")
     @PostMapping("/create")
     public Project createProject(@RequestBody CreateProject project) {
         var manager = registerUserInfoRepository.findById(UUID.fromString(project.getManagerId())).orElseThrow();
@@ -41,6 +43,7 @@ public class ProjectController {
         return projectRepository.save(p);
     }
 
+    @PreAuthorize("hasRole('DELETE-PROJECT')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> createProject(@PathVariable UUID id) {
        projectRepository.deleteById(id);

@@ -9,17 +9,15 @@ import {UserService} from "../../../../core/services/user.service";
 import {Project} from "../../models/project";
 import {UserProject} from "../../models/userProject";
 import {SelectOption} from "../../../../shared/ui/input/components/select-field/select-field.component";
+import {ProjectService} from "../../../../core/services/project.service";
+import {CreateUserProject} from "../../models/dto/createUserProject";
+import {C} from "@angular/cdk/keycodes";
 
 @Component({
   selector: 'app-manager-profile',
   templateUrl: './manager-profile.component.html',
   styleUrls: ['./manager-profile.component.scss']
 })
-/*Menadžer projekta može da ažurira lične podatke. Pored toga, menadžeru projekta
-treba omogućiti prikaz svih projekata na kojima trenutno radi ili na kojima je radio, kao i
-prikaz zaposlenih inženjera koji su radili na tim projektima. Menadžer projekta ima
-mogućnost ažuriranja zaposlenih na projektima. Za svakog zaposlenog potrebno je
-evidentirati datum početka i završetka rada na projektu.*/
 
 export class ManagerProfileComponent implements OnInit{
 
@@ -27,24 +25,29 @@ export class ManagerProfileComponent implements OnInit{
   updateForm: FormGroup;
   designationOptions = Object.values(Designation);
   passwordMatchError: boolean = false;
+
   projects: any;
   userProjects:any;
-  projectsData = new MatTableDataSource;
-  displayedColumns = ['id', 'name', 'duration', 'manager','managerId'];
+  allEmployees: any;
   newCaption: string = ""
+  newDate: any;
   private User: UserProfile | undefined;
+
+  projectsData = new MatTableDataSource;
   userProjectsData= new MatTableDataSource;
+
+  displayedColumns = ['id', 'name', 'duration','managerId'];
   displayedColumnsUserProjects = ['userId','user', 'project', 'startDate','buttonStart', 'endDate','buttonEnd','description','delete'];
   selectProject:SelectOption[] = []
-  project: any;
   selectEmployee:SelectOption[] = []
+  project: any;
   employee: any;
   description: any;
-  newDate: any;
 
   constructor(
     private formBuilder: FormBuilder,
-    public registerUserInfoService: UserService,
+    public userService: UserService,
+    public projectService:ProjectService,
     public toastrService: ToastrService) { }
 
   ngOnInit() {
@@ -78,7 +81,7 @@ export class ManagerProfileComponent implements OnInit{
 
   onSubmit() {
     if (this.updateForm.valid) {
-      this.registerUserInfoService.updateEngineer(this.updateForm.value).subscribe({
+      this.userService.updateEngineer(this.updateForm.value).subscribe({
         next: (result: any) => {
           console.log(result);
           this.toastrService.success("Profile updated!");
@@ -102,60 +105,114 @@ export class ManagerProfileComponent implements OnInit{
 
 
   Populate(){
-   let projekat1 = new Project("1", this.User, "prvi projekat", 200);
-    let projekat2 = new Project("2", this.User, "drugi projekat", 200)
-    this.projects = [projekat1, projekat2]
-    this.projectsData.data = this.projects;
+    this.userService.getProjectsByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+      next: (result:any) => {
+        this.projects = result;
+        console.log(this.projects);
+        this.projectsData.data = result;
+      },
+      error: (error:any) => {
+        this.toastrService.error(error.message);
+      }
+    })
 
-   let User2 = new UserProfile('2', 'a@email.com', 'password', 'Engineer', 'Engineer', 'admin', 'admin', 'novi sad', '00', Designation.Engineer)
-    let User3 = new UserProfile('3', 'a@email.com', 'password', 'Engineer2', 'Engineer2', 'admin', 'admin', 'novi sad', '00', Designation.Engineer)
-    let Userproject1 = new UserProject("1", User2, projekat1,new Date(), new Date(), "tester")
-    let Userproject3 = new UserProject("1", User3, projekat1,new Date(), new Date(), "team leader")
-    let Userproject2 = new UserProject("2", User3, projekat2,new Date(), new Date(), "team leader")
-    this.userProjects = [Userproject1, Userproject2, Userproject3]
-    this.userProjectsData.data = this.userProjects;
-    this.selectEmployee= [
-      {
-        value: User2,
-        displayValue: User2.firstName,
+    this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+      next: (result:any) => {
+        this.userProjects = result;
+        console.log(this.userProjects);
+        this.userProjectsData.data = result;
       },
-      {
-        value: User3,
-        displayValue: User3.firstName,
+      error: (error:any) => {
+        this.toastrService.error(error.message);
       }
-    ];
-    this.selectProject= [
-      {
-        value: projekat2,
-        displayValue: projekat2.name,
+    })
+    this.userService.getAccounts().subscribe({
+      next: (result:any) => {
+        this.allEmployees = result;
+        console.log(this.allEmployees);
       },
-      {
-        value: projekat1,
-        displayValue: projekat1.name,
+      error: (error:any) => {
+        this.toastrService.error(error.message);
       }
-    ];
-    //get userProjects za projekte na kojima je ovaj bio manager
-    /*   this.registerUserInfoService.getProjectsForManager().subscribe({
-           next: (result:any) => {
-             this.projects = result;
-             console.log(this.projects);
-             this.dataSource.data = result;
-           },
-           error: (error:any) => {
-             this.toastrService.error(error.message);
-           }
-         }) */
+    })
+
   }
 
   delete(element:UserProject) {
-
+      this.userService.deleteUserProject(element.id).subscribe(res => {
+      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+          next: (result:any) => {
+            this.userProjects = result;
+            console.log(this.userProjects);
+            this.userProjectsData.data = result;
+          },
+          error: (error:any) => {
+            this.toastrService.error(error.message);
+          }
+      })
+    })
   }
 
   add() {
-
+      let newUserProject = new CreateUserProject(this.employee.id, this.project.id, new Date("2023-05-27T10:30:00"),new Date("2023-05-27T10:30:00"), this.description)
+      this.userService.createUserProject(newUserProject).subscribe(res => {
+      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+          next: (result:any) => {
+            this.userProjects = result;
+            console.log(this.userProjects);
+            this.userProjectsData.data = result;
+          },
+          error: (error:any) => {
+            this.toastrService.error(error.message);
+          }
+        })
+      })
   }
   changeStartDate(element : any) {
-    element.startDate = this.newDate;}
+    const outputDate = new Date(
+      this.newDate.getTime() -
+      this.newDate.getTimezoneOffset() * 60 * 1000 +
+      10 * 60 * 60 * 1000 +
+      30 * 60 * 1000
+    );
+    const formattedDate = outputDate.toISOString().slice(0, 19);
+    element.startDate = formattedDate;
+
+    this.userService.updateUserProject(element).subscribe(res => {
+      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+          next: (result:any) => {
+            this.userProjects = result;
+            console.log(this.userProjects);
+            this.userProjectsData.data = result;
+          },
+          error: (error:any) => {
+            this.toastrService.error(error.message);
+          }
+       })
+    })}
+
+
+
   changeEndDate(element : any) {
-    element.endDate = this.newDate;}
+    const outputDate = new Date(
+    this.newDate.getTime() -
+    this.newDate.getTimezoneOffset() * 60 * 1000 +
+    10 * 60 * 60 * 1000 +
+    30 * 60 * 1000
+  );
+    const formattedDate = outputDate.toISOString().slice(0, 19);
+    element.endDate = formattedDate;
+
+    this.userService.updateUserProject(element).subscribe(res => {
+      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+          next: (result:any) => {
+            this.userProjects = result;
+            console.log(this.userProjects);
+            this.userProjectsData.data = result;
+          },
+          error: (error:any) => {
+            this.toastrService.error(error.message);
+          }
+      })
+    })}
 }

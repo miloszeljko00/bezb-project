@@ -13,6 +13,7 @@ import {ProjectService} from "../../../../core/services/project.service";
 import {CreateUserProject} from "../../models/dto/createUserProject";
 import {C} from "@angular/cdk/keycodes";
 import {AuthService} from "../../../../core/auth/services/auth.service";
+import {combineLatest, map, Observable} from "rxjs";
 
 @Component({
   selector: 'app-manager-profile',
@@ -33,7 +34,7 @@ export class ManagerProfileComponent implements OnInit{
   newCaption: string = ""
   newDate: any;
   private User: UserProfile | undefined;
-
+  newName: any;
   projectsData = new MatTableDataSource;
   userProjectsData= new MatTableDataSource;
 
@@ -45,6 +46,7 @@ export class ManagerProfileComponent implements OnInit{
   employee: any;
   description: any;
   userId: any;
+  accountId: any;
   constructor(
     private formBuilder: FormBuilder,
     public userService: UserService,
@@ -58,8 +60,12 @@ export class ManagerProfileComponent implements OnInit{
     if(!user) return
     this.registerUserInfoService.getRegisterUserInfoByEmail(user?.email).subscribe({
       next: (result: any) => {
+        let infoArray = [result];
+        this.accountId = infoArray[0].account.id ;
         this.userId = result.id;
         console.log('%cMyProject%cline:79%cresult', 'color:#fff;background:#ee6f57;padding:3px;border-radius:2px', 'color:#fff;background:#1f3c88;padding:3px;border-radius:2px', 'color:#fff;background:rgb(1, 77, 103);padding:3px;border-radius:2px', result)
+
+        this.Populate( this.accountId );
         this.updateForm = this.formBuilder.group({
           id: new FormControl({value: result.id, disabled: true}),
           email: [result.account.username, Validators.required],
@@ -71,10 +77,10 @@ export class ManagerProfileComponent implements OnInit{
           city: [result.address.city, Validators.required],
           country: [result.address.country, Validators.required],
           phone: [result.phoneNumber, Validators.required]
-        });
-      }
+        });}
+
     })
-    this.Populate();
+
   }
   passwordValidator(password: FormControl) {
     const hasNumber = /[0-9]/.test(password.value);
@@ -130,8 +136,8 @@ export class ManagerProfileComponent implements OnInit{
   }
 
 
-  Populate(){
-    this.userService.getProjectsByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+  Populate(id:string){
+    this.userService.getProjectsByManager(id).subscribe({
       next: (result:any) => {
         this.projects = result;
         console.log(this.projects);
@@ -141,7 +147,7 @@ export class ManagerProfileComponent implements OnInit{
         this.toastrService.error(error.message);
       }
     })
-    this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+    this.userService.getEmployeesByManager(this.accountId).subscribe({
       next: (result:any) => {
         this.userProjects = result;
         console.log(this.userProjects);
@@ -162,26 +168,24 @@ export class ManagerProfileComponent implements OnInit{
     })
 
   }
-
-  delete(element:UserProject) {
-      this.userService.deleteUserProject(element.id).subscribe(res => {
-      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
-          next: (result:any) => {
-            this.userProjects = result;
-            console.log(this.userProjects);
-            this.userProjectsData.data = result;
-          },
-          error: (error:any) => {
-            this.toastrService.error(error.message);
-          }
-      })
-    })
+  delete(element: UserProject) {
+   /*   this.userService.deleteUserProject(element.id).subscribe(res => {
+  
+    })*/
+      this.projectService.removeUserFromProjects(element.project.id, element.user?.id).subscribe({
+        next: (result) => {
+          if (result) {
+            this.toastrService.success("User removed from project successfully!")
+            this.Populate( this.accountId );
+          } else this.toastrService.error("Error has occurred while removing user from project!")
+        }
+      });
   }
 
   add() {
       let newUserProject = new CreateUserProject(this.employee.id, this.project.id, new Date("2023-05-27T10:30:00"),new Date("2023-05-27T10:30:00"), this.description)
       this.userService.createUserProject(newUserProject).subscribe(res => {
-      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+      this.userService.getEmployeesByManager(this.accountId).subscribe({
           next: (result:any) => {
             this.userProjects = result;
             console.log(this.userProjects);
@@ -192,6 +196,7 @@ export class ManagerProfileComponent implements OnInit{
           }
         })
       })
+
   }
   changeStartDate(element : any) {
     const outputDate = new Date(
@@ -204,7 +209,7 @@ export class ManagerProfileComponent implements OnInit{
     element.startDate = formattedDate;
 
     this.userService.updateUserProject(element).subscribe(res => {
-      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+      this.userService.getEmployeesByManager(this.accountId).subscribe({
           next: (result:any) => {
             this.userProjects = result;
             console.log(this.userProjects);
@@ -229,7 +234,7 @@ export class ManagerProfileComponent implements OnInit{
     element.endDate = formattedDate;
 
     this.userService.updateUserProject(element).subscribe(res => {
-      this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
+      this.userService.getEmployeesByManager(this.accountId).subscribe({
           next: (result:any) => {
             this.userProjects = result;
             console.log(this.userProjects);
@@ -240,4 +245,7 @@ export class ManagerProfileComponent implements OnInit{
           }
       })
     })}
+
+
+
 }

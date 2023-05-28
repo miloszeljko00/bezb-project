@@ -44,7 +44,7 @@ export class ProjectService {
     private projects$ = new BehaviorSubject<Project[]>([])
 
     constructor(private http: HttpClient, private toastr: ToastrService) {}
-  
+
     getEmployeesByProjectId(projectId: string): Observable<UserProject[]> {
         return this.http.get<UserProject[]>(environment.apiUrl + `/api/profile/user-project/${projectId}`)
     }
@@ -59,4 +59,12 @@ export class ProjectService {
     getProjectsObservable() {
         return this.projects$.asObservable()
     }
+
+  removeUserFromProjects(id: string, id2: string | undefined) {
+    return this.http.delete(environment.apiUrl + `/api/profile/user-project/${id}/delete/${id2}`).pipe(
+      map(() => {
+        return true
+      })
+    )
+  }
 }

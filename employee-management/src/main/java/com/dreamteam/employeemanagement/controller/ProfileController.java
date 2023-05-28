@@ -97,7 +97,7 @@ public class ProfileController {
         var userProjects = profileService.getUsersByProject(projectId);
 
         for(var user: userProjects){
-            if(user.getId().equals(UUID.fromString(userId))){
+            if(user.getUser().getId().equals(UUID.fromString(userId))){
                 userProjectRepository.delete(user);
                 return new ResponseEntity<>(HttpStatus.OK);
             }

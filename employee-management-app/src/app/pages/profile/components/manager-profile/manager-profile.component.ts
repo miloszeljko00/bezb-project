@@ -12,6 +12,7 @@ import {SelectOption} from "../../../../shared/ui/input/components/select-field/
 import {ProjectService} from "../../../../core/services/project.service";
 import {CreateUserProject} from "../../models/dto/createUserProject";
 import {C} from "@angular/cdk/keycodes";
+import {AuthService} from "../../../../core/auth/services/auth.service";
 
 @Component({
   selector: 'app-manager-profile',
@@ -43,28 +44,36 @@ export class ManagerProfileComponent implements OnInit{
   project: any;
   employee: any;
   description: any;
-
+  userId: any;
   constructor(
     private formBuilder: FormBuilder,
     public userService: UserService,
     public projectService:ProjectService,
-    public toastrService: ToastrService) { }
+    public toastrService: ToastrService,
+    private authService: AuthService,
+    public registerUserInfoService: RegisterUserInfoService) { }
 
   ngOnInit() {
-    this.User = new UserProfile('1','a@email.com','password','managger','manager','admin','admin','novi sad','00', Designation.ProjectManager)
-    this.updateForm = this.formBuilder.group({
-      id: new FormControl({value: this.User.id, disabled: true}),
-      email: [this.User.email, Validators.required],
-      password: [this.User.password, [Validators.required, Validators.minLength(8), this.passwordValidator]],
-      confirmPassword: ['', Validators.required],
-      firstName: [this.User.firstName, Validators.required],
-      lastName: [this.User.lastName, Validators.required],
-      street: [this.User.street, Validators.required],
-      city: [this.User.city, Validators.required],
-      country: [this.User.country, Validators.required],
-      phone: [this.User.phone, Validators.required],
-      designation: [this.User.designation, Validators.required]
-    });
+    const user = this.authService.getUser()
+    if(!user) return
+    this.registerUserInfoService.getRegisterUserInfoByEmail(user?.email).subscribe({
+      next: (result: any) => {
+        this.userId = result.id;
+        console.log('%cMyProject%cline:79%cresult', 'color:#fff;background:#ee6f57;padding:3px;border-radius:2px', 'color:#fff;background:#1f3c88;padding:3px;border-radius:2px', 'color:#fff;background:rgb(1, 77, 103);padding:3px;border-radius:2px', result)
+        this.updateForm = this.formBuilder.group({
+          id: new FormControl({value: result.id, disabled: true}),
+          email: [result.account.username, Validators.required],
+          password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
+          confirmPassword: ['', Validators.required],
+          firstName: [result.firstName, Validators.required],
+          lastName: [result.lastName, Validators.required],
+          street: [result.address.street, Validators.required],
+          city: [result.address.city, Validators.required],
+          country: [result.address.country, Validators.required],
+          phone: [result.phoneNumber, Validators.required]
+        });
+      }
+    })
     this.Populate();
   }
   passwordValidator(password: FormControl) {
@@ -81,7 +90,23 @@ export class ManagerProfileComponent implements OnInit{
 
   onSubmit() {
     if (this.updateForm.valid) {
-      this.userService.updateEngineer(this.updateForm.value).subscribe({
+      const request = {
+        id: this.userId,
+        account: {
+          username: this.updateForm.value.email,
+          password: this.updateForm.value.password
+        },
+        firstName: this.updateForm.value.firstName,
+        lastName: this.updateForm.value.lastName,
+        address: {
+          street: this.updateForm.value.street,
+          city: this.updateForm.value.city,
+          country: this.updateForm.value.country
+        },
+        phoneNumber: this.updateForm.value.phone,
+        revisionDate: new Date(),
+      }
+      this.userService.updateProfile(request).subscribe({
         next: (result: any) => {
           console.log(result);
           this.toastrService.success("Profile updated!");
@@ -92,6 +117,7 @@ export class ManagerProfileComponent implements OnInit{
       })
     }
   }
+
   validatePasswordMatch() {
     const password = this.updateForm.get('password')!.value;
     const confirmPassword = this.updateForm.get('confirmPassword')!.value;
@@ -115,7 +141,6 @@ export class ManagerProfileComponent implements OnInit{
         this.toastrService.error(error.message);
       }
     })
-
     this.userService.getEmployeesByManager("d46fb741-5d9a-44dc-bc70-73ebea53dc25").subscribe({
       next: (result:any) => {
         this.userProjects = result;

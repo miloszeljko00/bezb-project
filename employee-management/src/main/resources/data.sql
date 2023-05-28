@@ -63,6 +63,8 @@ INSERT INTO public.permissions(id, name)
 VALUES ('b534fa31-95d0-4c63-9a26-4d27696c2de6', 'DELETE-PROJECT');
 INSERT INTO public.permissions(id, name)
 VALUES ('43182ad7-6915-4aa3-bce5-d412b3d53551', 'REGISTER-ADMIN');
+INSERT INTO public.permissions(id, name)
+VALUES ('15836cbb-dd75-4747-95ba-bf19d96e00c3', 'GET-USER-PROJECTS');
 
 
 -- GET-PERMISSIONS to Administrator
@@ -120,8 +122,24 @@ VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'b534fa31-95d0-4c63-9a26-4d27696
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '43182ad7-6915-4aa3-bce5-d412b3d53551');
 
-
-
+-- UPDATE-REGISTER-USER-INFO to Project Manager
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', 'f061927b-5d87-4bb5-9ca4-af3b7252432e');
+-- UPDATE-USER-PROJECT to Project Manager
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', 'f37150ca-8f4e-4e50-bfa5-48c0797b469d');
+-- ADD-EMPLOYEE-TO-PROJECT to Project Manager
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', '9d9eb54a-a317-4b34-bdee-42fdbf6c0ad7');
+-- GET-PROJECTS to Project Manager
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', '3c27e735-8b39-42e3-8612-d90ca6c750a2');
+-- GET-USER-PROJECTS to Project Manager
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', '15836cbb-dd75-4747-95ba-bf19d96e00c3');
+-- REMOVE-EMPLOYEE-FROM-PROJECT to Project Manager
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', '2cb7a52c-cc57-4261-ae87-ae1bb36dd00b');
 
 
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)

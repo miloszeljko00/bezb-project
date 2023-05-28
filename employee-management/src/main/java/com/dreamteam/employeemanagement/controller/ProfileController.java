@@ -45,12 +45,12 @@ public class ProfileController {
     public Optional<Account> getUser(@PathVariable("id")  String id) {
         return profileService.getUser(id);
     }
-
-   @GetMapping("/manager/{id}")
+    @PreAuthorize("hasRole('GET-PROJECTS')")
+    @GetMapping("/manager/{id}")
     public List<Project> getAllByManager(@PathVariable("id") String id) {
         return profileService.getByManager(id);
     }
-
+    @PreAuthorize("hasRole('GET-USER-PROJECTS')")
     @GetMapping("/user-project/manager/{id}")
     public List<UserProject> getUsersByManager(@PathVariable("id") String managerId) {
 

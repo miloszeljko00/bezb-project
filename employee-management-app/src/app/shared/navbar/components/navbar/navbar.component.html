@@ -14,8 +14,9 @@
             <app-navbar-button *ngIf="user.hasPermission('GET-EMPLOYEES')" (click)="goToEmployees()">Employees</app-navbar-button>
             <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToPreviewRegistrationRequest()">Review Registrations</app-navbar-button>
             <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToRegisterNewAdminPage()">Register New Admin</app-navbar-button>
+          <app-navbar-button *ngIf="user.hasRole('Project Manager')" (click)="goToManagerAccount()">Account</app-navbar-button>
 
-            <app-navbar-button *ngIf="user.hasRole('Software Engineer')" (click)="goToEngineerAccount()">Account</app-navbar-button>
+          <app-navbar-button *ngIf="user.hasRole('Software Engineer')" (click)="goToEngineerAccount()">Account</app-navbar-button>
             <app-navbar-button *ngIf="user.hasRole('Administrator')" (click)="goToManageRoles()">Manage Roles</app-navbar-button>
         </ng-container>
       </div>

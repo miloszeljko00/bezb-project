@@ -76,6 +76,9 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToEngineerAccount() {
     this.router.navigate(['/account/engineer'])
   }
+  goToManagerAccount() {
+    this.router.navigate(['/account/manager'])
+  }
   test() {
     this.http.get(environment.apiUrl + '/api/test').subscribe({
       next: () =>{

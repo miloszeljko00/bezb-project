@@ -1,4 +1,4 @@
-<form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="form">
+<form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="form" *ngIf="updateForm">
   <div class="first-column" style="margin-right: 20px;">
     <mat-form-field>
       <mat-label>User ID</mat-label>
@@ -34,8 +34,6 @@
       <mat-error *ngIf="f.confirmPassword.hasError('required')">Confirm password is required</mat-error>
       <mat-error *ngIf="f.confirmPassword.hasError('mismatch')">Passwords do not match</mat-error>
     </mat-form-field><br>
-    <button  style="margin-left: -80px;" mat-raised-button color="primary" type="submit" [disabled]="updateForm.invalid">Update</button>
-
   </div>
   <div class="second-column">
     <mat-form-field>
@@ -62,16 +60,10 @@
       <mat-error *ngIf="f.phone.hasError('required')">Phone number is required</mat-error>
     </mat-form-field><br>
 
-    <mat-form-field>
-      <mat-label>Designation</mat-label>
-      <mat-select formControlName="designation">
-        <mat-option *ngFor="let option of designationOptions" [value]="option">{{ option }}</mat-option>
-      </mat-select>
-      <mat-error *ngIf="f.designation.hasError('required')">Designation is required</mat-error>
-    </mat-form-field><br>
-
+    <button  style="margin-left: 150px; margin-top: 12px;" mat-raised-button color="primary" type="submit" [disabled]="updateForm.invalid">Update</button>
   </div>
 </form>
+
 <div>
 <div class="table-header">
   <p class="table-title">My projects</p>
@@ -113,7 +105,7 @@
 <div  class="table">
   <div class="table-header">
     <p class="table-title">Employees on my projects</p>
-    <app-date-field [(value)]="newDate" >
+    <app-date-field [(value)]="newDate">
       <mat-label>Choose new date</mat-label>
     </app-date-field>
   </div>
@@ -192,14 +184,12 @@
         <option *ngFor="let object of allEmployees" [ngValue]="object">{{ object.id }}</option>
       </select>
     </tr>
-    <tr><td>
-    </td>
-      <td>
-        <app-input-field
-          name="fieldName"
-          ngDefaultControl
-          [(ngModel)]="description">Description</app-input-field>
-      </td>
+    <tr>
+      <app-input-field
+        name="fieldName"
+        ngDefaultControl
+        [(ngModel)]="description">Description</app-input-field></tr>
+    <tr>
   </table>
   <app-primary-button class="create" (click)="add()">Add</app-primary-button>
 </div>

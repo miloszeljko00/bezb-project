@@ -27,7 +27,7 @@ export class UserService {
     return this.http.get(environment.apiUrl + "/api/profile/project/"+ id);
   }
   getUsersByProject(id: string) {
-    return this.http.get(environment.apiUrl + "/api/profile/user-project/"+ id);
+    return this.http.get<UserProject[]>(environment.apiUrl + "/api/profile/user-project/"+ id);
   }
   getUsers() {
     return this.http.get<UserProfile[]>(environment.apiUrl + "/api/profile/users/all");

@@ -34,7 +34,7 @@ public class ProfileService {
     }
 
     public List<UserProject> getUsersByProject(String projectId) {
-        var project = projectRepository.getById(UUID.fromString(projectId));
+        var project = projectRepository.findById(UUID.fromString(projectId)).orElseThrow();
         return userProjectRepository.findAllByProject(project);
     }
     public List<UserProject> getProjectsByUser(UUID id) {

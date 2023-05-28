@@ -1,11 +1,10 @@
 package com.dreamteam.employeemanagement.controller;
+import com.dreamteam.employeemanagement.dto.profile.AddUserToProject;
 import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
 import com.dreamteam.employeemanagement.model.*;
-import com.dreamteam.employeemanagement.repository.ICVRepository;
-import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
-import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
-import com.dreamteam.employeemanagement.repository.IUserSkillsRepository;
+import com.dreamteam.employeemanagement.repository.*;
 import com.dreamteam.employeemanagement.service.ProfileService;
+import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +30,8 @@ public class ProfileController {
     private final IUserSkillsRepository userSkillsRepository;
     private final IUserProjectRepository userProjectRepository;
     private final IRegisterUserInfoRepository registerUserInfoRepository;
+    private final IProjectRepository projectRepository;
+    private final IAccountRepository accountRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -62,8 +64,22 @@ public class ProfileController {
      }*/
     @GetMapping("/user-project/{id}")
     public List<UserProject> getUsersByProject(@PathVariable("id") String projectId) {
-        return profileService.getUsersByProject(projectId);
+        var userProjects = profileService.getUsersByProject(projectId);
+        return userProjects;
     }
+    @DeleteMapping("/user-project/{projectId}/delete/{userId}")
+    public ResponseEntity<Object> deleteUserFromProject(@PathVariable("projectId") String projectId, @PathVariable("userId") String userId) {
+        var userProjects = profileService.getUsersByProject(projectId);
+
+        for(var user: userProjects){
+            if(user.getId().equals(UUID.fromString(userId))){
+                userProjectRepository.delete(user);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     @GetMapping("/user-skills/{id}")
     public ResponseEntity<List<UserSkills>> getUserSkills(@PathVariable("id") String id) {
         return new ResponseEntity<>(this.userSkillsRepository.findByUserId(UUID.fromString(id)), HttpStatus.OK);
@@ -90,6 +106,19 @@ public class ProfileController {
     @PostMapping("/create-userSkill")
     public UserSkills createUserSkill(@RequestBody UserSkills skill) {
         return profileService.createUserSkill(skill);
+    }
+    @PostMapping("/user-project/{projectId}/add")
+    public UserProject addUserToProject(@PathVariable UUID projectId, @RequestBody AddUserToProject user) {
+        var project = projectRepository.findById(projectId).orElseThrow();
+        var account = accountRepository.findById(UUID.fromString(user.getUserId())).orElseThrow();
+        var up = new UserProject();
+        up.setProject(project);
+        up.setUser(account);
+        up.setStartDate(user.getFrom());
+        up.setEndDate(user.getTo());
+        up.setDescription(user.getDescription());
+
+        return userProjectRepository.save(up);
     }
 
     @PostMapping("/create-userProject")

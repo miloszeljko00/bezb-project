@@ -39,6 +39,10 @@
   </mat-form-field><br>
   <button  style="margin-left: 0px;" mat-raised-button color="primary" type="submit" [disabled]="updateForm.invalid">Update</button>
 </form>
+<div style="position: absolute; margin-left: 70%; margin-top: -30%;">
+  <label class="button" for="fileElem">Upload CV</label><br>
+  <input type="file" id="fileElem" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document" (change)="onFileUpload($event)">
+</div>
 
 <div class="table">
   <div class="table-header">
@@ -113,6 +117,7 @@
     <ng-container matColumnDef="buttons">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let element">
+        <button mat-raised-button style="margin-right: 10px;" (click)="changeSkillName(element)">Change skill name</button>
         <button mat-raised-button style="margin-right: 10px;" (click)="changeRating(element)">Change rating</button>
       </td>
     </ng-container>

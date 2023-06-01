@@ -1,7 +1,5 @@
 package com.dreamteam.employeemanagement.controller;
 
-import com.dreamteam.employeemanagement.dto.auth.request.LoginRequest;
-import com.dreamteam.employeemanagement.dto.auth.response.LoginResponse;
 import com.dreamteam.employeemanagement.dto.register.RegisterUserInfoRequest;
 import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.model.enums.AccountStatus;
@@ -18,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -174,7 +171,7 @@ public class RegisterController {
         // Generate the HMAC for the token and registerUserInfoId
         String hmac = HmacUtil.generateHmac(token.getToken().toString() + idString, "veljin-tajni-kljuc");
 
-        String activationLink = "http://localhost:8080/api/register/confirm-registration?token=" + hmac + "&registerUserInfoId=" + idString;
+        String activationLink = "https://localhost:443/api/register/confirm-registration?token=" + hmac + "&registerUserInfoId=" + idString;
         emailService.sendEmail(registrationRequest.get().getAccount().getEmail(), "Obradjen zahtev za registraciju", "Vas zahtev za registraciju je prihvacen! Potvrdite pritiskom na link: " + activationLink);
         return new ResponseEntity<>(updatedRegistrationRequest, HttpStatus.OK);
     }

@@ -1,0 +1,8 @@
+<div style="margin-left: 30%; margin-top: 20%;">
+  <div *ngFor="let cv of cvs" style="display: flex; justify-content: space-between; width: 60%;">
+    <div>{{cv.userEmail}}</div>
+    <div>{{cv.fileName}}</div>
+    <button (click)="downloadCv(cv)">download</button>
+  </div>
+</div>
+<h1 *ngIf="cvs.length == 0" style="margin-left: 50%">No cvs</h1>

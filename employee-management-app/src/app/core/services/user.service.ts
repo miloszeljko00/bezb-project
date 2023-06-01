@@ -77,8 +77,18 @@ export class UserService {
   updateProfile(newCaption: any) {
     return this.http.put(environment.apiUrl + "/api/profile/update-profile", newCaption);
   }
-  updateSkill(userSkill: UserSkills) {
-    return this.http.put(environment.apiUrl + "/api/profile/update-skill", userSkill);
-  }
+  updateSkill(userSkill: UserSkills, flag: string) {
+    if(flag=="jedan"){
+      return this.http.put(environment.apiUrl + "/api/profile/update-skill/" + userSkill.id + "/" + userSkill.name + "/" + flag, null);
 
+    }else {
+      return this.http.put(environment.apiUrl + "/api/profile/update-skill/" + userSkill.id + "/" + userSkill.rating + "/" + flag, null);
+    }
+  }
+  uploadCv(file: FormData, userEmail: string) {
+    return this.http.post(environment.apiUrl + "/api/profile/upload-cv/" + userEmail, file);
+  }
+  getAllCvs() {
+    return this.http.get(environment.apiUrl + "/api/profile/get-all-cvs");
+  }
 }

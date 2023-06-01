@@ -24,6 +24,8 @@ public class CV {
     private String userEmail;
     @Column(name = "file_name")
     private String fileName;
+    @Column(name = "file_name_on_file_system")
+    private String fileNameOnFileSystem;
     @Column(name = "data")
     private byte[] data;
 }

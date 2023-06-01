@@ -12,6 +12,7 @@ const routes: Routes = [
   { path: 'previewRegistrationRequests', loadChildren: () => import('./pages/PreviewRegistrationRequests/PreviewRegistrationRequests.module').then(m => m.PreviewRegistrationRequestsModule) },
   { path: 'manage-roles', loadChildren: () => import('./pages/manage-roles/manage-roles.module').then(m => m.ManageRolesModule), canActivate: [GetRolesGuard] },
   { path: 'account', loadChildren: () => import('./pages/profile/profile.module').then(m => m.ProfileModule) },
+  { path: 'cvs', loadChildren: () => import('./pages/CVs/CVs.module').then(m => m.CVsModule) },
   { path: 'employees', loadChildren: () => import('./pages/employees/employees.module').then(m => m.EmployeesModule), canActivate: [GetEmployeesGuard] },
   { path: 'projects', loadChildren: () => import('./pages/projects/projects.module').then(m => m.ProjectsModule), canActivate: [GetProjectsGuard] },
   { path: 'register-new-admin', loadChildren: () => import('./pages/register-new-admin/register-new-admin.module').then(m => m.RegisterNewAdminModule), canActivate: [RegisterNewAdminGuard] },

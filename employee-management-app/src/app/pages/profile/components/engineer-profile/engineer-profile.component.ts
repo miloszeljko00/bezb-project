@@ -9,6 +9,7 @@ import { UserService } from "../../../../core/services/user.service";
 import { UserProject } from "../../models/userProject";
 import { AuthService } from 'src/app/core/auth/services/auth.service';
 import { Validators } from '@angular/forms';
+import { UserSkills } from '../../models/userSkills';
 
 
 @Component({
@@ -94,9 +95,17 @@ export class EngineerProfileComponent implements OnInit{
 
   onSubmit() {
     if (this.updateForm.valid) {
-      this.updateUserService.updateEngineer(this.updateForm.value).subscribe({
+      this.registerUserInfo.account.email = this.updateForm.get('email')?.value;
+      this.registerUserInfo.firstName = this.updateForm.get('firstName')?.value;
+      this.registerUserInfo.lastName = this.updateForm.get('lastName')?.value;
+      this.registerUserInfo.address.street = this.updateForm.get('street')?.value;
+      this.registerUserInfo.address.city= this.updateForm.get('city')?.value;
+      this.registerUserInfo.address.country= this.updateForm.get('country')?.value;
+      this.registerUserInfo.phoneNumber= this.updateForm.get('phoneNumber')?.value;
+
+      this.updateUserService.updateProfile(this.registerUserInfo).subscribe({
         next: (result: any) => {
-          console.log(result);
+          this.registerUserInfo = result;
           this.toastrService.success("Profile updated!");
         },
         error: (error: any) => {
@@ -105,7 +114,23 @@ export class EngineerProfileComponent implements OnInit{
       })
     }
   }
+  onFileUpload(event: Event) {
+    const formData = new FormData();
+    //@ts-ignore
+    const file : File = event.target!.files[0];
+    formData.append("file", file);
+    this.updateUserService.uploadCv(formData, this.registerUserInfo.account.email).subscribe({
+      next: (result: any) => {
+        console.log(result);
+        this.toastrService.success("CV uploaded successfully")
+      },
+      error: (e:any) => {
+        console.log(e);
+        this.toastrService.error(e.message);
+      }
+    })
 
+};
   getProjectsForUser(id: any){
     // let manager =new UserProfile('1', 'a@email.com', 'password', 'manager', 'manager', 'kolubarska', 'serbia', 'novi sad', '00', Designation.ProjectManager);
     // let projekat1 = new Project("1", manager, "prvi projekat", 200);
@@ -152,9 +177,21 @@ export class EngineerProfileComponent implements OnInit{
     })
   }
 
+  changeSkillName(element : UserSkills) {
+    element.name = this.skillName;
+    this.updateUserService.updateSkill(element, 'jedan').subscribe({
+      next: (result: any) => {
+        this.toastrService.success("User skill changed successfully");
+        element=result;
+      },
+      error: (e: any) => {
+        this.toastrService.error(e.message);
+      }
+    })
+  }
   changeRating(element : any) {
     element.rating = this.rating;
-    this.updateUserService.updateSkill(element).subscribe({
+    this.updateUserService.updateSkill(element, 'bilosta').subscribe({
       next: (result: any) => {
         this.toastrService.success("User skill changed successfully");
         element=result;

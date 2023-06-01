@@ -20,7 +20,7 @@ public class UserProject {
     @JoinColumn(name = "accountId")
     private Account user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "projectId")
     private Project project;
     @Column(name = "startDate")

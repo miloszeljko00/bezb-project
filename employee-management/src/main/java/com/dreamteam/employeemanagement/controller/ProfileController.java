@@ -1,4 +1,12 @@
 package com.dreamteam.employeemanagement.controller;
+import com.dreamteam.employeemanagement.dto.profile.RegisterUserInfoDto;
+import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
+import com.dreamteam.employeemanagement.model.*;
+import com.dreamteam.employeemanagement.repository.ICVRepository;
+import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
+import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
+import com.dreamteam.employeemanagement.repository.IUserSkillsRepository;
+import com.dreamteam.employeemanagement.service.CVService;
 import com.dreamteam.employeemanagement.dto.profile.CreateProjectDto;
 import com.dreamteam.employeemanagement.dto.profile.AddUserToProject;
 import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
@@ -27,10 +35,12 @@ public class ProfileController {
 
 
     private final ProfileService profileService;
-    private final ICVRepository cvRepository;
     private final IUserSkillsRepository userSkillsRepository;
     private final IUserProjectRepository userProjectRepository;
     private final IRegisterUserInfoRepository registerUserInfoRepository;
+    private final CVService cvService;
+
+    private final ICVRepository cvRepository;
     private final IProjectRepository projectRepository;
     private final IAccountRepository accountRepository;
 
@@ -171,6 +181,26 @@ public class ProfileController {
 
     @PreAuthorize("hasRole('UPDATE-REGISTER-USER-INFO')")
     @PutMapping("/update-profile")
+    public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfoDto registerUserInfoDto) {
+        var registerUserInfo = registerUserInfoRepository.findById(UUID.fromString(registerUserInfoDto.getId()));
+        registerUserInfo.get().setAddress(registerUserInfoDto.getAddress());
+        registerUserInfo.get().setPhoneNumber(registerUserInfoDto.getPhoneNumber());
+        registerUserInfo.get().setFirstName(registerUserInfoDto.getFirstName());
+        registerUserInfo.get().setLastName(registerUserInfoDto.getLastName());
+        return new ResponseEntity<>(registerUserInfoRepository.save(registerUserInfo.get()), HttpStatus.OK);
+    }
+
+    @PutMapping("/update-skill/{userProjectId}/{changedProperty}/{flag}")
+    public ResponseEntity<UserSkills> updateSkill(@PathVariable String userProjectId, @PathVariable String changedProperty, @PathVariable String flag) {
+        if(flag.equals("jedan")){
+            return new ResponseEntity<>(userSkillsRepository.save((userSkillsRepository.findById(UUID.fromString(userProjectId)).map(us-> {us.setName(changedProperty); return us;}).get())), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(userSkillsRepository.save((userSkillsRepository.findById(UUID.fromString(userProjectId)).map(us-> {us.setRating(Double.valueOf(changedProperty)); return us;}).get())), HttpStatus.OK);
+        }
+    }
+
+    @PostMapping(value = "/upload-cv/{userEmail}")
+    public ResponseEntity<Object> uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
     public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
         var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
         var pass = registerUserInfo.getAccount().getPassword();
@@ -198,18 +228,23 @@ public class ProfileController {
             try {
                 String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
+                var cvFileNameOnFileSystem = cvService.saveCV(file);
                 CV cv = new CV();
                 cv.setFileName(fileName);
+                cv.setFileNameOnFileSystem(cvFileNameOnFileSystem);
                 cv.setUserEmail(userEmail);
                 cv.setData(file.getBytes());
                 cvRepository.save(cv);
-
-                return new ResponseEntity<>("CV saved successfully!", HttpStatus.OK);
+                return new ResponseEntity<>("{\"message\": \"CV saved successfully!\"}", HttpStatus.OK);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity<>("Something went wrong while uploading CV...", HttpStatus.BAD_REQUEST);
             }
         }
         return new ResponseEntity<>("Empty file uploaded...", HttpStatus.BAD_REQUEST);
+    }
+    @GetMapping("/get-all-cvs")
+    public ResponseEntity<List<CV>> getAllCvs() {
+        return new ResponseEntity<>(cvRepository.findAll(), HttpStatus.OK);
     }
 }

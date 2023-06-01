@@ -200,7 +200,6 @@ public class ProfileController {
     }
 
     @PostMapping(value = "/upload-cv/{userEmail}")
-    public ResponseEntity<Object> uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
     public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
         var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
         var pass = registerUserInfo.getAccount().getPassword();

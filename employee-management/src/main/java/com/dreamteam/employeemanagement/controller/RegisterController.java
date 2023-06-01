@@ -11,6 +11,7 @@ import com.dreamteam.employeemanagement.service.RegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -122,6 +123,38 @@ public class RegisterController {
         return ResponseEntity.badRequest().body("Invalid activation link.");
     }
 
+    @PreAuthorize("hasRole('REGISTER-ADMIN')")
+    @PostMapping("/admin")
+    public ResponseEntity registerAdmin(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) {
+
+        var role = roleRepository.findByName("Administrator");
+        var roles = new ArrayList<Role>();
+        roles.add(role);
+        //Create account
+        var account = new Account();
+        account.setStatus(AccountStatus.ACCEPTED);
+        account.setRoles(roles);
+        account.setEmail(registerUserInfoRequest.getEmail());
+        account.setFirstLogin(true);
+        var passwordEncoded = passwordEncoder.encode(registerUserInfoRequest.getPassword());
+        account.setPassword(passwordEncoded);
+        account = accountRepository.save(account);
+        //Create Address
+        var address = Address.builder()
+                .City(registerUserInfoRequest.getCity())
+                .Country(registerUserInfoRequest.getCountry())
+                .Street(registerUserInfoRequest.getStreet())
+                .build();
+        //Create RegisterUserInfo
+        var registerUserInfo = new RegisterUserInfo();
+        registerUserInfo.setAccount(account);
+        registerUserInfo.setFirstName(registerUserInfoRequest.getFirstName());
+        registerUserInfo.setLastName(registerUserInfoRequest.getLastName());
+        registerUserInfo.setPhoneNumber(registerUserInfoRequest.getPhone());
+        registerUserInfo.setAddress(address);
+        registerUserInfo = registerUserInfoRepository.save(registerUserInfo);
+        return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
+    }
     @PutMapping("/accept-registration")
     public ResponseEntity<RegisterUserInfo> acceptRegistration(@RequestBody String idString) {
         UUID id = UUID.fromString(idString);

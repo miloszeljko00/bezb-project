@@ -8,6 +8,7 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { RoleService } from 'src/app/core/services/role.service';
 import { AddPermissionDialog } from './components/add-permission-dialog/add-permission.dialog';
 import { auto } from '@popperjs/core';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 
 
@@ -21,11 +22,17 @@ export class ManageRolesPage {
   roles$ = this.roleService.getRolesObservable()
   permissions$ = this.permissionService.getPermissionsObservable()
 
+  user: any;
+
   constructor(
     private roleService: RoleService,
     private permissionService: PermissionService,
     private toastr: ToastrService,
-    private dialog: MatDialog) {}
+    private dialog: MatDialog,
+    private authService: AuthService ) {
+      this.user = this.authService.getUser()
+      console.log('%cMyProject%cline:33%cthis.user', 'color:#fff;background:#ee6f57;padding:3px;border-radius:2px', 'color:#fff;background:#1f3c88;padding:3px;border-radius:2px', 'color:#fff;background:rgb(179, 214, 110);padding:3px;border-radius:2px', this.user)
+    }
 
   ngOnInit() {
     this.roleService.fetchRoles()

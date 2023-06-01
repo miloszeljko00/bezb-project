@@ -1,4 +1,4 @@
-<form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="form">
+<form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="form" *ngIf="updateForm">
   <div class="first-column" style="margin-right: 20px;">
     <mat-form-field>
       <mat-label>User ID</mat-label>
@@ -60,13 +60,6 @@
       <mat-error *ngIf="f.phone.hasError('required')">Phone number is required</mat-error>
     </mat-form-field><br>
 
-    <mat-form-field>
-      <mat-label>Designation</mat-label>
-      <mat-select formControlName="designation">
-        <mat-option *ngFor="let option of designationOptions" [value]="option">{{ option }}</mat-option>
-      </mat-select>
-      <mat-error *ngIf="f.designation.hasError('required')">Designation is required</mat-error>
-    </mat-form-field><br>
     <button  style="margin-left: 150px; margin-top: 12px;" mat-raised-button color="primary" type="submit" [disabled]="updateForm.invalid">Update</button>
   </div>
 </form>

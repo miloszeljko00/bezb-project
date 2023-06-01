@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { EmployeeService } from 'src/app/core/services/employee.service';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   templateUrl: './employees.page.html',
@@ -8,7 +9,7 @@ import { EmployeeService } from 'src/app/core/services/employee.service';
 export class EmployeesPage {
   
   displayedColumns = ['id', 'firstName', 'lastName', 'country', 'city', 'street', 'email', 'phone'];
-  employees$ = this.employeeService.getEmployeesObservable()
+  employees$ = this.userService.getUsers()
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(private userService: UserService) {}
 }

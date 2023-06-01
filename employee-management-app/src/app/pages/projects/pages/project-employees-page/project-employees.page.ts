@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, concatAll, map, switchMap, tap, toArray } from 'rxjs';
 import { ProjectService } from 'src/app/core/services/project.service';
 import { UserProject } from 'src/app/pages/profile/models/userProject';
 import { AddEmployeeDialog } from '../../dialogs/add-employee-dialog/add-employee.dialog';
@@ -22,7 +22,7 @@ export class ProjectEmployeesPage {
   employeesOnProject$ = this.projectId$.pipe(
     switchMap(projectId => this.projectService.getEmployeesByProjectId(projectId))
   )
-
+  employeesOnProject: UserProject[] = [];
   @ViewChild('table') table!: MatTable<UserProject>;
 
 
@@ -35,21 +35,26 @@ export class ProjectEmployeesPage {
   removeEmployeeFromProject(userProject: UserProject) {
     const result = confirm("Are you sure you want to remove this user from project?");
     if(!result) return;
-    this.projectService.removeUserFromProject(userProject.id).subscribe({
+    this.projectService.removeUserFromProject(this.projectId, userProject.id).subscribe({
       next: (result) => {
         if(result) {
           this.toastr.success("User removed from project successfully!")
-          this.employeesOnProject$ = this.employeesOnProject$.pipe(map(employees => employees.filter(employee => employee.id !== userProject.id)))
+          this.employeesOnProject = this.employeesOnProject.filter(employee => employee.id !== userProject.id)
           this.table.renderRows()
         }else this.toastr.error("Error has occurred while removing user from project!")
       }
     });
   }
-
+  ngOnInit() {
+    this.employeesOnProject$.subscribe((employees) => {
+      this.employeesOnProject = employees;
+    })
+  }
   openAddEmployeeToProjectDialog() {
     const dialogRef = this.dialog.open(AddEmployeeDialog, {
       restoreFocus: false,
-      autoFocus: false
+      autoFocus: false,
+      data: { projectId: this.projectId}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -58,7 +63,7 @@ export class ProjectEmployeesPage {
           next: (result: UserProject) => {
             if(result) {
               this.toastr.success("User added to project successfully!")
-              this.employeesOnProject$ = this.employeesOnProject$.pipe(map(employees => {employees.push(result); return employees}))
+              this.employeesOnProject = [...this.employeesOnProject, result]
               this.table.renderRows()
             }else this.toastr.error("Error has occurred while adding user to project!")
           }

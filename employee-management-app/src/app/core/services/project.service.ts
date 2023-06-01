@@ -11,14 +11,17 @@ import { UserProject } from 'src/app/pages/profile/models/userProject';
 @Injectable({providedIn: 'root'})
 export class ProjectService {
     addUserToProject(result: any, projectId: string) {
-      return of(new UserProject('999', result, new Project(projectId, undefined, "project 1", 10), new Date(), new Date(), 'description'))
+      return this.http.post<UserProject>(environment.apiUrl + `/api/profile/user-project/${projectId}/add`, { userId: result.userId, from: result.from, to: result.to, description: result.description})
     }
-    removeUserFromProject(id: string) {
-      return of(true)
+    removeUserFromProject(projectId: string, userId: string) {
+      return this.http.delete(environment.apiUrl + `/api/profile/user-project/${projectId}/delete/${userId}`).pipe(
+        map(() => {
+          return true
+        })
+      )
     }
     deleteProject(id: string) {
-        //TODO call backend
-        return of(true).pipe(
+        return this.http.delete(environment.apiUrl + "/api/projects/delete/" + id).pipe(
             map(() => {
                 const projects = this.projects$.getValue()
                 const index = projects.findIndex((project) => project.id === id)
@@ -28,9 +31,8 @@ export class ProjectService {
             }
         ))
     }
-    createProject(name: string, duration: number, manager: UserProfile) {
-      //TODO call backend
-      return of(new Project('999', manager, name, duration)).pipe(
+    createProject(name: string, duration: number, managerId: string) {
+      return this.http.post<Project>(environment.apiUrl + "/api/projects/create", { managerId: managerId, name: name, duration: duration}).pipe(
         map((project: Project) => {
             const projects = this.projects$.getValue()
             projects.push(project)
@@ -39,96 +41,16 @@ export class ProjectService {
         }
       ))
     }
-    private projects$ = new BehaviorSubject<Project[]>([
-        new Project('1', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 1', 10),
-        new Project('2', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 2', 20),
-        new Project('3', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 3', 30),
-        new Project('4', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 4', 40),
-        new Project('5', new UserProfile(
-            "1",
-            "john.doe@example.com",
-            "password",
-            "John",
-            "Doe",
-            "123 Main St",
-            "USA",
-            "New York",
-            "555-1234",
-            Designation.ProjectManager), 'Project 5', 50),
-      ])
+    private projects$ = new BehaviorSubject<Project[]>([])
 
     constructor(private http: HttpClient, private toastr: ToastrService) {}
   
     getEmployeesByProjectId(projectId: string): Observable<UserProject[]> {
-        return of([
-            new UserProject("1", new UserProfile(
-                "2",
-                "jane.doe@example.com",
-                "password",
-                "Jane",
-                "Doe",
-                "456 Elm St",
-                "USA",
-                "California",
-                "555-5678",
-                Designation.Engineer
-              ), new Project('1', new UserProfile(
-                "1",
-                "john.doe@example.com",
-                "password",
-                "John",
-                "Doe",
-                "123 Main St",
-                "USA",
-                "New York",
-                "555-1234",
-                Designation.ProjectManager), 'Project 1', 10),new Date(), new Date(), "tester")
-          ] as UserProject[])
-        //return this.http.get<UserProfile[]>(environment.apiUrl + `/api/projects/${projectId}/employees`);
+        return this.http.get<UserProject[]>(environment.apiUrl + `/api/profile/user-project/${projectId}`)
     }
 
     fetchProjects() {
-      this.http.get<Project[]>(environment.apiUrl + '/api/projects').subscribe({
+      this.http.get<Project[]>(environment.apiUrl + "/api/profile/project/all").subscribe({
         next: (response: Project[]) => this.projects$.next(response),
         error: (error: HttpErrorResponse) => this.toastr.error(error.message)
       })

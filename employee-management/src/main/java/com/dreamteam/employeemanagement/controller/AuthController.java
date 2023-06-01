@@ -1,6 +1,7 @@
 package com.dreamteam.employeemanagement.controller;
 
 import com.dreamteam.employeemanagement.auth.services.AuthenticationService;
+import com.dreamteam.employeemanagement.dto.auth.request.ChangePasswordRequest;
 import com.dreamteam.employeemanagement.dto.auth.request.LoginRequest;
 import com.dreamteam.employeemanagement.dto.auth.request.LogoutRequest;
 import com.dreamteam.employeemanagement.dto.auth.request.RefreshAccessTokenRequest;
@@ -36,6 +37,15 @@ public class AuthController {
         var email = loginRequest.getEmail();
         var password = loginRequest.getPassword();
         var loginResponse = authenticationService.login(email, password);
+
+        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+    }
+    @PostMapping("/actions/change-password")
+    public ResponseEntity<LoginResponse> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        var email = changePasswordRequest.getEmail();
+        var oldPassword = changePasswordRequest.getOldPassword();
+        var newPassword = changePasswordRequest.getNewPassword();
+        var loginResponse = authenticationService.changePassword(email, oldPassword, newPassword);
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }

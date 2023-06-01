@@ -22,8 +22,12 @@ export class ProjectsPage {
     private dialog: MatDialog,
     private toastr: ToastrService,
     private router: Router
-    ) {}
+  )  {}
 
+  ngOnInit() {
+    this.projectService.fetchProjects()
+  }
+  
   openCreateProjectDialog() {
     const dialogRef = this.dialog.open(CreateProjectDialog, {
       restoreFocus: false,
@@ -32,7 +36,7 @@ export class ProjectsPage {
 
     dialogRef.afterClosed().subscribe(result => {
       if(result){
-        this.projectService.createProject(result.name, result.duration, result.manager).subscribe({
+        this.projectService.createProject(result.name, parseFloat(result.duration), result.manager.id).subscribe({
           next: (result) => {
             if(result) {
               this.toastr.success("Project created successfully!")

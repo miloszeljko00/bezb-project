@@ -6,6 +6,8 @@ import { Project } from "../../pages/profile/models/project";
 import { UserSkills } from "../../pages/profile/models/userSkills";
 import { UserProject } from "../../pages/profile/models/userProject";
 import { UserProfile } from "../../pages/profile/models/userProfile";
+import { User } from '../auth/models/user';
+import {CreateUserProject} from "../../pages/profile/models/dto/createUserProject";
 
 @Injectable({
   providedIn: 'root'
@@ -21,24 +23,38 @@ export class UserService {
   getProjects() {
     return this.http.get(environment.apiUrl + "/api/profile/project/all");
   }
+
   getProjectById(id: string) {
     return this.http.get(environment.apiUrl + "/api/profile/project/"+ id);
   }
   getUsersByProject(id: string) {
-    return this.http.get(environment.apiUrl + "/api/profile/user-project/"+ id);
+    return this.http.get<UserProject[]>(environment.apiUrl + "/api/profile/user-project/"+ id);
+  }
+  getUsers() {
+    return this.http.get<UserProfile[]>("https://localhost:443" + "/api/profile/users/all");
+  }
+  //za kreiranje userprojecta
+  getAccounts() {
+    return this.http.get<UserProfile[]>("https://localhost:443" + "/api/manager/user/all");
+  }
+  getProjectManagers() {
+    return this.http.get<UserProfile[]>(environment.apiUrl + "/api/profile/users/pm");
   }
   getProjectsByUser(id: string) {
     return this.http.get(environment.apiUrl + "/api/profile/project-user/"+ id);
   }
+  getProjectsByManager(id: string) {
+    return this.http.get("https://localhost:443"+ "/api/profile/manager/"+id);
+  }
   getEmployeesByManager(id: string) {
-    return this.http.get(environment.apiUrl + "/api/profile/employees-manager/"+ id);
+    return this.http.get("https://localhost:443" + "/api/manager/user-manager/"+id);
   }
 
   getUserSkills(userId: string) {
     return this.http.get(environment.apiUrl + "/api/profile/user-skills/"+ userId);
   }
-  deleteUserProject(userProject: UserProject): Observable<any> {
-    return this.http.put<any>(environment.apiUrl + "/api/profile/user-project", userProject);
+  deleteUserProject(id: string): Observable<any> {
+    return this.http.delete<any>(environment.apiUrl + "/api/manager/user-project/"+id);
   }
   deleteSkill(userSkill: UserSkills): Observable<any> {
     return this.http.put<any>(environment.apiUrl + "/api/profile/skill", userSkill);
@@ -52,13 +68,13 @@ export class UserService {
   createUserSkill(newCaption: UserSkills) {
     return this.http.post(environment.apiUrl + "/api/profile/create-userSkill", newCaption);
   }
-  createUserProject(newCaption: UserProject) {
-    return this.http.post(environment.apiUrl + "/api/profile/create-userProject", newCaption);
+  createUserProject(userProjectDto: CreateUserProject) {
+    return this.http.post("https://localhost:443" + "/api/manager/create-user-project", userProjectDto);
   }
   updateUserProject(userProject: UserProject) {
-    return this.http.put(environment.apiUrl + "/api/profile/update-userProject/" + userProject.id + "/" + userProject.description, null);
+    return this.http.put("https://localhost:443" + "/api/manager/update/"+ userProject.id +'/' +userProject.startDate+'/'+userProject.endDate, userProject);
   }
-  updateProfile(newCaption: UserProfile) {
+  updateProfile(newCaption: any) {
     return this.http.put(environment.apiUrl + "/api/profile/update-profile", newCaption);
   }
   updateSkill(userSkill: UserSkills, flag: string) {

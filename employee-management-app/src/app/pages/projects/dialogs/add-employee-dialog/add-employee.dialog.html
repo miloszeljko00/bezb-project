@@ -1,11 +1,27 @@
-<div mat-dialog-title style="display: flex; justify-content: center; padding: 10px; padding-top: 20px;">
+<div *ngIf="employeeOptions$ | async as employeeOptions">
+  <div mat-dialog-title style="display: flex; justify-content: center; padding: 10px; padding-top: 20px;">
     <h1 style="padding:0px; margin:0px;">Add employee to project</h1>
 </div>
 <div mat-dialog-content style="padding:10px;">
     <table>
       <tr>
-        <td colspan="3">
+        <td>
           <app-select-field [options]="employeeOptions" [(selected)]="employee">Employee</app-select-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <app-date-field [(value)]="from">From Date</app-date-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <app-date-field [(value)]="to">To Date</app-date-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <app-input-field [(value)]="description">Description</app-input-field>
         </td>
       </tr>
       <tr>
@@ -14,4 +30,5 @@
 <div mat-dialog-actions style="display: flex; justify-content: space-between;">
     <app-secondary-button mat-dialog-close>Cancel</app-secondary-button>
     <app-primary-button (click)="create()">Create</app-primary-button>
+</div>
 </div>

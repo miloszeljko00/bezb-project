@@ -1,10 +1,7 @@
 package com.dreamteam.employeemanagement.controller;
 
 import com.dreamteam.employeemanagement.auth.services.AuthenticationService;
-import com.dreamteam.employeemanagement.dto.auth.request.ChangePasswordRequest;
-import com.dreamteam.employeemanagement.dto.auth.request.LoginRequest;
-import com.dreamteam.employeemanagement.dto.auth.request.LogoutRequest;
-import com.dreamteam.employeemanagement.dto.auth.request.RefreshAccessTokenRequest;
+import com.dreamteam.employeemanagement.dto.auth.request.*;
 import com.dreamteam.employeemanagement.dto.auth.response.RefreshAccessTokenResponse;
 import com.dreamteam.employeemanagement.dto.auth.response.LoginResponse;
 import com.dreamteam.employeemanagement.model.*;
@@ -14,9 +11,12 @@ import com.dreamteam.employeemanagement.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -32,11 +32,76 @@ public class AuthController {
     private final IAccountRepository accountRepository;
     private final EmailService emailService;
 
+
+    @GetMapping("/actions/request-reset-password/{userEmail}")
+    public ResponseEntity<LoginResponse> requestResetPassword(@PathVariable String userEmail) {
+        var account = accountRepository.findByEmail(userEmail).orElseThrow();
+
+        MagicLoginToken token = MagicLoginToken.builder()
+                .token(UUID.randomUUID())
+                .expirationDate(getExpirationDate())
+                .isUsed(false) // Set it to false initially
+                .build();
+
+        account.setMagicLoginToken(token);
+        accountRepository.save(account);
+
+        // Generate the HMAC for the token and registerUserInfoId
+        String hmac = HmacUtil.generateHmac(token.getToken().toString() + userEmail, "veljin-tajni-kljuc");
+
+        String activationLink = "http://localhost:4200/confirm-reset-password?token=" + hmac + "&userEmail=" + userEmail;
+        emailService.sendEmail(userEmail, "Reset Password", "Dear user,\n\n We are sending you a link to confirm password reset request you made. If it wasn't you ignore this email.\n\n Here is the confirmation link: " + activationLink);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PostMapping("/actions/confirm-reset-password")
+    public ResponseEntity<Object> confirmResetPassword(@RequestParam("token") String token, @RequestBody ResetPasswordRequest request) {
+        var account = accountRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        MagicLoginToken magicLoginToken = account.getMagicLoginToken();
+
+        // Check if the token is expired
+        if (magicLoginToken.getExpirationDate().before(new Date())) {
+            return ResponseEntity.badRequest().body("Token has expired.");
+        }
+
+        // Check if the token has been used before
+        if (magicLoginToken.isUsed()) {
+            return ResponseEntity.badRequest().body("Token has already been used.");
+        }
+
+        // Generate the expected HMAC for the token and registerUserInfoId
+        String expectedHmac = HmacUtil.generateHmac(account.getMagicLoginToken().getToken() + request.getEmail(), "veljin-tajni-kljuc");
+        String encodedToken;
+        try{
+            assert expectedHmac != null;
+            encodedToken = URLDecoder.decode(expectedHmac, StandardCharsets.UTF_8);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        // Verify if the provided HMAC matches the expected HMAC
+        if (encodedToken.equals(token)) {
+            LoginResponse loginResponse = null;
+            try {
+                loginResponse = authenticationService.magicResetPassword(account, request.getPassword());
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+        }
+
+        return ResponseEntity.badRequest().body("Invalid activation link.");
+    }
+
     @PostMapping("/actions/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         var email = loginRequest.getEmail();
         var password = loginRequest.getPassword();
-        var loginResponse = authenticationService.login(email, password);
+        LoginResponse loginResponse = null;
+        try {
+            loginResponse = authenticationService.login(email, password);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
@@ -45,7 +110,12 @@ public class AuthController {
         var email = changePasswordRequest.getEmail();
         var oldPassword = changePasswordRequest.getOldPassword();
         var newPassword = changePasswordRequest.getNewPassword();
-        var loginResponse = authenticationService.changePassword(email, oldPassword, newPassword);
+        LoginResponse loginResponse = null;
+        try {
+            loginResponse = authenticationService.changePassword(email, oldPassword, newPassword);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
@@ -78,7 +148,22 @@ public class AuthController {
         Date futureDate = calendar.getTime();
         return futureDate;
     }
-
+    @PreAuthorize("hasRole('ENABLE-USER')")
+    @GetMapping("/actions/enable-user/{userId}")
+    public ResponseEntity enableUser(@PathVariable("userId") UUID userId) {
+        var user = accountRepository.findById(userId).orElseThrow();
+        user.setEnabled(true);
+        accountRepository.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('DISABLE-USER')")
+    @GetMapping("/actions/disable-user/{userId}")
+    public ResponseEntity disableUser(@PathVariable("userId") UUID userId) {
+        var user = accountRepository.findById(userId).orElseThrow();
+        user.setEnabled(false);
+        accountRepository.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @GetMapping("/actions/magic-login-activation")
     public ResponseEntity magicLogin(@RequestParam("token") String token, @RequestParam("userEmail") String userEmail) {
         // Retrieve the RegisterUserInfo object using the provided registerUserInfoId
@@ -103,7 +188,12 @@ public class AuthController {
 
             // Verify if the provided HMAC matches the expected HMAC
             if (expectedHmac.equals(token)) {
-                var loginResponse = authenticationService.magicLogin(account.get());
+                LoginResponse loginResponse = null;
+                try {
+                    loginResponse = authenticationService.magicLogin(account.get());
+                } catch (Exception e) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
                 return new ResponseEntity<>(loginResponse, HttpStatus.OK);
             }
         }
@@ -119,7 +209,12 @@ public class AuthController {
 
     @PostMapping("/actions/refresh-access-token")
     public ResponseEntity<RefreshAccessTokenResponse> refreshAccessToken(@RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest) {
-        var accessToken = authenticationService.refreshAccessToken(refreshAccessTokenRequest);
+        String accessToken = null;
+        try {
+            accessToken = authenticationService.refreshAccessToken(refreshAccessTokenRequest);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         if(accessToken == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         var refreshAccessTokenResponse = new RefreshAccessTokenResponse(accessToken);
         return new ResponseEntity<>(refreshAccessTokenResponse, HttpStatus.OK);

@@ -16,6 +16,8 @@ const routes: Routes = [
   { path: 'projects', loadChildren: () => import('./pages/projects/projects.module').then(m => m.ProjectsModule), canActivate: [GetProjectsGuard] },
   { path: 'register-new-admin', loadChildren: () => import('./pages/register-new-admin/register-new-admin.module').then(m => m.RegisterNewAdminModule), canActivate: [RegisterNewAdminGuard] },
   { path: 'change-password/:email', loadChildren: () => import('./pages/change-password/change-password.module').then(m => m.ChangePasswordModule) },
+  { path: 'request-reset-password', loadChildren: () => import('./pages/request-reset-password/request-reset-password.module').then(m => m.RequestResetPasswordModule) },
+  { path: 'confirm-reset-password', loadChildren: () => import('./pages/confirm-reset-password/confirm-reset-password.module').then(m => m.ConfirmResetPasswordModule) },
   { path: '**', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
 ];
 

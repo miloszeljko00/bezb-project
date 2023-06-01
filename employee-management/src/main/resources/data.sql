@@ -1,11 +1,11 @@
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password1!
-VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'a@email.com', '$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa', true);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password
-VALUES ('d206f89e-73cd-4388-ba29-8f528258db99', 'se@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password
-VALUES ('3403bb0f-0d70-40b0-955d-2424d7a5699e', 'hm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password
-VALUES ('d46fb741-5d9a-44dc-bc70-73ebea53dc25', 'pm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password1!
+VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'miloszeljko00@gmail.com', '$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password
+VALUES ('d206f89e-73cd-4388-ba29-8f528258db99', 'se@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password
+VALUES ('3403bb0f-0d70-40b0-955d-2424d7a5699e', 'hm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password
+VALUES ('d46fb741-5d9a-44dc-bc70-73ebea53dc25', 'pm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false, true);
 
 INSERT INTO public.roles(id, name)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'Administrator');
@@ -63,8 +63,17 @@ INSERT INTO public.permissions(id, name)
 VALUES ('b534fa31-95d0-4c63-9a26-4d27696c2de6', 'DELETE-PROJECT');
 INSERT INTO public.permissions(id, name)
 VALUES ('43182ad7-6915-4aa3-bce5-d412b3d53551', 'REGISTER-ADMIN');
+INSERT INTO public.permissions(id, name)
+VALUES ('5d157836-d6ee-46cd-82c0-8e5a2a840305', 'ENABLE-USER');
+INSERT INTO public.permissions(id, name)
+VALUES ('cf2edd2b-fa44-4609-8d8c-c40342140c76', 'DISABLE-USER');
 
-
+-- ENABLE-USER to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '5d157836-d6ee-46cd-82c0-8e5a2a840305');
+-- DISABLE-USER to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'cf2edd2b-fa44-4609-8d8c-c40342140c76');
 -- GET-PERMISSIONS to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '84e5cc62-2b3b-4332-89ae-ba74f96f614a');

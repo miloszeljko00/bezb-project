@@ -6,6 +6,7 @@ import com.dreamteam.employeemanagement.model.enums.AccountStatus;
 import com.dreamteam.employeemanagement.repository.IAccountRepository;
 import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
 import com.dreamteam.employeemanagement.repository.IRoleRepository;
+import com.dreamteam.employeemanagement.security.gdpr.EncryptionKeyManager;
 import com.dreamteam.employeemanagement.service.EmailService;
 import com.dreamteam.employeemanagement.service.RegisterService;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @RestController
@@ -30,12 +34,43 @@ public class RegisterController {
     private final EmailService emailService;
     private final RegisterService registerService;
 
+    public static String encryptString(String string, String alias) throws Exception {
+        byte[] encryptedEmail;
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        var secretKey = EncryptionKeyManager.generateEncryptionKey();
+        EncryptionKeyManager.storeKeyInKeyStore(secretKey, alias);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        encryptedEmail = cipher.doFinal(string.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encryptedEmail);
+    }
+    public static String decryptString(String encryptedString, String alias) throws Exception {
+        byte[] encryptedInfoBytes = Base64.getDecoder().decode(encryptedString);
+
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, EncryptionKeyManager.retrieveKeyFromKeyStore(alias));
+        byte[] decryptedInfo = cipher.doFinal(encryptedInfoBytes);
+
+        String decryptedEmail = new String(decryptedInfo, StandardCharsets.UTF_8);
+        return decryptedEmail;
+    }
+    public static String takesFirstPartOfEmail(String email) {
+        int atIndex = email.indexOf("@");
+        return email.substring(0, atIndex);
+    }
     @PostMapping
-    public ResponseEntity register(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) {
+    public ResponseEntity register(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) throws Exception {
 
         if(registerService.checkIfAccountWithThisEmailWasRecentlyDeclined(registerUserInfoRequest.getEmail())){
             return ResponseEntity.badRequest().body("Registration request with this email was declined recently.");
         }
+        //Encrypt personal data
+        String aliasPrefix = takesFirstPartOfEmail(registerUserInfoRequest.getEmail());
+        registerUserInfoRequest.setFirstName(encryptString(registerUserInfoRequest.getFirstName(), aliasPrefix.concat("name")));
+        registerUserInfoRequest.setPhone(encryptString(registerUserInfoRequest.getPhone(), aliasPrefix.concat("phone")));
+        registerUserInfoRequest.setCountry(encryptString(registerUserInfoRequest.getCountry(), aliasPrefix.concat("country")));
+        registerUserInfoRequest.setCity(encryptString(registerUserInfoRequest.getCity(), aliasPrefix.concat("city")));
+        registerUserInfoRequest.setStreet(encryptString(registerUserInfoRequest.getStreet(), aliasPrefix.concat("street")));
+        registerUserInfoRequest.setLastName(encryptString(registerUserInfoRequest.getLastName(), aliasPrefix.concat("prezime")));
         //Create Role
         var role = new Role();
         role.setName(registerUserInfoRequest.getDesignation());
@@ -71,9 +106,18 @@ public class RegisterController {
     public ResponseEntity<List<RegisterUserInfo>> getAllUnconfirmedRegistrations() {
         return new ResponseEntity<>(registerUserInfoRepository.findByAccount_Status(AccountStatus.PENDING), HttpStatus.OK);
     }
+    //TODO: desifrovati podatke
     @GetMapping("/get-by-id/{userEmail}")
-    public ResponseEntity<RegisterUserInfo> getById(@PathVariable("userEmail") String userEmail) {
-        return new ResponseEntity<>(registerUserInfoRepository.findByAccount_Email(userEmail), HttpStatus.OK);
+    public ResponseEntity<RegisterUserInfo> getById(@PathVariable("userEmail") String userEmail) throws Exception {
+        var registerUserInfo = registerUserInfoRepository.findByAccount_Email(userEmail);
+        String aliasPrefix = takesFirstPartOfEmail(registerUserInfo.getAccount().getEmail());
+        registerUserInfo.setFirstName(decryptString(registerUserInfo.getFirstName(), aliasPrefix.concat("name")));
+        registerUserInfo.setPhoneNumber(decryptString(registerUserInfo.getPhoneNumber(), aliasPrefix.concat("phone")));
+        registerUserInfo.getAddress().setCountry(decryptString(registerUserInfo.getAddress().getCountry(), aliasPrefix.concat("country")));
+        registerUserInfo.getAddress().setCity(decryptString(registerUserInfo.getAddress().getCity(), aliasPrefix.concat("city")));
+        registerUserInfo.getAddress().setStreet(decryptString(registerUserInfo.getAddress().getStreet(), aliasPrefix.concat("street")));
+        registerUserInfo.setLastName(decryptString(registerUserInfo.getLastName(), aliasPrefix.concat("prezime")));
+        return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
     }
     @GetMapping("/confirm-registration")
     public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token, @RequestParam("registerUserInfoId") String registerUserInfoId) {
@@ -156,10 +200,9 @@ public class RegisterController {
         return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
     }
     @PutMapping("/accept-registration")
-    public ResponseEntity<RegisterUserInfo> acceptRegistration(@RequestBody String idString) {
+    public ResponseEntity<RegisterUserInfo> acceptRegistration(@RequestBody String idString) throws Exception {
         UUID id = UUID.fromString(idString);
         var registrationRequest = registerUserInfoRepository.findById(id);
-
         RegistrationToken token = RegistrationToken.builder()
                 .token(UUID.randomUUID())
                 .expirationDate(getExpirationDate())

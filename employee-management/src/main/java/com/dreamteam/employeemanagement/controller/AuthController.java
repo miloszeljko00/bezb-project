@@ -10,6 +10,7 @@ import com.dreamteam.employeemanagement.dto.auth.response.LoginResponse;
 import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.model.enums.AccountStatus;
 import com.dreamteam.employeemanagement.repository.IAccountRepository;
+import com.dreamteam.employeemanagement.security.gdpr.EncryptionKeyManager;
 import com.dreamteam.employeemanagement.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class AuthController {
     private final EmailService emailService;
 
     @PostMapping("/actions/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
         var email = loginRequest.getEmail();
         var password = loginRequest.getPassword();
         var loginResponse = authenticationService.login(email, password);

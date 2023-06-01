@@ -1,5 +1,5 @@
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password1!
-VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'a@email.com', '$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa', true);
+VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'a@email.com', '$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password
 VALUES ('d206f89e-73cd-4388-ba29-8f528258db99', 'se@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password
@@ -149,8 +149,6 @@ VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', '2cb7a52c-cc57-4261-ae87-ae1bb36
 
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
 VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9c', '9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'John', 'Doe', '123 Main St', 'New York', 'USA', '555-1234', '2022-01-01');
-INSERT INTO public.register_user_info(id, city, country, street, first_name, last_name, phone_number, expiration_date, is_used, token, revision_date, account_id)
-VALUES ('ece1b3a6-6db9-4db1-a29a-1eae6e7a543a', 'Sabac', 'Srbija', 'Knez Ive od Semberije', 'Mihailo', 'Veljic', '+3812470650', null, null, null, null, 'd206f89e-73cd-4388-ba29-8f528258db99');
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
 VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9e', '3403bb0f-0d70-40b0-955d-2424d7a5699e', 'Bob', 'Smith', '789 Oak St', 'Chicago', 'USA', '555-9012', '2022-01-03');
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)

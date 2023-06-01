@@ -8,12 +8,17 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 
 @Service
 @Slf4j
 public class CVService {
     public static final String cvDirectoryPath = "src/main/resources/cvs/";
+    @Value("${server.ssl.key-store-password}")
+    public String serverP12Password;
 
 
 
@@ -73,8 +78,8 @@ public class CVService {
         }
         return null;
     }
-    private void writeDataToFile(MultipartFile excelFile, String excelName) throws IOException {
-        byte[] bytes = excelFile.getBytes();
+    private void writeDataToFile(MultipartFile cvFile, String excelName) throws IOException {
+        byte[] bytes = cvFile.getBytes();
 
         Path path = Paths.get(cvDirectoryPath);
         File file = new File(String.valueOf(path.toAbsolutePath()), excelName);
@@ -85,5 +90,28 @@ public class CVService {
 
         bufferedOutputStream.write(bytes);
         bufferedOutputStream.close();
+    }
+    public X509Certificate loadCertificateFromP12File(String p12FilePath, String p12FilePassword) {
+        try {
+            // Load the keystore from the P12 file
+            KeyStore keystore = KeyStore.getInstance("PKCS12");
+            FileInputStream fis = new FileInputStream(p12FilePath);
+            keystore.load(fis, p12FilePassword.toCharArray());
+            fis.close();
+
+            // Get the certificate from the keystore
+            String alias = keystore.aliases().nextElement();
+            Certificate certificate = keystore.getCertificate(alias);
+
+            // Convert the certificate to X509Certificate
+            if (certificate instanceof X509Certificate) {
+                return (X509Certificate) certificate;
+            } else {
+                throw new IllegalArgumentException("The loaded certificate is not an X509Certificate.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -1,6 +1,6 @@
 export enum Designation {
-  HR = "hr",
-  Engineer = "engineer",
-  ProjectManager = "project manager",
+  HR = "HR Manager",
+  Engineer = "Software Engineer",
+  ProjectManager = "Project Manager",
   Admin = "Administrator"
 }

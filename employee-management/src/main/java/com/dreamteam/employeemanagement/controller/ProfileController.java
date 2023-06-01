@@ -115,12 +115,12 @@ public class ProfileController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PreAuthorize("hasRole('GET-USER-SKILLS')")
+    //@PreAuthorize("hasRole('GET-USER-SKILLS')")
     @GetMapping("/user-skills/{id}")
     public ResponseEntity<List<UserSkills>> getUserSkills(@PathVariable("id") String id) {
         return new ResponseEntity<>(this.userSkillsRepository.findByUserId(UUID.fromString(id)), HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('GET-EMPLOYEES')")
+    //@PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/project-user/{id}")
     public ResponseEntity<List<UserProject>> getProjectsByUser(@PathVariable("id") String accountId) {
         return new ResponseEntity<>(profileService.getProjectsByUser(UUID.fromString(accountId)), HttpStatus.OK);
@@ -200,7 +200,6 @@ public class ProfileController {
     }
 
     @PostMapping(value = "/upload-cv/{userEmail}")
-    public ResponseEntity<Object> uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
     public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
         var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
         var pass = registerUserInfo.getAccount().getPassword();

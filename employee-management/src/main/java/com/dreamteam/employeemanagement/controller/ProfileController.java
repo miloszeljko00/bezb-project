@@ -6,6 +6,7 @@ import com.dreamteam.employeemanagement.repository.ICVRepository;
 import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
 import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
 import com.dreamteam.employeemanagement.repository.IUserSkillsRepository;
+import com.dreamteam.employeemanagement.security.gdpr.Test;
 import com.dreamteam.employeemanagement.service.CVService;
 import com.dreamteam.employeemanagement.dto.profile.CreateProjectDto;
 import com.dreamteam.employeemanagement.dto.profile.AddUserToProject;
@@ -219,7 +220,7 @@ public class ProfileController {
         return new ResponseEntity<>(userSkillsRepository.save(skill), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('UPLOAD-CV')")
+    //@PreAuthorize("hasRole('UPLOAD-CV')")
     @PostMapping(value = "/upload-cv/{userEmail}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity uploadCV(@PathVariable("userEmail") String userEmail, @RequestParam("file") MultipartFile file) {
         // Check if the file is not empty
@@ -243,7 +244,12 @@ public class ProfileController {
         return new ResponseEntity<>("Empty file uploaded...", HttpStatus.BAD_REQUEST);
     }
     @GetMapping("/get-all-cvs")
-    public ResponseEntity<List<CV>> getAllCvs() {
-        return new ResponseEntity<>(cvRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<Test> getAllCvs() {
+        //List<CV> cvs = cvRepository.findAll();
+        var cvBytes = cvService.readCV("1685694362506_testCV.docx");
+        String base64CV = Base64.getEncoder().encodeToString(cvBytes);
+        Test test = new Test();
+        test.setBase64CvData(base64CV);
+        return new ResponseEntity<>(test, HttpStatus.OK);
     }
 }

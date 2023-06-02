@@ -6,6 +6,8 @@ INSERT INTO public.accounts(id, email, password, first_login) -- password=passwo
 VALUES ('3403bb0f-0d70-40b0-955d-2424d7a5699e', 'hm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password
 VALUES ('d46fb741-5d9a-44dc-bc70-73ebea53dc25', 'pm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
+INSERT INTO public.accounts(id, email, password, first_login) -- password=mihailo!123
+VALUES ('27df3032-9ae2-4f31-9ef0-4447f79dc10c', 'pelepelepele158@gmail.com', '$2a$10$5R3V7dZGaPrKDoZx2k1kRuznUaU/Dzj4YnIF5BG3ttghJuKOrmw9q', false);
 
 INSERT INTO public.roles(id, name)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'Administrator');
@@ -24,7 +26,8 @@ INSERT INTO public.accounts_roles(account_id, roles_id)
 VALUES ('3403bb0f-0d70-40b0-955d-2424d7a5699e', '3ad3288e-1fad-45cc-aa7f-8660ce4af4e4');
 INSERT INTO public.accounts_roles(account_id, roles_id)
 VALUES ('d46fb741-5d9a-44dc-bc70-73ebea53dc25', 'b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc');
-
+INSERT INTO public.accounts_roles(account_id, roles_id)
+VALUES ('27df3032-9ae2-4f31-9ef0-4447f79dc10c', '9a4d712a-2882-4278-b981-76d339fc6894');
 
 --ADD NEW PERMISSIONS HERE
 INSERT INTO public.permissions(id, name)
@@ -126,6 +129,9 @@ VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'b534fa31-95d0-4c63-9a26-4d27696
 -- REGISTER-ADMIN to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '43182ad7-6915-4aa3-bce5-d412b3d53551');
+-- UPLOAD-CV to Engineer
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('9a4d712a-2882-4278-b981-76d339fc6894', '227e082c-78d9-4eef-bb0a-d22d8abbac70');
 
 -- UPDATE-REGISTER-USER-INFO to Project Manager
 INSERT INTO public.roles_permissions(role_id, permissions_id)
@@ -153,6 +159,8 @@ INSERT INTO register_user_info (id, account_id, first_name, last_name, street, c
 VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9e', '3403bb0f-0d70-40b0-955d-2424d7a5699e', 'Bob', 'Smith', '789 Oak St', 'Chicago', 'USA', '555-9012', '2022-01-03');
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
 VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9f', 'd46fb741-5d9a-44dc-bc70-73ebea53dc25', 'Alice', 'Johnson', '321 Pine St', 'San Francisco', 'USA', '555-3456', '2022-01-04');
+INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
+VALUES ('bc0d9546-c245-462a-a983-0d0ac8b49758', '27df3032-9ae2-4f31-9ef0-4447f79dc10c', 'ccg4wnglgMk+LaPPyA9F/g==', 'qXSgVcAbhzjDjxA3Q1lBiA==', 'A+f/FTVelkY3uTY6qPHC0w==', 'sh9b6RWXIX+zlhHwdu76DQ==', 'eJwpo5nTe4C1RomV0cgdOw==', '+pMuAL4y/DqmFD/dmSk30Q==', '2022-01-05');
 
 
 INSERT INTO public.projects(id, duration, name, manager_id)

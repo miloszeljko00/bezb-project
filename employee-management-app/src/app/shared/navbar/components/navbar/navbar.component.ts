@@ -83,7 +83,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
     this.router.navigate(['/cvs'])
   }
   test() {
-    this.http.get(environment.apiUrl + '/api/test').subscribe({
+    this.http.get(environment.apiUrl + '/api/logs').subscribe({
       next: () =>{
         this.toastr.success("Working!")
       },

@@ -1,0 +1,3 @@
+<div *ngFor="let log of logs$ | async">
+    <p [ngClass]="{'unseen-log': !log.seen}">{{ log.timestamp }} - {{ log.level }} - {{ log.loggerName }} - {{ log.message }}</p>
+</div>

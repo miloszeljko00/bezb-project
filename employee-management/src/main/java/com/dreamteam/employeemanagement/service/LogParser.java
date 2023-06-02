@@ -18,11 +18,12 @@ import java.util.regex.Pattern;
 
 @Service
 public class LogParser {
-    private static final Pattern LOG_PATTERN = Pattern.compile("^(\\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+(\\S+)\\s+-\\S+\\s+(.*)$");
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    private static final Pattern LOG_PATTERN = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+(\\S+)\\s+-\\S+\\s+(.*)$");
 
-    public ArrayList<LogEntry> parseLogEntries() throws ParseException, IOException {
-        var logs = new ArrayList<LogEntry>();
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public synchronized ArrayList<LogEntry> parseLogEntries() throws ParseException, IOException {
+        ArrayList<LogEntry> logs = new ArrayList<>();
         StringBuilder logContents = new StringBuilder();
         String logFilePath = "logs/app.log";
         try (BufferedReader reader = new BufferedReader(new FileReader(logFilePath))) {

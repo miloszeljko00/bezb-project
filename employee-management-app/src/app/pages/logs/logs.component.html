@@ -1,3 +1,12 @@
-<div *ngFor="let log of logs$ | async">
-    <p [ngClass]="{'unseen-log': !log.seen}">{{ log.timestamp }} - {{ log.level }} - {{ log.loggerName }} - {{ log.message }}</p>
+<div style="padding: 50px;">
+    <div *ngFor="let log of logs$ | async; trackBy: trackByTimestamp">
+        <p [ngClass]="{
+            'unseen-log': !log.seen, 
+            'warn': log.level == 'WARN',
+            'info': log.level == 'INFO',
+            'error': log.level == 'ERROR',
+            'debug': log.level == 'DEBUG'}">
+            {{ log.timestamp }} - {{ log.level }} - {{ log.loggerName }} - {{ log.message }}
+        </p>
+    </div>
 </div>

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -27,21 +29,21 @@ public class LogController {
     private final LogParser logParser;
 
     @GetMapping
-    public ResponseEntity<LoginResponse> getLogs(Authentication authentication) {
+    public ResponseEntity<List<LogParser.LogEntry>> getLogs(Authentication authentication) {
         var email = authentication.getName();
-
-        log.info("pogodio me batica sa mejla: " + email);
 
         var account = accountRepository.findByEmail(email).orElseThrow();
         var lastAccessed = account.getLastTimeLogsAccessed();
 
-        if(lastAccessed == null) lastAccessed = new Date(Long.MIN_VALUE);
+        if(lastAccessed == null) lastAccessed = new Date(0);
         var logs = new ArrayList<LogParser.LogEntry>();
         try {
             logs = logParser.parseLogEntries();
         } catch (ParseException e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (IOException e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -51,7 +53,9 @@ public class LogController {
                 log.setSeen(true);
             }
         });
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        Collections.reverse(logs);
+        account.setLastTimeLogsAccessed(new Date());
+        accountRepository.save(account);
+        return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { tap } from 'rxjs';
+import { map, tap } from 'rxjs';
+import { LogEntry } from 'src/app/core/models/log-entry';
 import { LogService } from 'src/app/core/services/log.service';
 
 @Component({
@@ -10,14 +11,25 @@ import { LogService } from 'src/app/core/services/log.service';
 export class LogsComponent implements OnInit {
 
   logs$ = this.logService.getLogsObservable().pipe(
-    tap((logs) => {
-      console.log(logs);
+    map((logs: LogEntry[]) => {
+      logs.forEach(log => {
+        log.timestamp = new Date(log.timestamp)
+      });
+      return logs
     })
   )
 
   constructor(private logService: LogService) {}
 
+  trackByTimestamp(index: number, log: LogEntry) {
+    return log.timestamp
+  }
+
   ngOnInit() {
+    //run this.logService.fetch() every 5seconds 
     this.logService.fetch()
+    setInterval(() => {
+      this.logService.fetch()
+    }, 10000)
   }
 }

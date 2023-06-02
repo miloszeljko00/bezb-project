@@ -4,14 +4,17 @@ import com.dreamteam.employeemanagement.model.Permission;
 import com.dreamteam.employeemanagement.repository.IPermissionRepository;
 import com.dreamteam.employeemanagement.repository.IRoleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/roles")
 @RequiredArgsConstructor
@@ -21,9 +24,11 @@ public class RoleController {
 
     private final IPermissionRepository permissionRepository;
 
+
     @PreAuthorize("hasRole('GET-ROLES')")
     @GetMapping
-    public ResponseEntity<Object> getAllRoles() {
+    public ResponseEntity<Object> getAllRoles(Authentication authentication) {
+        log.info("User: "+authentication.getName() + " called: GetAllRoles()");
         return new ResponseEntity<>(roleRepository.findAll(), HttpStatus.OK);
     }
 

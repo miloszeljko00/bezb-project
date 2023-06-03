@@ -67,14 +67,21 @@ INSERT INTO public.permissions(id, name)
 VALUES ('43182ad7-6915-4aa3-bce5-d412b3d53551', 'REGISTER-ADMIN');
 INSERT INTO public.permissions(id, name)
 VALUES ('15836cbb-dd75-4747-95ba-bf19d96e00c3', 'GET-USER-PROJECTS');
+INSERT INTO public.permissions(id, name)
+VALUES ('061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea6a', 'EDIT-CV');
 
-
+-- EDIT-CV to HR
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('3ad3288e-1fad-45cc-aa7f-8660ce4af4e4', '061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea6a');
 -- GET-PERMISSIONS to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '84e5cc62-2b3b-4332-89ae-ba74f96f614a');
 -- READ-CVs permission to HR role
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('3ad3288e-1fad-45cc-aa7f-8660ce4af4e4', 'f591b0ef-29a7-4e51-9c4f-83496dcfa8db');
+-- READ-CVs permission to Project Manager role
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', 'f591b0ef-29a7-4e51-9c4f-83496dcfa8db');
 -- GET-ROLES to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '781a137c-e1b2-4f3b-8eed-b1d429f348fe');

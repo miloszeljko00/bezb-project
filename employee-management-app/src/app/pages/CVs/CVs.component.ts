@@ -27,31 +27,40 @@ export class CVsComponent implements OnInit {
     })
   }
   downloadCv(cv: CV) {
-    // Base64-encoded string
-    const base64String = cv.data;
-    // Convert base64 to byte array
-    const byteCharacters = atob(base64String);
-    // Convert byte array to ArrayBuffer
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    // Create Blob from ArrayBuffer
-    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+    var base64CvData = '';
+    this.userService.getCvByFileName(cv.fileNameOnFileSystem).subscribe({
+      next: (result: any) => {
+        base64CvData = result.base64CvData;
+        // Convert base64 to byte array
+        const byteCharacters = atob(base64CvData);
+        // Convert byte array to ArrayBuffer
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        // Create Blob from ArrayBuffer
+        const blob = new Blob([byteArray], { type: 'application/octet-stream' });
 
-    const url = URL.createObjectURL(blob);
-    // Create a link element dynamically
-    const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        // Create a link element dynamically
+        const link = document.createElement('a');
 
-    // Set the link attributes
-    link.href = url;
-    link.download = cv.fileName;
+        // Set the link attributes
+        link.href = url;
+        link.download = "test.docx";
 
-    link.dispatchEvent(new MouseEvent('click'));
+        link.dispatchEvent(new MouseEvent('click'));
 
-    // Clean up the temporary URL
-    URL.revokeObjectURL(url);
+        // Clean up the temporary URL
+        URL.revokeObjectURL(url);
+      },
+      error: (e: any) => {
+        this.toastr.error("Something went wrong while downloading cv :/");
+        console.log(e);
+      }
+    })
+
   }
 
 }

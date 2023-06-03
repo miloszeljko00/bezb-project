@@ -19,8 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -199,19 +203,19 @@ public class ProfileController {
         }
     }
 
-    @PostMapping(value = "/upload-cv/{userEmail}")
-    public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
-        var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
-        var pass = registerUserInfo.getAccount().getPassword();
-        var encodedPass = passwordEncoder.encode(pass);
-        //if(!userProfile.getAccount().getPassword().equals(encodedPass)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        userProfile.setAddress(registerUserInfo.getAddress());
-        userProfile.setFirstName(registerUserInfo.getFirstName());
-        userProfile.setLastName(registerUserInfo.getLastName());
-        userProfile.setPhoneNumber(registerUserInfo.getPhoneNumber());
-        userProfile.setRevisionDate(new Date());
-        return new ResponseEntity<>(registerUserInfoRepository.save(userProfile), HttpStatus.OK);
-    }
+//    @PostMapping(value = "/upload-cv/{userEmail}")
+//    public ResponseEntity<RegisterUserInfo> updateProfile(@RequestBody RegisterUserInfo registerUserInfo) {
+//        var userProfile = registerUserInfoRepository.findById(registerUserInfo.getId()).orElseThrow();
+//        var pass = registerUserInfo.getAccount().getPassword();
+//        var encodedPass = passwordEncoder.encode(pass);
+//        //if(!userProfile.getAccount().getPassword().equals(encodedPass)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        userProfile.setAddress(registerUserInfo.getAddress());
+//        userProfile.setFirstName(registerUserInfo.getFirstName());
+//        userProfile.setLastName(registerUserInfo.getLastName());
+//        userProfile.setPhoneNumber(registerUserInfo.getPhoneNumber());
+//        userProfile.setRevisionDate(new Date());
+//        return new ResponseEntity<>(registerUserInfoRepository.save(userProfile), HttpStatus.OK);
+//    }
 
     @PreAuthorize("hasRole('UPDATE-SKILL')")
     @PutMapping("/update-skill")
@@ -245,5 +249,14 @@ public class ProfileController {
     @GetMapping("/get-all-cvs")
     public ResponseEntity<List<CV>> getAllCvs() {
         return new ResponseEntity<>(cvRepository.findAll(), HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('READ-CVs')")
+    @GetMapping("/get-cv-by-filename/{fileName}")
+    public ResponseEntity<Test> getCvByFileName(@PathVariable("fileName") String fileName, UsernamePasswordAuthenticationToken jwt) {
+        var cvBytes = cvService.readCV(fileName, jwt);
+        String base64CV = Base64.getEncoder().encodeToString(cvBytes);
+        Test test = new Test();
+        test.setBase64CvData(base64CV);
+        return new ResponseEntity<>(test, HttpStatus.OK);
     }
 }

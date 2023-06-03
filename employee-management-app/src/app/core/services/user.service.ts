@@ -6,8 +6,7 @@ import { Project } from "../../pages/profile/models/project";
 import { UserSkills } from "../../pages/profile/models/userSkills";
 import { UserProject } from "../../pages/profile/models/userProject";
 import { UserProfile } from "../../pages/profile/models/userProfile";
-import { User } from '../auth/models/user';
-import {CreateUserProject} from "../../pages/profile/models/dto/createUserProject";
+import { CreateUserProject } from "../../pages/profile/models/dto/createUserProject";
 
 @Injectable({
   providedIn: 'root'
@@ -90,5 +89,8 @@ export class UserService {
   }
   getAllCvs() {
     return this.http.get(environment.apiUrl + "/api/profile/get-all-cvs");
+  }
+  getCvByFileName(fileName: String) {
+    return this.http.get<string>(environment.apiUrl + "/api/profile/get-cv-by-filename/"+fileName);
   }
 }

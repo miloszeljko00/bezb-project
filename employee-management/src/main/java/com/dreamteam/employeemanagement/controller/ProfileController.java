@@ -248,13 +248,8 @@ public class ProfileController {
         return new ResponseEntity<>("Empty file uploaded...", HttpStatus.BAD_REQUEST);
     }
     @GetMapping("/get-all-cvs")
-    public ResponseEntity<Test> getAllCvs() {
-        //List<CV> cvs = cvRepository.findAll();
-        var cvBytes = cvService.readCV("1685694362506_testCV.docx");
-        String base64CV = Base64.getEncoder().encodeToString(cvBytes);
-        Test test = new Test();
-        test.setBase64CvData(base64CV);
-        return new ResponseEntity<>(test, HttpStatus.OK);
+    public ResponseEntity<List<CV>> getAllCvs() {
+        return new ResponseEntity<>(cvRepository.findAll(), HttpStatus.OK);
     }
     @PreAuthorize("hasRole('READ-CVs')")
     @GetMapping("/get-cv-by-filename/{fileName}")

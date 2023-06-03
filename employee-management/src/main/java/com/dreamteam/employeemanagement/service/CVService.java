@@ -11,13 +11,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyStore;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -25,59 +29,35 @@ import java.util.List;
 @Slf4j
 public class CVService {
     public static final String cvDirectoryPath = "src/main/resources/cvs/";
+    @Value("${server.ssl.key-store}")
+    public String serverP12Path;
     @Value("${server.ssl.key-store-password}")
     public String serverP12Password;
 
 
-
-//    public InputStream openExcel(Excel excel){
-//        try {
-//            Path path = Paths.get(excelDirectoryPath + excel.getName());
-//            return Files.newInputStream(path.toAbsolutePath());
-//        }catch (Exception e){
-//            log.error("Can't open excel file: " + excel.getName() + ".");
-//            return null;
-//        }
-//    }
-
-
-
-//    public File openFile(Excel excel){
-//        try {
-//            Path path = Paths.get(excelDirectoryPath + excel.getName());
-//            return new File(String.valueOf(path.toAbsolutePath()));
-//        }catch (Exception e){
-//            log.error("Can't open excel file: " + excel.getName() + ".");
-//            return null;
-//        }
-//    }
-
-//    public void deleteExcelFile(Excel excel) {
-//        try {
-//            Path path = Paths.get(excelDirectoryPath + excel.getName());
-//            log.info(path.toAbsolutePath().toString());
-//            Files.delete(path.toAbsolutePath());
-//        } catch (Exception e) {
-//            log.error("Can't delete excel file: " + excel.getName() + ".");
-//        }
-//    }
-
-//    public void closeExcel(InputStream excelFile) {
-//        try {
-//            excelFile.close();
-//        } catch (Exception e) {
-//            log.error("Can't close excel file.");
-//        }
-//    }
+    public String saveCV(MultipartFile cv) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException, IllegalBlockSizeException, BadPaddingException {
+        //certificate
+        X509Certificate x509Certificate = loadCertificateFromP12File();
+        //secret aes key
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        keyGenerator.init(256);
+        SecretKey aesKey = keyGenerator.generateKey();
+        //utilize AES algorithm using Cipher
+        Cipher aesCipher = Cipher.getInstance("AES");
+        aesCipher.init(Cipher.ENCRYPT_MODE, aesKey);
+        byte[] encryptedData = aesCipher.doFinal(cv.getBytes());
+        //Encrypt AES key using the RSA encryption certificate
+        PublicKey publicKey = x509Certificate.getPublicKey();
+        Cipher rsaCipher = Cipher.getInstance("RSA");
+        rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedAESKey = rsaCipher.doFinal(aesKey.getEncoded());
 
 
-
-    public String saveCV(MultipartFile cv) {
         Long currentDateInMils = new Date().getTime();
         String cvFileName = currentDateInMils + "_" +cv.getOriginalFilename();
         if(!cv.isEmpty()) {
             try{
-                writeDataToFile(cv, cvFileName);
+                writeDataToFile(encryptedData, encryptedAESKey, cvFileName);
                 return cvFileName;
             } catch (Exception e) {
                 log.error(e.getMessage());
@@ -86,17 +66,20 @@ public class CVService {
         }
         return null;
     }
-    private void writeDataToFile(MultipartFile cvFile, String excelName) throws IOException {
-        byte[] bytes = cvFile.getBytes();
-
+    private void writeDataToFile(byte[] encryptedData, byte[] encryptedAESKey, String cvFileName) throws IOException {
         Path path = Paths.get(cvDirectoryPath);
-        File file = new File(String.valueOf(path.toAbsolutePath()), excelName);
+        File cvFile = new File(String.valueOf(path.toAbsolutePath()), cvFileName);
 
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-
+        FileOutputStream fileOutputStream = new FileOutputStream(cvFile);
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 
-        bufferedOutputStream.write(bytes);
+        // Write the encrypted AES key
+        bufferedOutputStream.write(encryptedAESKey);
+        // Write a separator to distinguish the AES key and CV data
+        bufferedOutputStream.write("###".getBytes());
+        // Write the encrypted CV document
+        bufferedOutputStream.write(encryptedData);
+
         bufferedOutputStream.close();
     }
     public byte[] readCV(String cvFileName, UsernamePasswordAuthenticationToken jwt) {
@@ -205,8 +188,8 @@ public class CVService {
         try {
             // Load the keystore from the P12 file
             KeyStore keystore = KeyStore.getInstance("PKCS12");
-            FileInputStream fis = new FileInputStream(p12FilePath);
-            keystore.load(fis, p12FilePassword.toCharArray());
+            FileInputStream fis = new FileInputStream(serverP12Path);
+            keystore.load(fis, serverP12Password.toCharArray());
             fis.close();
 
             // Get the certificate from the keystore

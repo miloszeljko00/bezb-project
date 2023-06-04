@@ -247,9 +247,17 @@ public class ProfileController {
         }
         return new ResponseEntity<>("Empty file uploaded...", HttpStatus.BAD_REQUEST);
     }
+    @PreAuthorize("hasRole('READ-CVs')")
     @GetMapping("/get-all-cvs")
     public ResponseEntity<List<CV>> getAllCvs() {
         return new ResponseEntity<>(cvRepository.findAll(), HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('READ-CVs')")
+    @GetMapping("/get-all-cvs-for-manager-projects/{managerEmail}")
+    public ResponseEntity<List<CV>> getAllCvsForManagerProjects(@PathVariable("managerEmail") String managerEmail) {
+        var managerAccount = accountRepository.findByEmail(managerEmail);
+        var managerIdUuid = managerAccount.get().getId();
+        return new ResponseEntity<>(cvService.getAllForManager(managerIdUuid), HttpStatus.OK);
     }
     @PreAuthorize("hasRole('READ-CVs')")
     @GetMapping("/get-cv-by-filename/{fileName}")

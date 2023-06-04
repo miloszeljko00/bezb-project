@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CV } from './models/cv';
 import { UserService } from 'src/app/core/services/user.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-CVs',
@@ -13,18 +14,31 @@ export class CVsComponent implements OnInit {
   cvs: CV[] = [];
   constructor(
     public userService : UserService,
-    public toastr : ToastrService
+    public toastr : ToastrService,
+    public auth: AuthService
   ) { }
 
   ngOnInit() {
-    this.userService.getAllCvs().subscribe({
-      next: (result : any) => {
-        this.cvs = result;
-      },
-      error: (error: any) => {
-        this.toastr.error(error.message)
-      }
-    })
+    var user = this.auth.getUser();
+    if(user?.hasRole("Project Manager")){
+      this.userService.getAllCvsByManager(user.email).subscribe({
+        next: (result : any) => {
+          this.cvs = result;
+        },
+        error: (error: any) => {
+          this.toastr.error(error.message)
+        }
+      })
+    }else {
+      this.userService.getAllCvs().subscribe({
+        next: (result : any) => {
+          this.cvs = result;
+        },
+        error: (error: any) => {
+          this.toastr.error(error.message)
+        }
+      })
+    }
   }
   downloadCv(cv: CV) {
     var base64CvData = '';

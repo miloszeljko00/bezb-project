@@ -1,10 +1,18 @@
 package com.dreamteam.employeemanagement.service;
+import com.dreamteam.employeemanagement.model.CV;
 import com.dreamteam.employeemanagement.model.Permission;
+import com.dreamteam.employeemanagement.model.Project;
+import com.dreamteam.employeemanagement.model.UserProject;
+import com.dreamteam.employeemanagement.repository.ICVRepository;
+import com.dreamteam.employeemanagement.repository.IProjectRepository;
+import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,14 +29,18 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
 public class CVService {
     public static final String cvDirectoryPath = "src/main/resources/cvs/";
+    @Autowired
+    private IUserProjectRepository userProjectRepository;
+    @Autowired
+    private IProjectRepository projectRepository;
+    @Autowired
+    private ICVRepository cvRepository;
     @Value("${server.ssl.key-store}")
     public String serverP12Path;
     @Value("${server.ssl.key-store-password}")
@@ -206,5 +218,40 @@ public class CVService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<CV> getAllForManager(UUID managerId) {
+        var userEmails = getUserEmailsByManager(managerId);
+        var cvsForManager = new ArrayList<CV>();
+        for(String email:userEmails) {
+            var cvByEmail = cvRepository.findByUserEmail(email);
+            if(cvByEmail != null){
+                cvsForManager.add(cvByEmail);
+            }
+        }
+        return cvsForManager;
+    }
+    public List<String> getUserEmailsByManager(UUID managerId) {
+
+        List<UserProject> managersUserProjects = new ArrayList<>();
+        for(Project project:projectRepository.findByManager_Id(managerId)){
+            for( UserProject userProject:userProjectRepository.findAll())
+            {
+                if(userProject.getProject()==project){
+                    managersUserProjects.add(userProject);
+                }
+            }
+        }
+        return filterDuplicates(managersUserProjects);
+    }
+    private List<String> filterDuplicates(List<UserProject> userProjects) {
+        Set<String> uniqueEmails = new HashSet<>();
+        List<String> emails = new ArrayList<String>();
+        for(UserProject userProject: userProjects){
+            if(uniqueEmails.add(userProject.getUser().getEmail())){
+                emails.add(userProject.getUser().getEmail());
+            }
+        }
+        return emails;
     }
 }

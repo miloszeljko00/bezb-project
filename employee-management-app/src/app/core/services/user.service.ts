@@ -90,6 +90,9 @@ export class UserService {
   getAllCvs() {
     return this.http.get(environment.apiUrl + "/api/profile/get-all-cvs");
   }
+  getAllCvsByManager(managerId: string) {
+    return this.http.get(environment.apiUrl + "/api/profile/get-all-cvs-for-manager-projects/"+managerId);
+  }
   getCvByFileName(fileName: String) {
     return this.http.get<string>(environment.apiUrl + "/api/profile/get-cv-by-filename/"+fileName);
   }

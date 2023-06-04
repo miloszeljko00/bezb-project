@@ -4,6 +4,7 @@ import { GetProjectsGuard } from './core/auth/guards/get-projects.guard';
 import { GetEmployeesGuard } from './core/auth/guards/get-employees.guard';
 import { RegisterNewAdminGuard } from './core/auth/guards/register-new-admin.guard';
 import { GetRolesGuard } from './core/auth/guards/get-roles.guard';
+import { ReadCvGuard } from './core/auth/guards/read-cv.guard';
 
 const routes: Routes = [
   { path: '', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
@@ -12,7 +13,7 @@ const routes: Routes = [
   { path: 'previewRegistrationRequests', loadChildren: () => import('./pages/PreviewRegistrationRequests/PreviewRegistrationRequests.module').then(m => m.PreviewRegistrationRequestsModule) },
   { path: 'manage-roles', loadChildren: () => import('./pages/manage-roles/manage-roles.module').then(m => m.ManageRolesModule), canActivate: [GetRolesGuard] },
   { path: 'account', loadChildren: () => import('./pages/profile/profile.module').then(m => m.ProfileModule) },
-  { path: 'cvs', loadChildren: () => import('./pages/CVs/CVs.module').then(m => m.CVsModule) },
+  { path: 'cvs', loadChildren: () => import('./pages/CVs/CVs.module').then(m => m.CVsModule), canActivate: [ReadCvGuard] },
   { path: 'employees', loadChildren: () => import('./pages/employees/employees.module').then(m => m.EmployeesModule), canActivate: [GetEmployeesGuard] },
   { path: 'projects', loadChildren: () => import('./pages/projects/projects.module').then(m => m.ProjectsModule), canActivate: [GetProjectsGuard] },
   { path: 'register-new-admin', loadChildren: () => import('./pages/register-new-admin/register-new-admin.module').then(m => m.RegisterNewAdminModule), canActivate: [RegisterNewAdminGuard] },

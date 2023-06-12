@@ -26,10 +26,10 @@ export class LogsComponent implements OnInit {
   }
 
   ngOnInit() {
-    //run this.logService.fetch() every 5seconds 
+    this.refresh()
+  }
+
+  refresh() {
     this.logService.fetch()
-    setInterval(() => {
-      this.logService.fetch()
-    }, 10000)
   }
 }

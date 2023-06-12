@@ -16,10 +16,7 @@ public class TestController {
 
     @GetMapping
     public ResponseEntity<Object> test() {
-        log.error("Hello World!");
         log.info("Hello World!");
-        log.warn("Hello World!");
-        log.debug("Hello World!");
         return new ResponseEntity<>("{\"result\": \"WORKS!\"}", HttpStatus.OK);
     }
 

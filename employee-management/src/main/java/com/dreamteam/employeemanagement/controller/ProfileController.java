@@ -1,6 +1,5 @@
 package com.dreamteam.employeemanagement.controller;
-import com.dreamteam.employeemanagement.dto.profile.RegisterUserInfoDto;
-import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
+import com.dreamteam.employeemanagement.dto.profile.*;
 import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.repository.ICVRepository;
 import com.dreamteam.employeemanagement.repository.IRegisterUserInfoRepository;
@@ -8,14 +7,13 @@ import com.dreamteam.employeemanagement.repository.IUserProjectRepository;
 import com.dreamteam.employeemanagement.repository.IUserSkillsRepository;
 import com.dreamteam.employeemanagement.security.gdpr.Test;
 import com.dreamteam.employeemanagement.service.CVService;
-import com.dreamteam.employeemanagement.dto.profile.CreateProjectDto;
-import com.dreamteam.employeemanagement.dto.profile.AddUserToProject;
 import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
 import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.repository.*;
 import com.dreamteam.employeemanagement.service.ProfileService;
 import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +23,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+//import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.time.LocalDateTime;
 
@@ -268,4 +268,48 @@ public class ProfileController {
         test.setBase64CvData(base64CV);
         return new ResponseEntity<>(test, HttpStatus.OK);
     }
+   @PreAuthorize("hasRole('SEARCH')")
+    @GetMapping("/users/search/{email}/{firstname}/{lastname}/{from}/{to}")
+    public  ResponseEntity<List<RegisterUserInfo>> Search(
+            @PathVariable("email") String email,
+            @PathVariable("firstname") String firstname,
+            @PathVariable("lastname") String lastname,
+            @PathVariable("from") String from,
+            @PathVariable("to") String to
+    ) {
+       LocalDateTime date1 = LocalDateTime.parse(from);
+       LocalDateTime date2 = LocalDateTime.parse(to);
+        SearchDto searchDto = new SearchDto(email, firstname, lastname, date1, date2);
+        return new ResponseEntity<>(profileService.Search(searchDto), HttpStatus.OK);}
+
+    @PreAuthorize("hasRole('SEARCH')")
+    @GetMapping("/users/search/{firstname}/{lastname}/{from}/{to}")
+    public  ResponseEntity<List<RegisterUserInfo>> Search(
+            @PathVariable("firstname") String firstname,
+            @PathVariable("lastname") String lastname,
+            @PathVariable("from") String from,
+            @PathVariable("to") String to
+    ) {
+        LocalDateTime date1 = LocalDateTime.parse(from);
+        LocalDateTime date2 = LocalDateTime.parse(to);
+        if(firstname.equals("empty")){
+            firstname="";
+        }
+        if(lastname.equals("empty")){
+            lastname="";
+        }
+        SearchDto searchDto = new SearchDto("", firstname, lastname, date1, date2);
+        return new ResponseEntity<>(profileService.SearchByFirstNameOrLastName(searchDto), HttpStatus.OK);}
+
+    @PreAuthorize("hasRole('SEARCH')")
+    @GetMapping("/users/search/{from}/{to}")
+    public  ResponseEntity<List<RegisterUserInfo>> Search(
+            @PathVariable("from") String from,
+            @PathVariable("to") String to
+    ) {
+        LocalDateTime date1 = LocalDateTime.parse(from);
+        LocalDateTime date2 = LocalDateTime.parse(to);
+        SearchDto searchDto = new SearchDto("", "", "", date1, date2);
+        return new ResponseEntity<>(profileService.SearchByPeriod(searchDto), HttpStatus.OK);}
+
 }

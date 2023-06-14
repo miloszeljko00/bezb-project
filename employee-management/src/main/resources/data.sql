@@ -76,6 +76,8 @@ INSERT INTO public.permissions(id, name)
 VALUES ('15836cbb-dd75-4747-95ba-bf19d96e00c3', 'GET-USER-PROJECTS');
 INSERT INTO public.permissions(id, name)
 VALUES ('061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea6a', 'EDIT-CV');
+INSERT INTO public.permissions(id, name)
+VALUES ('061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea5a', 'SEARCH');
 
 -- EDIT-CV to HR
 INSERT INTO public.roles_permissions(role_id, permissions_id)
@@ -140,6 +142,9 @@ VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'b534fa31-95d0-4c63-9a26-4d27696
 -- REGISTER-ADMIN to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '43182ad7-6915-4aa3-bce5-d412b3d53551');
+-- SEARCH to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea5a');
 -- UPLOAD-CV to Engineer
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('9a4d712a-2882-4278-b981-76d339fc6894', '227e082c-78d9-4eef-bb0a-d22d8abbac70');
@@ -174,6 +179,8 @@ INSERT INTO register_user_info (id, account_id, first_name, last_name, street, c
 VALUES ('bc0d9546-c245-462a-a983-0d0ac8b49758', '27df3032-9ae2-4f31-9ef0-4447f79dc10c', 'ccg4wnglgMk+LaPPyA9F/g==', 'qXSgVcAbhzjDjxA3Q1lBiA==', 'A+f/FTVelkY3uTY6qPHC0w==', 'sh9b6RWXIX+zlhHwdu76DQ==', 'eJwpo5nTe4C1RomV0cgdOw==', '+pMuAL4y/DqmFD/dmSk30Q==', '2022-01-05');
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
 VALUES ('b695426d-2a64-4d1e-8f10-ffd568971082', 'aa8f9b07-ff5e-49bf-bf17-b959f4aae050', 'qwbLzfZR98mJ0Qzh0KEubg==', '8VRskLm4YTkOuriLIcWcGQ==', '/LmQmB2/jbrCwrNjvfOUAAhWntHwc6ZB3ZhEjgkLBLs=', 'ac9BNUMJ+jZuLILd3qmvzQ==', '+/wbaCniGu1idX1rgRtILQ==', 'CddNB5rgixfPqZ40FWeJuA==', '2022-01-05');
+INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
+VALUES ('b695426d-2a64-4d1e-8f10-ffd568971083', 'd206f89e-73cd-4388-ba29-8f528258db99', 'a', 'a', '/LmQmB2/jbrCwrNjvfOUAAhWntHwc6ZB3ZhEjgkLBLs=', 'ac9BNUMJ+jZuLILd3qmvzQ==', '+/wbaCniGu1idX1rgRtILQ==', 'CddNB5rgixfPqZ40FWeJuA==', '2022-01-05');
 
 
 INSERT INTO public.projects(id, duration, name, manager_id)
@@ -185,6 +192,9 @@ INSERT INTO public.user_project(id, description, end_date, start_date, project_i
 VALUES ('c0a67112-9c3e-4f15-9f86-6c14be9c0f3c', 'description 1', '2023-05-27T10:30:00', '2023-05-27T10:30:00', '3a6a9b34-7f34-4a56-b1d2-10cd7f0e8b21', '27df3032-9ae2-4f31-9ef0-4447f79dc10c');
 INSERT INTO public.user_project(id, description, end_date, start_date, project_id, account_id)
 VALUES ('7d899e47-9903-4e6e-9b3f-3d8a33a59c5d', 'description 2', '2023-05-27T10:30:00', '2023-05-27T10:30:00', 'f591b0ef-29a7-4e51-9c4f-83496dcfa8db', '27df3032-9ae2-4f31-9ef0-4447f79dc10c');
+INSERT INTO public.user_project(id, description, end_date, start_date, project_id, account_id)
+VALUES ('7d899e47-9903-4e6e-9b3f-3d8a33a59c4d', 'description 3', '2023-05-27T10:30:00', '2023-05-27T10:30:00', 'f591b0ef-29a7-4e51-9c4f-83496dcfa8db', 'd206f89e-73cd-4388-ba29-8f528258db99');
+
 
 INSERT INTO public.skills(id, name, rating, user_id)
 VALUES ('f48a2463-303e-4ef1-8a83-4a3c7d03a4f8', 'skill name 1', '5', '27df3032-9ae2-4f31-9ef0-4447f79dc10c');

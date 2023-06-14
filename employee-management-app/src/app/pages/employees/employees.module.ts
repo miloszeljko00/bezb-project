@@ -4,16 +4,18 @@ import { CommonModule } from '@angular/common';
 import { EmployeesRoutingModule } from './employees-routing.module';
 import { EmployeesPage } from './employees.page';
 import { MaterialModule } from 'src/app/shared/material/material.module';
+import {ButtonModule} from "../../shared/ui/button/button.module";
 
 
 @NgModule({
   declarations: [
     EmployeesPage
   ],
-  imports: [
-    CommonModule,
-    EmployeesRoutingModule,
-    MaterialModule
-  ]
+    imports: [
+        CommonModule,
+        EmployeesRoutingModule,
+        MaterialModule,
+        ButtonModule
+    ]
 })
 export class EmployeesModule { }

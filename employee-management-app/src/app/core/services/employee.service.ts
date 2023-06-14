@@ -1,17 +1,53 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { UserProfile } from 'src/app/pages/profile/models/userProfile';
-import { BehaviorSubject, of } from 'rxjs';
-import { Designation } from 'src/app/pages/register/models/Designation';
+import {HttpClient, HttpErrorResponse, HttpEvent, HttpHeaders} from '@angular/common/http';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({providedIn: 'root'})
 export class EmployeeService {
-    
+
     constructor(private http: HttpClient) { }
- 
-    getEmployees() { 
+
+    getEmployees() {
         return this.http.get<any[]>(environment.apiUrl + `/api/profile/users/all`);
     }
-    
+   search(searchDto: any) {
+    return this.http.get<any[]>(`https://localhost:443/api/profile/users/search`, searchDto);
+  }
+ // searchEmployee(searchDto: any): Observable<HttpEvent<any[]>> {
+  //  return this.http.get<any[]>(`https://localhost:443/api/profile/users/search`, searchDto);
+  //}
+  public searchResponse: any[] = [];
+  headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  searchEmployee(searchDto: any):
+    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+      + searchDto.email + '/'
+      + searchDto.firstName +'/'
+      + searchDto.lastName+'/'
+      + searchDto.from +'/'
+    + searchDto.to, {headers: this.headers});
+  }
+
+  getSearchResponse() {
+    return this.searchResponse;
+  }
+  updateSearchResponse(newList: any[]) {
+    this.searchResponse = newList;
+  }
+
+  searchEmployeeWithoutEmail(searchDto: any):
+    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+    + searchDto.firstName +'/'
+    + searchDto.lastName+'/'
+    + searchDto.from +'/'
+    + searchDto.to, {headers: this.headers});
+  }
+
+  searchEmployeeByPeriod(searchDto: any):
+    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+    + searchDto.from +'/'
+    + searchDto.to, {headers: this.headers});
+  }
+
 }

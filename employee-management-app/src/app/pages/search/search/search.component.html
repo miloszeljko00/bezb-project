@@ -1,4 +1,29 @@
-<div *ngIf="employees$ | async as employees" style="padding: 50px;">
+<div class="search">
+    <mat-label>Email</mat-label>
+  <app-input-field matInput [(value)]="email"></app-input-field>
+<br>
+    <mat-label class="fields" >Name</mat-label>
+  <app-input-field class="fields"  name="name" ngDefaultControl [(value)]="firstName"></app-input-field>
+<br>
+    <mat-label>Surname</mat-label>
+  <app-input-field name="surname" ngDefaultControl [(value)]="lastName"></app-input-field>
+
+<br>
+    <mat-label>From</mat-label>
+    <app-date-field   name="from" ngDefaultControl [(value)]="from"></app-date-field>
+ <br>
+    <mat-label>To</mat-label>
+    <app-date-field   name="to" ngDefaultControl [(value)]="to"></app-date-field>
+<br>
+  <button class="cta" (click)="search()">
+    <span class="hover-underline-animation"> SEARCH</span>
+    <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
+      <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
+    </svg>
+  </button>
+  <br>
+</div>
+<div >
   <table mat-table [dataSource]="employees">
 
     <!-- Id Column -->
@@ -50,6 +75,4 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
   </table>
-  <p *ngIf="employees.length == 0" style="margin-left: 40%; margin-top: 10%;">No data available.</p>
-  </div>
-<button (click)="Search()">search</button>
+</div>

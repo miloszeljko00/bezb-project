@@ -14,6 +14,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {RegisterRoutingModule} from "../register/register-routing.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MaterialModule} from "../../shared/material/material.module";
+import {SearchModule} from "../search/search.module";
+import {MatInputModule} from "@angular/material/input";
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import {MaterialModule} from "../../shared/material/material.module";
         ToggleModule,
         ProfileRoutingModule,
         MatFormFieldModule,
-        FormsModule
+        FormsModule,
+      SearchModule,
+      MatInputModule
     ]
 })
 export class ProfileModule { }

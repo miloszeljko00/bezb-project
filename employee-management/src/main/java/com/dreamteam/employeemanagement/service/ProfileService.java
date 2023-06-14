@@ -1,17 +1,17 @@
 package com.dreamteam.employeemanagement.service;
 
 import com.dreamteam.employeemanagement.dto.profile.CreateProjectDto;
-import com.dreamteam.employeemanagement.dto.profile.UpdateProfileDto;
+import com.dreamteam.employeemanagement.dto.profile.SearchDto;
 import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -113,4 +113,125 @@ public class ProfileService {
         return null;//accountRepository.findById(id);
     }
 
+
+    public List<RegisterUserInfo> Search(SearchDto searchDto) {
+
+        List<RegisterUserInfo> searchResult = new ArrayList<>();
+        if (!searchDto.getEmail().isEmpty() && !searchDto.getFirstName().isEmpty() && !searchDto.getLastName().isEmpty())
+        {
+            RegisterUserInfo user = registerUserInfoRepository.findByAccount_Email(searchDto.getEmail());
+            if(Objects.equals(user.getFirstName(), searchDto.getFirstName())
+                    && Objects.equals(user.getLastName(), searchDto.getLastName()))
+            {
+
+                List<LocalDateTime> startAndEndDate = PeriodOfEmployment(user.getAccount());
+                if(!MatchedPeriods(startAndEndDate.get(0),
+                        startAndEndDate.get(1),
+                        searchDto.getFrom(),
+                        searchDto.getTo()))
+                {
+                    return searchResult;
+                }
+                searchResult.add(registerUserInfoRepository.findByAccount_Email(searchDto.getEmail()));
+                return searchResult;
+            }
+        }
+
+        return searchResult;
+    }
+    public List<RegisterUserInfo> SearchByPeriod(SearchDto searchDto) {
+        List<RegisterUserInfo> searchResult = new ArrayList<>();
+        List<UserProject> allUserProjects = userProjectRepository.findAll();
+        List<RegisterUserInfo> allWorkingUsers = new ArrayList<>();
+        for (UserProject userProject : allUserProjects)
+        {
+            allWorkingUsers.add(registerUserInfoRepository.findByAccount_Email(userProject.getUser().getEmail()));
+        }
+        List<RegisterUserInfo> filtredDuplicates = new HashSet<>(allWorkingUsers).stream().toList();
+
+        for (RegisterUserInfo user : filtredDuplicates) {
+                List<LocalDateTime> startAndEndDate = PeriodOfEmployment(user.getAccount());
+                if (MatchedPeriods(startAndEndDate.get(0),
+                        startAndEndDate.get(1),
+                        searchDto.getFrom(),
+                        searchDto.getTo())) {
+                    searchResult.add(user);
+                }
+            }
+            return searchResult;
+    }
+    public List<RegisterUserInfo> SearchByFirstNameOrLastName(SearchDto searchDto) {
+        List<RegisterUserInfo> searchResult = new ArrayList<>();
+
+            if(!searchDto.getFirstName().isEmpty() && !searchDto.getLastName().isEmpty())
+            {
+                for(RegisterUserInfo user : matched(registerUserInfoRepository.findByFirstName(searchDto.getFirstName()),
+                        registerUserInfoRepository.findByLastName(searchDto.getLastName())))
+                {
+                    searchResult.add(user);
+                }
+                return searchResult;
+            }
+            else if(!searchDto.getFirstName().isEmpty() && searchDto.getLastName().isEmpty()){
+
+                for(RegisterUserInfo user : registerUserInfoRepository.findByFirstName(searchDto.getFirstName()))
+                {
+                    searchResult.add(user);
+                }
+                return searchResult;
+            }
+            else { //imamo samo ime ne i prezime
+                for(RegisterUserInfo user : registerUserInfoRepository.findByLastName(searchDto.getLastName()))
+                {
+                    searchResult.add(user);
+                }
+                return searchResult;
+            }
+    }
+    public static boolean MatchedPeriods(LocalDateTime start1, LocalDateTime end1, LocalDateTime start2, LocalDateTime end2) {
+        if (start2.compareTo(start1) >= 0 &&
+                end2.compareTo(end1) <= 0 ||
+                start1.compareTo(start2) >= 0 &&
+                        end1.compareTo(end2) <= 0 ||
+                start2.compareTo(start1) <= 0 &&
+                        start1.compareTo(end2) <= 0) {
+            return true;
+        }
+        return start2.compareTo(start1) >= 0 &&
+                start1.compareTo(end2) <= 0;
+    }
+
+    private List<LocalDateTime> PeriodOfEmployment(Account account) {
+        List<LocalDateTime> period = new ArrayList<>();
+        LocalDateTime start =  LocalDateTime.of(2024, 2, 13, 15, 56);
+        LocalDateTime end =  LocalDateTime.of(2011, 2, 13, 15, 56);
+        period.add(start);
+        period.add(end);
+
+        List<UserProject> projects = userProjectRepository.findAllByUser(account);
+
+        for (UserProject project : projects) {
+            if (project.getStartDate().isBefore(period.get(0))) {
+                period.set(0,project.getStartDate());
+            }
+            if (period.get(1).isBefore(project.getEndDate())) {
+                period.set(1,project.getEndDate());
+            }
+        }
+        return period;
+    }
+
+    public List<RegisterUserInfo> matched(List<RegisterUserInfo> list1, List<RegisterUserInfo> list2) {
+        List<RegisterUserInfo> sameObjects = new ArrayList<>();
+
+        for (RegisterUserInfo obj1 : list1) {
+            for (RegisterUserInfo obj2 : list2) {
+                if (obj1.equals(obj2)) {
+                    sameObjects.add(obj1);
+                    break;
+                }
+            }
+        }
+        return sameObjects;
+    }
 }

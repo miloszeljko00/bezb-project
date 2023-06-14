@@ -15,6 +15,8 @@ import java.util.UUID;
 public interface IRegisterUserInfoRepository extends JpaRepository<RegisterUserInfo, UUID> {
     List<RegisterUserInfo> findByAccount_Status(AccountStatus status);
     RegisterUserInfo findByAccount_Email(String email);
+    List<RegisterUserInfo> findByFirstName(String firstName);
+    List<RegisterUserInfo> findByLastName(String lastName);
     Optional<RegisterUserInfo> findByAccountStatusAndAccountEmailAndRevisionDateBetween(
             AccountStatus status, String email, Date startDate, Date endDate);
 }

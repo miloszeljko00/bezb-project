@@ -4,7 +4,6 @@ import { MaterialModule } from 'src/app/shared/material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputModule } from 'src/app/shared/ui/input/input.module';
 import { ButtonModule } from 'src/app/shared/ui/button/button.module';
-import {SearchResponseComponent} from "./search-response/search-response.component";
 import {SearchComponent} from "./search/search.component";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {CheckboxModule} from "../../shared/ui/checkbox/checkbox.module";
@@ -17,7 +16,6 @@ import {MatInputModule} from "@angular/material/input";
 
 @NgModule({
   declarations: [
-    SearchResponseComponent,
     SearchComponent
   ],
   imports: [

@@ -25,7 +25,7 @@ export class SearchComponent implements OnInit {
   firstName: string = "";
   lastName: string = "";
   from: any;
-  to: any;
+  to: any ;
   public employees: Observable<UserProfile[]> = new Observable<UserProfile[]>();
 
   constructor(
@@ -45,7 +45,10 @@ export class SearchComponent implements OnInit {
     if(this.searchRequestDto.email=='')
     {this.searchWithoutEmail()}
 
-    console.log(this.searchRequestDto);
+    if(this.searchRequestDto.firstName =="" && this.searchRequestDto.lastName ==""){
+      this.SearchByEmail();
+    }
+
     this.employeeService.searchEmployee(this.searchRequestDto).subscribe({
       next: (result: any) => {
         console.log(result);
@@ -70,6 +73,7 @@ export class SearchComponent implements OnInit {
       this.searchRequestDto.lastName = 'empty'
     }
 
+//dodaj da ne moze da searchuje bez datuma nikad- makar stavio neki random datum
     this.searchRequestDto.from = this.changeStartDate(this.from);
     this.searchRequestDto.to = this.changeStartDate(this.to);
     console.log(this.searchRequestDto);
@@ -99,6 +103,22 @@ export class SearchComponent implements OnInit {
     this.searchRequestDto.to = this.changeStartDate(this.to);
     console.log(this.searchRequestDto);
     this.employeeService.searchEmployeeByPeriod(this.searchRequestDto).subscribe({
+      next: (result: any) => {
+        console.log(result);
+        this.employees = result;
+      },
+      error: (error: any) => {
+        console.log(error);
+      }
+    })
+  }
+
+  private SearchByEmail() {
+    this.searchRequestDto.email = this.email
+    this.searchRequestDto.from = this.changeStartDate(this.from);
+    this.searchRequestDto.to = this.changeStartDate(this.to);
+    console.log(this.searchRequestDto);
+    this.employeeService.searchEmployeeByEmail(this.searchRequestDto).subscribe({
       next: (result: any) => {
         console.log(result);
         this.employees = result;

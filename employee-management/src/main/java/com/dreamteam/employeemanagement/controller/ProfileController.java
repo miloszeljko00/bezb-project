@@ -284,7 +284,7 @@ public class ProfileController {
 
     @PreAuthorize("hasRole('SEARCH')")
     @GetMapping("/users/search/{firstname}/{lastname}/{from}/{to}")
-    public  ResponseEntity<List<RegisterUserInfo>> Search(
+    public  ResponseEntity<List<RegisterUserInfo>> SearchEmployeeWithoutEmail(
             @PathVariable("firstname") String firstname,
             @PathVariable("lastname") String lastname,
             @PathVariable("from") String from,
@@ -303,7 +303,7 @@ public class ProfileController {
 
     @PreAuthorize("hasRole('SEARCH')")
     @GetMapping("/users/search/{from}/{to}")
-    public  ResponseEntity<List<RegisterUserInfo>> Search(
+    public  ResponseEntity<List<RegisterUserInfo>> SearchEmployeeByPeriod(
             @PathVariable("from") String from,
             @PathVariable("to") String to
     ) {
@@ -311,5 +311,15 @@ public class ProfileController {
         LocalDateTime date2 = LocalDateTime.parse(to);
         SearchDto searchDto = new SearchDto("", "", "", date1, date2);
         return new ResponseEntity<>(profileService.SearchByPeriod(searchDto), HttpStatus.OK);}
+    @PreAuthorize("hasRole('SEARCH')")
+    @GetMapping("/users/search/{email}/{from}/{to}")
+    public  ResponseEntity<List<RegisterUserInfo>> SearchEmployeeByEmail(
+            @PathVariable("email") String email,
+            @PathVariable("from") String from,
+            @PathVariable("to") String to
+    ) {
+        LocalDateTime date1 = LocalDateTime.parse(from);
+        LocalDateTime date2 = LocalDateTime.parse(to);
+        return new ResponseEntity<>(profileService.SearchByEmail(email, date1, date2), HttpStatus.OK);}
 
 }

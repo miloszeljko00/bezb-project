@@ -136,7 +136,6 @@ public class ProfileService {
                 return searchResult;
             }
         }
-
         return searchResult;
     }
     public List<RegisterUserInfo> SearchByPeriod(SearchDto searchDto) {
@@ -168,6 +167,11 @@ public class ProfileService {
                 for(RegisterUserInfo user : matched(registerUserInfoRepository.findByFirstName(searchDto.getFirstName()),
                         registerUserInfoRepository.findByLastName(searchDto.getLastName())))
                 {
+                    List<LocalDateTime> startAndEndDate = PeriodOfEmployment(user.getAccount());
+                    if (MatchedPeriods(startAndEndDate.get(0),
+                            startAndEndDate.get(1),
+                            searchDto.getFrom(),
+                            searchDto.getTo()))
                     searchResult.add(user);
                 }
                 return searchResult;
@@ -176,6 +180,11 @@ public class ProfileService {
 
                 for(RegisterUserInfo user : registerUserInfoRepository.findByFirstName(searchDto.getFirstName()))
                 {
+                    List<LocalDateTime> startAndEndDate = PeriodOfEmployment(user.getAccount());
+                    if (MatchedPeriods(startAndEndDate.get(0),
+                            startAndEndDate.get(1),
+                            searchDto.getFrom(),
+                            searchDto.getTo()))
                     searchResult.add(user);
                 }
                 return searchResult;
@@ -183,22 +192,23 @@ public class ProfileService {
             else { //imamo samo ime ne i prezime
                 for(RegisterUserInfo user : registerUserInfoRepository.findByLastName(searchDto.getLastName()))
                 {
+                    List<LocalDateTime> startAndEndDate = PeriodOfEmployment(user.getAccount());
+                    if (MatchedPeriods(startAndEndDate.get(0),
+                            startAndEndDate.get(1),
+                            searchDto.getFrom(),
+                            searchDto.getTo()))
                     searchResult.add(user);
                 }
                 return searchResult;
             }
     }
     public static boolean MatchedPeriods(LocalDateTime start1, LocalDateTime end1, LocalDateTime start2, LocalDateTime end2) {
-        if (start2.compareTo(start1) >= 0 &&
-                end2.compareTo(end1) <= 0 ||
-                start1.compareTo(start2) >= 0 &&
-                        end1.compareTo(end2) <= 0 ||
-                start2.compareTo(start1) <= 0 &&
-                        start1.compareTo(end2) <= 0) {
-            return true;
+        if (start2.compareTo(start1) < 0 &&
+                start1.compareTo(end2) > 0  ||
+                start2.compareTo(end1) > 0) {
+            return false;
         }
-        return start2.compareTo(start1) >= 0 &&
-                start1.compareTo(end2) <= 0;
+        return true;
     }
 
     private List<LocalDateTime> PeriodOfEmployment(Account account) {
@@ -233,5 +243,21 @@ public class ProfileService {
             }
         }
         return sameObjects;
+    }
+
+    public List<RegisterUserInfo> SearchByEmail(String email, LocalDateTime date1, LocalDateTime date2) {
+        List<RegisterUserInfo> searchResult = new ArrayList<>();
+
+            RegisterUserInfo user = registerUserInfoRepository.findByAccount_Email(email);
+                List<LocalDateTime> startAndEndDate = PeriodOfEmployment(user.getAccount());
+                if(!MatchedPeriods(startAndEndDate.get(0),
+                        startAndEndDate.get(1),
+                        date1,
+                        date2))
+                {
+                    return searchResult;
+                }
+                searchResult.add(user);
+                return searchResult;
     }
 }

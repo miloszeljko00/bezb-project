@@ -14,10 +14,6 @@ export class EmployeeService {
    search(searchDto: any) {
     return this.http.get<any[]>(`https://localhost:443/api/profile/users/search`, searchDto);
   }
- // searchEmployee(searchDto: any): Observable<HttpEvent<any[]>> {
-  //  return this.http.get<any[]>(`https://localhost:443/api/profile/users/search`, searchDto);
-  //}
-  public searchResponse: any[] = [];
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   searchEmployee(searchDto: any):
@@ -28,14 +24,6 @@ export class EmployeeService {
       + searchDto.from +'/'
     + searchDto.to, {headers: this.headers});
   }
-
-  getSearchResponse() {
-    return this.searchResponse;
-  }
-  updateSearchResponse(newList: any[]) {
-    this.searchResponse = newList;
-  }
-
   searchEmployeeWithoutEmail(searchDto: any):
     Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
     + searchDto.firstName +'/'
@@ -50,4 +38,10 @@ export class EmployeeService {
     + searchDto.to, {headers: this.headers});
   }
 
+  searchEmployeeByEmail(searchDto: any):
+    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+    + searchDto.email + '/'
+    + searchDto.from +'/'
+    + searchDto.to, {headers: this.headers});
+  }
 }

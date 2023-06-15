@@ -1,5 +1,6 @@
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password1!
-VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'a@email.com', '$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa', false);
+
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password1!
+VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'miloszeljko00@gmail.com', '$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password
 VALUES ('d206f89e-73cd-4388-ba29-8f528258db99', 'se@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=password
@@ -10,6 +11,7 @@ INSERT INTO public.accounts(id, email, password, first_login) -- password=mihail
 VALUES ('27df3032-9ae2-4f31-9ef0-4447f79dc10c', 'pelepelepele158@gmail.com', '$2a$10$5R3V7dZGaPrKDoZx2k1kRuznUaU/Dzj4YnIF5BG3ttghJuKOrmw9q', false);
 INSERT INTO public.accounts(id, email, password, first_login) -- password=mihailo!123
 VALUES ('aa8f9b07-ff5e-49bf-bf17-b959f4aae050', 'mihailoveljic3010@gmail.com', '$2a$10$5R3V7dZGaPrKDoZx2k1kRuznUaU/Dzj4YnIF5BG3ttghJuKOrmw9q', false);
+
 
 INSERT INTO public.roles(id, name)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'Administrator');
@@ -80,6 +82,16 @@ VALUES ('061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea6a', 'EDIT-CV');
 -- EDIT-CV to HR
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('3ad3288e-1fad-45cc-aa7f-8660ce4af4e4', '061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea6a');
+VALUES ('5d157836-d6ee-46cd-82c0-8e5a2a840305', 'ENABLE-USER');
+INSERT INTO public.permissions(id, name)
+VALUES ('cf2edd2b-fa44-4609-8d8c-c40342140c76', 'DISABLE-USER');
+
+-- ENABLE-USER to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '5d157836-d6ee-46cd-82c0-8e5a2a840305');
+-- DISABLE-USER to Administrator
+INSERT INTO public.roles_permissions(role_id, permissions_id)
+VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', 'cf2edd2b-fa44-4609-8d8c-c40342140c76');
 -- GET-PERMISSIONS to Administrator
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('6caccf41-5c54-401d-87b4-05af4d629fda', '84e5cc62-2b3b-4332-89ae-ba74f96f614a');

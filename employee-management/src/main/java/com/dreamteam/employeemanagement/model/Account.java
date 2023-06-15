@@ -41,6 +41,8 @@ public class Account implements UserDetails {
 
     @Column(name = "first_login")
     private boolean firstLogin;
+    @Column(name = "enabled")
+    private boolean enabled;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -87,7 +89,7 @@ public class Account implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }
 

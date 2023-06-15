@@ -23,6 +23,7 @@
       </div>
   </div>
   <div>
+    <app-navbar-button *ngIf="user" (click)="goToChangePasswordPage()">Change Password</app-navbar-button>
       <app-navbar-button *ngIf="!user" (click)="goToRegisterPage()">Register</app-navbar-button>
       <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToAdminProfile()">Account</app-navbar-button>
       <app-navbar-button *ngIf="!user" (click)="login()">Login</app-navbar-button>

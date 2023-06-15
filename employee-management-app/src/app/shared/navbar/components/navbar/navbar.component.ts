@@ -64,6 +64,9 @@ export class NavbarComponent implements OnInit, OnDestroy{
   goToRegisterNewAdminPage() {
     this.router.navigate(['/register-new-admin'])
   }
+  goToChangePasswordPage() {
+    this.router.navigate(['/change-password', this.user?.email])
+  }
   goToProjects() {
     this.router.navigate(['/projects'])
   }

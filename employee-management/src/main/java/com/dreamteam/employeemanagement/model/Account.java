@@ -8,10 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,6 +40,10 @@ public class Account implements UserDetails {
     private boolean firstLogin;
     @Column(name = "enabled")
     private boolean enabled;
+
+
+    @Column(name = "last_time_logs_accessed")
+    private Date lastTimeLogsAccessed;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -90,6 +91,13 @@ public class Account implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public boolean hasRole(String roleName){
+        for(var role : roles){
+            if(role.getName().equals(roleName)) return true;
+        }
+        return false;
     }
 }
 

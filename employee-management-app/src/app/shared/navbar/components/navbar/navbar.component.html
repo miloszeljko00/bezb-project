@@ -8,7 +8,8 @@
       </div>
       <div *ngIf="user">
         <ng-container>
-            <app-navbar-button *ngIf="user.hasPermission('TEST')" (click)="test()">TEST</app-navbar-button>
+            <app-navbar-button (click)="test()">TEST</app-navbar-button>
+            <app-navbar-button (click)="goToLogsPage()">Logs</app-navbar-button>
             <app-navbar-button *ngIf="user.hasPermission('GET-ROLES') && user.hasPermission('GET-PERMISSIONS')" (click)="goToManageRoles()">Manage Roles</app-navbar-button>
             <app-navbar-button *ngIf="user.hasPermission('GET-PROJECTS')" (click)="goToProjects()">Projects</app-navbar-button>
             <app-navbar-button *ngIf="user.hasPermission('GET-EMPLOYEES')" (click)="goToEmployees()">Employees</app-navbar-button>
@@ -16,14 +17,22 @@
             <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToRegisterNewAdminPage()">Register New Admin</app-navbar-button>
             <app-navbar-button *ngIf="user.hasRole('Project Manager')" (click)="goToManagerAccount()">Account</app-navbar-button>
             <app-navbar-button *ngIf="user.hasRole('Software Engineer')" (click)="goToEngineerAccount()">Account</app-navbar-button>
-
             <app-navbar-button *ngIf="user.hasPermission('READ-CVs')" (click)="goToCvs()">CVs</app-navbar-button>
-            <app-navbar-button *ngIf="user.hasRole('Administrator')" (click)="goToManageRoles()">Manage Roles</app-navbar-button>
         </ng-container>
       </div>
   </div>
-  <div>
-    <app-navbar-button *ngIf="user" (click)="goToChangePasswordPage()">Change Password</app-navbar-button>
+  <div style="display: flex; justify-content: center; text-align: center; align-items: center">
+      <button mat-icon-button style="position:relative;" (click)="openNotificationsDialog()" *ngIf="notifications$ | async as notifications">
+        <mat-icon style="color:white;">notifications</mat-icon>
+        <ng-container *ngIf="notifications.length > 0">
+            <mat-icon style="color: rgb(255, 48, 48); position: absolute; top:10%; left:45%;">circle</mat-icon>
+            <span class="notification-number" [ngClass]="{'notification-number-1': notifications.length < 10, 'notification-number-2': notifications.length > 9, }">
+                {{notifications.length}}
+            </span>
+        </ng-container>
+        
+      </button>
+      <app-navbar-button *ngIf="user" (click)="goToChangePasswordPage()">Change Password</app-navbar-button>
       <app-navbar-button *ngIf="!user" (click)="goToRegisterPage()">Register</app-navbar-button>
       <app-navbar-button *ngIf="user && user.hasRole('Administrator')" (click)="goToAdminProfile()">Account</app-navbar-button>
       <app-navbar-button *ngIf="!user" (click)="login()">Login</app-navbar-button>

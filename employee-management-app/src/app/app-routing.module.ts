@@ -20,6 +20,7 @@ const routes: Routes = [
   { path: 'change-password/:email', loadChildren: () => import('./pages/change-password/change-password.module').then(m => m.ChangePasswordModule) },
   { path: 'request-reset-password', loadChildren: () => import('./pages/request-reset-password/request-reset-password.module').then(m => m.RequestResetPasswordModule) },
   { path: 'confirm-reset-password', loadChildren: () => import('./pages/confirm-reset-password/confirm-reset-password.module').then(m => m.ConfirmResetPasswordModule) },
+  { path: 'logs', loadChildren: () => import('./pages/logs/logs.module').then(m => m.LogsModule) },
   { path: '**', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
 ];
 

@@ -34,7 +34,7 @@ public class RoleController {
             log.info("getAllRoles for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("getAllRoles for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getAllRoles for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -48,11 +48,11 @@ public class RoleController {
             permission = permissionRepository.findById(permission.getId()).orElse(null);
 
             if(role == null) {
-                log.info("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                log.warn("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             if(permission == null) {
-                log.info("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                log.warn("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
@@ -64,11 +64,11 @@ public class RoleController {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
-                log.info("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                log.warn("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
         }catch (Exception e){
-            log.info("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("addPermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 
@@ -82,11 +82,11 @@ public class RoleController {
             permission = permissionRepository.findById(permission.getId()).orElse(null);
 
             if(role == null) {
-                log.info("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                log.warn("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             if(permission == null) {
-                log.info("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                log.warn("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
@@ -98,11 +98,11 @@ public class RoleController {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
-                log.info("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                log.warn("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
         }catch (Exception e){
-            log.info("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("removePermission for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 

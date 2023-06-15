@@ -11,6 +11,7 @@ import com.dreamteam.employeemanagement.model.*;
 import com.dreamteam.employeemanagement.model.enums.AccountStatus;
 import com.dreamteam.employeemanagement.repository.IAccountRepository;
 import com.dreamteam.employeemanagement.service.EmailService;
+import com.dreamteam.employeemanagement.service.MyLittleLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +26,11 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MyLittleLogger.class);
 
     private final AuthenticationService authenticationService;
     private final PasswordEncoder passwordEncoder;
@@ -47,7 +48,7 @@ public class AuthController {
             log.info("Login for: " + loginRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         }catch (Exception e){
-            log.info("Login for: " + loginRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Login for: " + loginRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -64,7 +65,7 @@ public class AuthController {
             log.info("Password change for: " + changePasswordRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         }catch (Exception e){
-            log.info("Login for: " + changePasswordRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Login for: " + changePasswordRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -89,7 +90,7 @@ public class AuthController {
             log.info("Magic login for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
-            log.info("Magic login for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Magic login for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -138,7 +139,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid activation link.");
 
         }catch (Exception e){
-            log.info("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -151,7 +152,7 @@ public class AuthController {
             log.info("Logout for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
-            log.info("Logout for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Logout for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -166,7 +167,7 @@ public class AuthController {
             log.info("Refresh access token for: " + refreshAccessTokenRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(refreshAccessTokenResponse, HttpStatus.OK);
         }catch (Exception e){
-            log.info("Refresh access token for: " + refreshAccessTokenRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Refresh access token for: " + refreshAccessTokenRequest.getEmail() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }

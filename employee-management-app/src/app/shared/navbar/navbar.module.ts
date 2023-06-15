@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { NavbarButtonComponent } from './components/navbar-button/navbar-button.component';
 import { MaterialModule } from '../material/material.module';
+import { NotificationsDialogComponent } from './components/notifications-dialog/notifications-dialog.component';
 
 
 
 @NgModule({
   declarations: [
     NavbarComponent,
-    NavbarButtonComponent
+    NavbarButtonComponent,
+    NotificationsDialogComponent
   ],
   imports: [
     CommonModule,

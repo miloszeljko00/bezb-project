@@ -38,7 +38,7 @@ public class ManagerController {
             log.info("Get all projects for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("Get all projects for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Get all projects for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -51,7 +51,7 @@ public class ManagerController {
             log.info("Get users by project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("Get users by project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Get users by project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -64,7 +64,7 @@ public class ManagerController {
             log.info("Add user to project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("Add user to project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Add user to project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -77,7 +77,7 @@ public class ManagerController {
             log.info("Create Project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("Create Project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Create Project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -89,7 +89,7 @@ public class ManagerController {
             managerService.deleteUserFromProject(id);
             log.info("Remove user from project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
         }catch (Exception e){
-            log.info("Remove user from project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Remove user from project for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -104,7 +104,7 @@ public class ManagerController {
             log.info("Get Users by manager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("Get Users by manager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Get Users by manager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -120,7 +120,7 @@ public class ManagerController {
             log.info("Update UserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("Update UserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Update UserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 

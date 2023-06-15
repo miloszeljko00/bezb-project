@@ -1,0 +1,10 @@
+<div class="container" *ngIf="notifications$ | async as notifications">
+    <ng-container *ngIf="notifications.length > 0; else noNotification">
+        <span [class.animated]="notification.animate" (click)="handleNotificationClick(notification)" *ngFor="let notification of notifications" class="notification">{{ notification.message }}</span>
+    </ng-container>
+</div>
+
+
+<ng-template #noNotification>
+    <span style="display: flex; justify-content: center; text-align: center; color:white; margin: 10px;">No notifications...</span>
+</ng-template>

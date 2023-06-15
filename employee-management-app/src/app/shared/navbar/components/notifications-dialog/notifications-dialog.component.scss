@@ -1,0 +1,35 @@
+.container {
+    background-color: darkslategray;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+.notification{
+    transition: background-color .3s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #fff;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+
+  &.animated {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+.notification:hover {
+    background-color: #c5c5c5;
+}

@@ -49,7 +49,7 @@ public class ProjectController {
             log.info("createProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("createProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("createProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -66,7 +66,7 @@ public class ProjectController {
             log.info("deleteProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
-            log.info("deleteProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("deleteProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 

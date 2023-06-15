@@ -60,7 +60,7 @@ public class ProfileController {
             log.info("getAllProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("getAllProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getAllProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -72,7 +72,7 @@ public class ProfileController {
             log.info("getUser for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("getUser for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getUser for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -85,7 +85,7 @@ public class ProfileController {
             log.info("getAllProjectsByManager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("getAllProjectsByManager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getAllProjectsByManager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -99,7 +99,7 @@ public class ProfileController {
             log.info("getAllUsersByManager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("getAllUsersByManager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getAllUsersByManager for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 
@@ -115,7 +115,7 @@ public class ProfileController {
             log.info("getAllUsers for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("getAllUsers for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getAllUsers for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -136,7 +136,7 @@ public class ProfileController {
             log.info("getAllProjectManagers for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("getAllProjectManagers for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getAllProjectManagers for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 
@@ -152,7 +152,7 @@ public class ProfileController {
             log.info("getUsersByProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("getUsersByProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getUsersByProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -170,10 +170,10 @@ public class ProfileController {
                     return new ResponseEntity<>(HttpStatus.OK);
                 }
             }
-            log.info("deleteUserFromProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("deleteUserFromProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }catch (Exception e) {
-            log.info("deleteUserFromProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("deleteUserFromProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -187,7 +187,7 @@ public class ProfileController {
             log.info("getUserSkills for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("getUserSkills for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getUserSkills for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -200,7 +200,7 @@ public class ProfileController {
                     log.info("getProjectsByUser for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("getProjectsByUser for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("getProjectsByUser for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -213,7 +213,7 @@ public class ProfileController {
             log.info("DeleteUserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("DeleteUserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("DeleteUserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -227,7 +227,7 @@ public class ProfileController {
             log.info("deleteUserSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("deleteUserSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("deleteUserSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -241,7 +241,7 @@ public class ProfileController {
             log.info("createProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("createProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("createProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -255,7 +255,7 @@ public class ProfileController {
             log.info("createUserSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("createUserSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("createUserSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -279,7 +279,7 @@ public class ProfileController {
             log.info("addUserToProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("addUserToProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("addUserToProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 
@@ -295,7 +295,7 @@ public class ProfileController {
             log.info("addUserToProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
-            log.info("addUserToProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("addUserToProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -310,7 +310,7 @@ public class ProfileController {
             log.info("updateUserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("updateUserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("updateUserProject for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -329,7 +329,7 @@ public class ProfileController {
             log.info("updateProfile for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("updateProfile for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("updateProfile for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
 
@@ -369,7 +369,7 @@ public class ProfileController {
             log.info("updateSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("updateSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("updateSkill for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }
@@ -395,14 +395,14 @@ public class ProfileController {
                     return new ResponseEntity<>("{\"message\": \"CV saved successfully!\"}", HttpStatus.OK);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.info("uploadCV for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                    log.warn("uploadCV for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
                     return new ResponseEntity<>("Something went wrong while uploading CV...", HttpStatus.BAD_REQUEST);
                 }
             }
-            log.info("uploadCV for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("uploadCV for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             return new ResponseEntity<>("Empty file uploaded...", HttpStatus.BAD_REQUEST);
         }catch (Exception e){
-            log.info("uploadCV for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("uploadCV for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }

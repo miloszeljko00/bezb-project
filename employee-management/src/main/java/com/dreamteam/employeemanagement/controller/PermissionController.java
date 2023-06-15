@@ -30,7 +30,7 @@ public class PermissionController {
             log.info("Get all permissions for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
-            log.info("Get all permissions for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
+            log.warn("Get all permissions for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
         }
     }

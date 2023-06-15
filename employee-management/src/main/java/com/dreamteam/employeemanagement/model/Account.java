@@ -90,5 +90,12 @@ public class Account implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public boolean hasRole(String roleName){
+        for(var role : roles){
+            if(role.getName().equals(roleName)) return true;
+        }
+        return false;
+    }
 }
 

@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
@@ -7,6 +8,8 @@ import { User } from 'src/app/core/auth/models/user';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
 import { RegisterUserInfoService } from 'src/app/core/services/register-user-info.service';
 import { environment } from 'src/environments/environment';
+import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
+import { NotificationService } from '../../services/notification-service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,27 +17,57 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit, OnDestroy{
-
+  notifications$ = this.notificationService.getNotificationsObservable();
   getUserSubscription = new Subscription();
-
   user: User | null = null;
-
+  dialogRef!: MatDialogRef<NotificationsDialogComponent>;
+  dialogOpened = false;
   constructor(
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
     private toastr: ToastrService,
-    private registerUserInfoService: RegisterUserInfoService
+    private registerUserInfoService: RegisterUserInfoService,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) {}
 
   ngOnDestroy(): void {
     this.getUserSubscription.unsubscribe()
   }
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentMouseDown(event: MouseEvent): void {
+    if (this.dialogRef && !this.dialogRef._containerInstance['_elementRef'].nativeElement.contains(event.target)) {
+      this.dialogRef.close();
+    }
+  }
+  openNotificationsDialog() {
+    if(this.dialogRef)this.dialogRef.close();
+    this.dialogRef = this.dialog.open(NotificationsDialogComponent, {
+      hasBackdrop: false,
+      restoreFocus: false,
+      autoFocus: false,
+      position: {
+        top: '62px',
+        right: '165px'
+      },
+    });
 
+    this.dialogRef.afterOpened().subscribe(() => {
+      this.dialogOpened = true;
+    });
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.dialogOpened = false;
+    });
+  }
   ngOnInit() {
     this.user = this.authService.getUser();
     if(this.user)this.user = new User(this.user.email, this.user.roles, this.user.permissions)
-
+    if(this.user?.hasRole('Administrator')){
+      setInterval(() => {
+        if(!this.dialogOpened) this.notificationService.fetchNotifications(this.user?.email!)
+      }, 2000)
+    }
     this.getUserSubscription = this.authService.getUserObservable().subscribe({
       next: (result) => {
         this.user = result
@@ -86,7 +119,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
     this.router.navigate(['/logs'])
   }
   test() {
-    this.http.get(environment.apiUrl + '/api/logs').subscribe({
+    this.http.get(environment.apiUrl + '/api/test').subscribe({
       next: () =>{
         this.toastr.success("Working!")
       },

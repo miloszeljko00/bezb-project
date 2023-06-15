@@ -123,7 +123,7 @@ public class RegisterController {
     }
     //TODO: desifrovati podatke
     @GetMapping("/get-by-id/{userEmail}")
-    public ResponseEntity<RegisterUserInfo> getById(@PathVariable("userEmail") String userEmail) throws Exception {
+    public ResponseEntity<RegisterUserInfo> getById(@PathVariable("userEmail") String userEmail, HttpServletRequest request) throws Exception {
         log.info("getById initialized from ip address: " + request.getRemoteAddr());
         try{
             var registerUserInfo = registerUserInfoRepository.findByAccount_Email(userEmail);

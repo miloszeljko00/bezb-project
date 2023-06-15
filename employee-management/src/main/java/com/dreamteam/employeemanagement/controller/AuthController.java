@@ -99,7 +99,7 @@ public class AuthController {
     }
 
     @PostMapping("/actions/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) throws Exception {
         log.info("Login initialized by: " + loginRequest.getEmail() + ", from ip address: " + request.getRemoteAddr());
         try{
             var email = loginRequest.getEmail();
@@ -119,7 +119,7 @@ public class AuthController {
         }
     }
     @PostMapping("/actions/change-password")
-    public ResponseEntity<LoginResponse> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<LoginResponse> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, HttpServletRequest request) {
         log.info("Password change initialized by: " + changePasswordRequest.getEmail() + ", from ip address: " + request.getRemoteAddr());
         try{
             var email = changePasswordRequest.getEmail();
@@ -191,7 +191,7 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/actions/magic-login-activation")
-    public ResponseEntity magicLogin(@RequestParam("token") String token, @RequestParam("userEmail") String userEmail, HttpServletRequest request) {
+    public ResponseEntity magicLogin(@RequestParam("token") String token, @RequestParam("userEmail") String userEmail, HttpServletRequest request) throws Exception {
         log.info("Magic login activation initialized by: " + userEmail + ", from ip address: " + request.getRemoteAddr());
         try{
             // Retrieve the RegisterUserInfo object using the provided registerUserInfoId
@@ -218,34 +218,19 @@ public class AuthController {
 
                 // Verify if the provided HMAC matches the expected HMAC
                 if (expectedHmac.equals(token)) {
-                    var loginResponse = authenticationService.magicLogin(account.get());
+                    LoginResponse loginResponse = null;
+                    try {
+                        loginResponse = authenticationService.magicLogin(account.get());
+                    } catch (Exception e) {
+                        log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                    log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " was successful.");
                     return new ResponseEntity<>(loginResponse, HttpStatus.OK);
                 }
             }
             log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
             return ResponseEntity.badRequest().body("Invalid activation link.");
-
-            // Check if the token has been used before
-            if (magicLoginToken.isUsed()) {
-                log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
-                return ResponseEntity.badRequest().body("Token has already been used.");
-            }
-
-            // Generate the expected HMAC for the token and registerUserInfoId
-            String expectedHmac = HmacUtil.generateHmac(account.get().getMagicLoginToken().getToken() + userEmail, "veljin-tajni-kljuc");
-
-            // Verify if the provided HMAC matches the expected HMAC
-            if (expectedHmac.equals(token)) {
-                LoginResponse loginResponse = null;
-                try {
-                    loginResponse = authenticationService.magicLogin(account.get());
-                } catch (Exception e) {
-                    log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
-                log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " was successful.");
-                return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-            }
         }catch (Exception e){
             log.warn("Magic login activation for: " + userEmail + " from ip address: " + request.getRemoteAddr() + " has failed.");
             throw e;
@@ -266,7 +251,7 @@ public class AuthController {
     }
 
     @PostMapping("/actions/refresh-access-token")
-    public ResponseEntity<RefreshAccessTokenResponse> refreshAccessToken(@RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest) {
+    public ResponseEntity<RefreshAccessTokenResponse> refreshAccessToken(@RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest, HttpServletRequest request) {
         log.info("Refresh access token initialized by: " + refreshAccessTokenRequest.getEmail() + ", from ip address: " + request.getRemoteAddr());
         try{
             String accessToken = null;

@@ -41,6 +41,7 @@ export class SearchComponent implements OnInit {
     this.searchRequestDto.lastName = this.lastName;
   this.searchRequestDto.from = this.changeStartDate(this.from);
     this.searchRequestDto.to = this.changeStartDate(this.to);
+    if(this.searchRequestDto.to < this.searchRequestDto.from) return alert("Enter valid date span!");
     if(this.searchRequestDto.email=='')
     { this.searchWithoutEmail();
       return ;

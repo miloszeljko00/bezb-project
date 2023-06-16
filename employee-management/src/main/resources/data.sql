@@ -180,7 +180,7 @@ VALUES ('bc0d9546-c245-462a-a983-0d0ac8b49758', '27df3032-9ae2-4f31-9ef0-4447f79
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
 VALUES ('b695426d-2a64-4d1e-8f10-ffd568971082', 'aa8f9b07-ff5e-49bf-bf17-b959f4aae050', 'qwbLzfZR98mJ0Qzh0KEubg==', '8VRskLm4YTkOuriLIcWcGQ==', '/LmQmB2/jbrCwrNjvfOUAAhWntHwc6ZB3ZhEjgkLBLs=', 'ac9BNUMJ+jZuLILd3qmvzQ==', '+/wbaCniGu1idX1rgRtILQ==', 'CddNB5rgixfPqZ40FWeJuA==', '2022-01-05');
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
-VALUES ('b695426d-2a64-4d1e-8f10-ffd568971083', 'd206f89e-73cd-4388-ba29-8f528258db99', 'a', 'a', '/LmQmB2/jbrCwrNjvfOUAAhWntHwc6ZB3ZhEjgkLBLs=', 'ac9BNUMJ+jZuLILd3qmvzQ==', '+/wbaCniGu1idX1rgRtILQ==', 'CddNB5rgixfPqZ40FWeJuA==', '2022-01-05');
+VALUES ('b695426d-2a64-4d1e-8f10-ffd568971083', 'd206f89e-73cd-4388-ba29-8f528258db99', 'velja', 'zelja', '/LmQmB2/jbrCwrNjvfOUAAhWntHwc6ZB3ZhEjgkLBLs=', 'ac9BNUMJ+jZuLILd3qmvzQ==', '+/wbaCniGu1idX1rgRtILQ==', 'CddNB5rgixfPqZ40FWeJuA==', '2022-01-05');
 
 
 INSERT INTO public.projects(id, duration, name, manager_id)

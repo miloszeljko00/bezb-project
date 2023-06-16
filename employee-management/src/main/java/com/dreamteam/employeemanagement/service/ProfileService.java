@@ -260,4 +260,10 @@ public class ProfileService {
                 searchResult.add(user);
                 return searchResult;
     }
+    public List<RegisterUserInfo> SearchByEmailAndName(SearchDto searchDto){
+        List<RegisterUserInfo> resultsByOtherParameters = SearchByFirstNameOrLastName(searchDto);
+        List<RegisterUserInfo> userByEmail = SearchByEmail(searchDto.getEmail(), searchDto.getFrom(), searchDto.getTo());
+        return matched(resultsByOtherParameters, userByEmail);
+        }
+
 }

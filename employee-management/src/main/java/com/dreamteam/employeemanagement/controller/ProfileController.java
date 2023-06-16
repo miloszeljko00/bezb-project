@@ -321,5 +321,23 @@ public class ProfileController {
         LocalDateTime date1 = LocalDateTime.parse(from);
         LocalDateTime date2 = LocalDateTime.parse(to);
         return new ResponseEntity<>(profileService.SearchByEmail(email, date1, date2), HttpStatus.OK);}
-
+    @PreAuthorize("hasRole('SEARCH')")
+    @GetMapping("/users/{email}/{firstname}/{lastname}/{from}/{to}")
+    public  ResponseEntity<List<RegisterUserInfo>> SearchByMailAndOneParameter(
+            @PathVariable("email") String email,
+            @PathVariable("firstname") String firstname,
+            @PathVariable("lastname") String lastname,
+            @PathVariable("from") String from,
+            @PathVariable("to") String to
+    ) {
+        if (firstname.equals("empty")) {
+            firstname = "";
+        }
+        if (lastname.equals("empty")) {
+            lastname = "";}
+            LocalDateTime date1 = LocalDateTime.parse(from);
+            LocalDateTime date2 = LocalDateTime.parse(to);
+            SearchDto searchDto = new SearchDto(email, firstname, lastname, date1, date2);
+            return new ResponseEntity<>(profileService.SearchByEmailAndName(searchDto), HttpStatus.OK);
+    }
 }

@@ -24,8 +24,8 @@ export class SearchComponent implements OnInit {
   email: string = "";
   firstName: string = "";
   lastName: string = "";
-  from: any;
-  to: any ;
+  from: Date = new Date("2023-05-20");
+  to: Date = new Date("2023-05-20");
   public employees: Observable<UserProfile[]> = new Observable<UserProfile[]>();
 
   constructor(
@@ -33,22 +33,31 @@ export class SearchComponent implements OnInit {
     public userService: UserService) { }
 
   ngOnInit(): void {
-    this.employees = this.userService.getUsers()
     }
 
   search() {
     this.searchRequestDto.email = this.email;
     this.searchRequestDto.firstName = this.firstName;
     this.searchRequestDto.lastName = this.lastName;
-    this.searchRequestDto.from = this.changeStartDate(this.from);
+  this.searchRequestDto.from = this.changeStartDate(this.from);
     this.searchRequestDto.to = this.changeStartDate(this.to);
     if(this.searchRequestDto.email=='')
-    {this.searchWithoutEmail()}
-
-    if(this.searchRequestDto.firstName =="" && this.searchRequestDto.lastName ==""){
+    { this.searchWithoutEmail();
+      return ;
+    }
+    if(this.searchRequestDto.firstName =="" && this.searchRequestDto.lastName =="")
+    {
       this.SearchByEmail();
+      return ;
+    }
+    if(this.searchRequestDto.firstName !="" && this.searchRequestDto.email !="" && this.searchRequestDto.lastName ==""
+    || this.searchRequestDto.firstName =="" && this.searchRequestDto.email !="" && this.searchRequestDto.lastName !="")
+    {
+      this.searchWithEmailAndOneParameter();
+      return ;
     }
 
+    console.log(this.searchRequestDto);
     this.employeeService.searchEmployee(this.searchRequestDto).subscribe({
       next: (result: any) => {
         console.log(result);
@@ -59,8 +68,9 @@ export class SearchComponent implements OnInit {
       }
     })
   }
-  searchWithoutEmail() {
-    console.log(this.searchRequestDto);
+
+
+  private searchWithoutEmail() {
     this.searchRequestDto.firstName = this.firstName;
     this.searchRequestDto.lastName = this.lastName;
     if(this.searchRequestDto.firstName =="" && this.searchRequestDto.lastName ==""){
@@ -73,10 +83,9 @@ export class SearchComponent implements OnInit {
       this.searchRequestDto.lastName = 'empty'
     }
 
-//dodaj da ne moze da searchuje bez datuma nikad- makar stavio neki random datum
+    console.log(this.searchRequestDto);
     this.searchRequestDto.from = this.changeStartDate(this.from);
     this.searchRequestDto.to = this.changeStartDate(this.to);
-    console.log(this.searchRequestDto);
     this.employeeService.searchEmployeeWithoutEmail(this.searchRequestDto).subscribe({
       next: (result: any) => {
         console.log(result);
@@ -87,6 +96,7 @@ export class SearchComponent implements OnInit {
       }
     })
   }
+
   changeStartDate(element : any): string {
     const outputDate = new Date(
       element.getTime() -
@@ -117,8 +127,28 @@ export class SearchComponent implements OnInit {
     this.searchRequestDto.email = this.email
     this.searchRequestDto.from = this.changeStartDate(this.from);
     this.searchRequestDto.to = this.changeStartDate(this.to);
-    console.log(this.searchRequestDto);
     this.employeeService.searchEmployeeByEmail(this.searchRequestDto).subscribe({
+      next: (result: any) => {
+        console.log(result);
+        this.employees = result;
+      },
+      error: (error: any) => {
+        console.log(error);
+      }
+    })
+  }
+  private searchWithEmailAndOneParameter
+  () {
+    if(this.searchRequestDto.firstName ==""){
+      this.searchRequestDto.firstName = 'empty'
+    }
+    if(this.searchRequestDto.lastName ==""){
+      this.searchRequestDto.lastName = 'empty'
+    }
+    this.searchRequestDto.email = this.email
+    this.searchRequestDto.from = this.changeStartDate(this.from);
+    this.searchRequestDto.to = this.changeStartDate(this.to);
+    this.employeeService.searchWithEmailAndOneParameter(this.searchRequestDto).subscribe({
       next: (result: any) => {
         console.log(result);
         this.employees = result;

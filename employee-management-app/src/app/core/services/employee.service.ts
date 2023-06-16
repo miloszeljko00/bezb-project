@@ -17,7 +17,10 @@ export class EmployeeService {
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   searchEmployee(searchDto: any):
-    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+    Observable<any> {
+
+    console.log(searchDto);
+    return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
       + searchDto.email + '/'
       + searchDto.firstName +'/'
       + searchDto.lastName+'/'
@@ -25,7 +28,9 @@ export class EmployeeService {
     + searchDto.to, {headers: this.headers});
   }
   searchEmployeeWithoutEmail(searchDto: any):
-    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+    Observable<any> {
+    console.log(searchDto);
+    return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
     + searchDto.firstName +'/'
     + searchDto.lastName+'/'
     + searchDto.from +'/'
@@ -33,15 +38,31 @@ export class EmployeeService {
   }
 
   searchEmployeeByPeriod(searchDto: any):
-    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+    Observable<any> {
+
+    console.log(searchDto);
+    return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
     + searchDto.from +'/'
     + searchDto.to, {headers: this.headers});
   }
 
   searchEmployeeByEmail(searchDto: any):
-    Observable<any> {return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
+    Observable<any> {
+
+    console.log(searchDto);
+    return this.http.get<any>('https://localhost:443/api/profile/users/search' +'/'
     + searchDto.email + '/'
     + searchDto.from +'/'
     + searchDto.to, {headers: this.headers});
+  }
+  searchWithEmailAndOneParameter(searchDto: any):
+    Observable<any> {
+    console.log(searchDto);
+    return this.http.get<any>('https://localhost:443/api/profile/users' +'/'
+      + searchDto.email + '/'
+      + searchDto.firstName +'/'
+      + searchDto.lastName+'/'
+      + searchDto.from +'/'
+      + searchDto.to, {headers: this.headers});
   }
 }

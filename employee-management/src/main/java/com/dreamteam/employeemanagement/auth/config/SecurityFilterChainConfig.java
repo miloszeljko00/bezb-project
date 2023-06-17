@@ -46,6 +46,8 @@ public class SecurityFilterChainConfig {
                 .permitAll()
                 .requestMatchers("/api/auth/actions/login")
                 .permitAll()
+                .requestMatchers("/api/auth/actions/keycloak-login")
+                .permitAll()
                 .requestMatchers("/api/auth/actions/refresh-access-token")
                 .permitAll()
                 .requestMatchers("/api/auth/actions/change-password")

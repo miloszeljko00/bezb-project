@@ -9,6 +9,7 @@
   </form>
   <br>
   <h5>Can't remember your password? Click <a [routerLink]="'/request-reset-password'">here</a>!</h5>
-  <br>
+  <br>  
+  <button mat-button (click)="keycloakLogin()">Login via KeyCloak</button>
   <button mat-button (click)="magicLogin(loginForm.email)" *ngIf="loginForm.email">Wanna try magic login? Click here and check you email!</button>
 </div>

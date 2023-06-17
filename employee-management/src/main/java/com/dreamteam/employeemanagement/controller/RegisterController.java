@@ -128,7 +128,7 @@ public class RegisterController {
         try{
             var registerUserInfo = registerUserInfoRepository.findByAccount_Email(userEmail);
             String aliasPrefix = takesFirstPartOfEmail(registerUserInfo.getAccount().getEmail());
-            registerUserInfo.setFirstName(decryptString(registerUserInfo.getFirstName(), aliasPrefix.concat("name")));
+                registerUserInfo.setFirstName(decryptString(registerUserInfo.getFirstName(), aliasPrefix.concat("name")));
             registerUserInfo.setPhoneNumber(decryptString(registerUserInfo.getPhoneNumber(), aliasPrefix.concat("phone")));
             registerUserInfo.getAddress().setCountry(decryptString(registerUserInfo.getAddress().getCountry(), aliasPrefix.concat("country")));
             registerUserInfo.getAddress().setCity(decryptString(registerUserInfo.getAddress().getCity(), aliasPrefix.concat("city")));
@@ -201,18 +201,28 @@ public class RegisterController {
 
     @PreAuthorize("hasRole('REGISTER-ADMIN')")
     @PostMapping("/admin")
-    public ResponseEntity registerAdmin(@RequestBody RegisterUserInfoRequest registerUserInfoRequest, HttpServletRequest request) {
+    public ResponseEntity registerAdmin(@RequestBody RegisterUserInfoRequest registerUserInfoRequest, HttpServletRequest request) throws Exception {
         log.info("registerAdmin initialized from ip address: " + request.getRemoteAddr());
         try{
             var role = roleRepository.findByName("Administrator");
             var roles = new ArrayList<Role>();
             roles.add(role);
+            //
+            String aliasPrefix = takesFirstPartOfEmail(registerUserInfoRequest.getEmail());
+            registerUserInfoRequest.setFirstName(encryptString(registerUserInfoRequest.getFirstName(), aliasPrefix.concat("name")));
+            registerUserInfoRequest.setPhone(encryptString(registerUserInfoRequest.getPhone(), aliasPrefix.concat("phone")));
+            registerUserInfoRequest.setCountry(encryptString(registerUserInfoRequest.getCountry(), aliasPrefix.concat("country")));
+            registerUserInfoRequest.setCity(encryptString(registerUserInfoRequest.getCity(), aliasPrefix.concat("city")));
+            registerUserInfoRequest.setStreet(encryptString(registerUserInfoRequest.getStreet(), aliasPrefix.concat("street")));
+            registerUserInfoRequest.setLastName(encryptString(registerUserInfoRequest.getLastName(), aliasPrefix.concat("prezime")));
+
             //Create account
             var account = new Account();
             account.setStatus(AccountStatus.ACCEPTED);
+            account.setFirstLogin(true);
+            account.setEnabled(true);
             account.setRoles(roles);
             account.setEmail(registerUserInfoRequest.getEmail());
-            account.setFirstLogin(true);
             var passwordEncoded = passwordEncoder.encode(registerUserInfoRequest.getPassword());
             account.setPassword(passwordEncoded);
             account = accountRepository.save(account);

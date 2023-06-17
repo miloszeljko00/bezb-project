@@ -1,6 +1,7 @@
 package com.dreamteam.employeemanagement.controller;
 
 import com.dreamteam.employeemanagement.auth.services.AuthenticationService;
+import com.dreamteam.employeemanagement.dto.KeycloakLoginRequest;
 import com.dreamteam.employeemanagement.dto.auth.request.*;
 import com.dreamteam.employeemanagement.dto.auth.response.RefreshAccessTokenResponse;
 import com.dreamteam.employeemanagement.dto.auth.response.LoginResponse;
@@ -9,6 +10,7 @@ import com.dreamteam.employeemanagement.model.enums.AccountStatus;
 import com.dreamteam.employeemanagement.repository.IAccountRepository;
 import com.dreamteam.employeemanagement.security.gdpr.EncryptionKeyManager;
 import com.dreamteam.employeemanagement.service.EmailService;
+import com.dreamteam.employeemanagement.service.JwtValidator;
 import com.dreamteam.employeemanagement.service.MyLittleLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final IAccountRepository accountRepository;
     private final EmailService emailService;
+    private final JwtValidator jwtValidator;
 
 
     @GetMapping("/actions/request-reset-password/{userEmail}")
@@ -189,6 +192,22 @@ public class AuthController {
         user.setEnabled(false);
         accountRepository.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PostMapping("/actions/keycloak-login")
+    public ResponseEntity<Object> keycloakLogin(@RequestBody KeycloakLoginRequest request) {
+
+        try{
+            var jwt = jwtValidator.validate(request.getToken());
+            if(jwt == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+            var email = jwt.getClaim("email").asString();
+            var response = authenticationService.keycloakLogin(email);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
     }
     @GetMapping("/actions/magic-login-activation")
     public ResponseEntity magicLogin(@RequestParam("token") String token, @RequestParam("userEmail") String userEmail, HttpServletRequest request) throws Exception {

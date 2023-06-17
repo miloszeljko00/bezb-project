@@ -38,6 +38,14 @@ public class AuthenticationService {
 
         return new LoginResponse(accessToken, refreshToken.getToken().toString());
     }
+    public LoginResponse keycloakLogin(String email) throws Exception {
+        var account = accountRepository.findByEmail(email).orElseThrow();
+        if(!account.isEnabled()) throw new Exception("User account is disabled.");
+        var refreshToken = jwtService.generateRefreshToken(account);
+        var accessToken = jwtService.generateAccessToken(account);
+
+        return new LoginResponse(accessToken, refreshToken.getToken().toString());
+    }
     public LoginResponse magicLogin(Account account) throws Exception {
         if(!account.isEnabled()) throw new Exception("User account is disabled.");
         var refreshToken = jwtService.generateRefreshToken(account);

@@ -65,7 +65,8 @@ export class NavbarComponent implements OnInit, OnDestroy{
     if(this.user)this.user = new User(this.user.email, this.user.roles, this.user.permissions)
     if(this.user?.hasRole('Administrator')){
       setInterval(() => {
-        if(!this.dialogOpened) this.notificationService.fetchNotifications(this.user?.email!)
+        this.user = this.authService.getUser()
+        if(!this.dialogOpened && this.user) this.notificationService.fetchNotifications(this.user?.email!)
       }, 2000)
     }
     this.getUserSubscription = this.authService.getUserObservable().subscribe({

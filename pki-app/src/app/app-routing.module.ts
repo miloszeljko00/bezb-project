@@ -8,6 +8,8 @@ const routes: Routes = [
   { path: 'login', loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule) },
   { path: 'accounts', loadChildren: () => import('./pages/accounts/accounts.module').then(m => m.AccountsModule), canActivate: [HasRoleAdminOrCertificateAuthorityGuard] },
   { path: 'certificates', loadChildren: () => import('./pages/certificates/certificates.module').then(m => m.CertificatesModule) },
+  { path: 'keycloakcallback', loadChildren: () => import('./pages/keycloak-callback/keycloak-callback.module').then(m => m.KeycloakCallbackModule) },
+  { path: 'keycloak-callback', loadChildren: () => import('./keycloak-callback/keycloak-callback.module').then(m => m.KeycloakCallbackModule) },
   { path: '**', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
 ];
 

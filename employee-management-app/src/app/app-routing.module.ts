@@ -21,6 +21,7 @@ const routes: Routes = [
   { path: 'request-reset-password', loadChildren: () => import('./pages/request-reset-password/request-reset-password.module').then(m => m.RequestResetPasswordModule) },
   { path: 'confirm-reset-password', loadChildren: () => import('./pages/confirm-reset-password/confirm-reset-password.module').then(m => m.ConfirmResetPasswordModule) },
   { path: 'logs', loadChildren: () => import('./pages/logs/logs.module').then(m => m.LogsModule) },
+  { path: 'keycloak-callback', loadChildren: () => import('./pages/keycloak-callback/keycloak-callback.module').then(m => m.KeycloakCallbackModule) },
   { path: '**', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
 ];
 

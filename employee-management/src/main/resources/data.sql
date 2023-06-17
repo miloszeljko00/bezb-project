@@ -1,15 +1,15 @@
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password1! --$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa
-VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'miloszeljko00@gmail.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password
-VALUES ('d206f89e-73cd-4388-ba29-8f528258db99', 'se@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password
-VALUES ('3403bb0f-0d70-40b0-955d-2424d7a5699e', 'hm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=password
-VALUES ('d46fb741-5d9a-44dc-bc70-73ebea53dc25', 'pm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=mihailo!123
-VALUES ('27df3032-9ae2-4f31-9ef0-4447f79dc10c', 'pelepelepele158@gmail.com', '$2a$10$5R3V7dZGaPrKDoZx2k1kRuznUaU/Dzj4YnIF5BG3ttghJuKOrmw9q', false);
-INSERT INTO public.accounts(id, email, password, first_login) -- password=mihailo!123
-VALUES ('aa8f9b07-ff5e-49bf-bf17-b959f4aae050', 'mihailoveljic3010@gmail.com', '$2a$10$5R3V7dZGaPrKDoZx2k1kRuznUaU/Dzj4YnIF5BG3ttghJuKOrmw9q', false);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password1! --$2a$10$N65.jSs..LkY1E9VUp6qau.05HcK8AF5JDrtM/9hLVhSE5yNzGZQa
+VALUES ('9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'miloszeljko00@gmail.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password
+VALUES ('d206f89e-73cd-4388-ba29-8f528258db99', 'se@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password
+VALUES ('3403bb0f-0d70-40b0-955d-2424d7a5699e', 'hm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=password
+VALUES ('d46fb741-5d9a-44dc-bc70-73ebea53dc25', 'pm@email.com', '$2a$10$4pFoxuSM5qyfKzY3w7.hLe0zZ9lGACY7QyN2xz9u4lmE7tpkf5GGm', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=mihailo!123
+VALUES ('27df3032-9ae2-4f31-9ef0-4447f79dc10c', 'pelepelepele158@gmail.com', '$2a$10$5R3V7dZGaPrKDoZx2k1kRuznUaU/Dzj4YnIF5BG3ttghJuKOrmw9q', false, true);
+INSERT INTO public.accounts(id, email, password, first_login, enabled) -- password=
+VALUES ('aa8f9b07-ff5e-49bf-bf17-b959f4aae050', 'mihailoveljic3010@gmail.com', '$2a$10$5R3V7dZGaPrKDoZx2k1kRuznUaU/Dzj4YnIF5BG3ttghJuKOrmw9q', false, true);
 
 
 INSERT INTO public.roles(id, name)
@@ -81,6 +81,7 @@ VALUES ('061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea6a', 'EDIT-CV');
 -- EDIT-CV to HR
 INSERT INTO public.roles_permissions(role_id, permissions_id)
 VALUES ('3ad3288e-1fad-45cc-aa7f-8660ce4af4e4', '061ab9f7-b4a6-4aa6-ac5e-3ca25c6bea6a');
+INSERT INTO public.permissions(id, name)
 VALUES ('5d157836-d6ee-46cd-82c0-8e5a2a840305', 'ENABLE-USER');
 INSERT INTO public.permissions(id, name)
 VALUES ('cf2edd2b-fa44-4609-8d8c-c40342140c76', 'DISABLE-USER');
@@ -176,9 +177,7 @@ VALUES ('b45881cf-a8d2-4bdf-bbb1-183dcbabbbfc', '2cb7a52c-cc57-4261-ae87-ae1bb36
 
 
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
-VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9c', '9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'John', 'Doe', '123 Main St', 'New York', 'USA', '555-1234', '2022-01-01');
-INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
-VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9e', '3403bb0f-0d70-40b0-955d-2424d7a5699e', 'Bob', 'Smith', '789 Oak St', 'Chicago', 'USA', '555-9012', '2022-01-03');
+VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9c', '9d8eeb20-b52a-430f-9d0d-72cbaf592cf9', 'H+hSs35POgdbbrjGdyAUsg==', 'CC23mcImZzojyLgSLH09uA==', 'm/Z+/TdpEQYjp45SCYCOLA==', '1JwN7gTvnNQLBvWKzq94FA==', '4wi/coSHO2EJCLaCI0oi6g==', 'HYNYEwlly1WMaHVVJ0XZZg==', '2022-01-01');
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)
 VALUES ('c9bf9e57-1685-4c89-9fd3-5a6e8c8c8f9f', 'd46fb741-5d9a-44dc-bc70-73ebea53dc25', 'Alice', 'Johnson', '321 Pine St', 'San Francisco', 'USA', '555-3456', '2022-01-04');
 INSERT INTO register_user_info (id, account_id, first_name, last_name, street, city, country, phone_number, revision_date)

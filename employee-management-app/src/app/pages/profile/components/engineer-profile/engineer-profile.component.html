@@ -38,6 +38,7 @@
     <mat-error *ngIf="f.phoneNumber.hasError('required')">Phone number is required</mat-error>
   </mat-form-field><br>
   <button  style="margin-left: 0px;" mat-raised-button color="primary" type="submit" [disabled]="updateForm.invalid">Update</button>
+  <button (click)="setup2F()" style="position: absolute; left: 900px; top: 670px;" mat-raised-button>setup 2 factor</button>
 </form>
 <div style="position: absolute; margin-left: 70%; margin-top: -30%;">
   <label class="button" for="fileElem">Upload CV</label><br>

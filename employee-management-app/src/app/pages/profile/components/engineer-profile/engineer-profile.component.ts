@@ -189,6 +189,9 @@ export class EngineerProfileComponent implements OnInit{
       }
     })
   }
+  setup2F() {
+    window.open('https://login-keycloak.azurewebsites.net/auth/realms/bezbednost/account/totp', '_blank');
+  }
   changeRating(element : any) {
     element.rating = this.rating;
     this.updateUserService.updateSkill(element, 'bilosta').subscribe({

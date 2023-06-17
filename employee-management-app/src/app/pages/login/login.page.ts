@@ -26,4 +26,10 @@ export class LoginPage {
   magicLogin(email: string){
     this.authService.magicLogin(email);
   }
+  keycloakLogin(){
+    window.location.href = 'https://login-keycloak.azurewebsites.net/auth/realms/bezbednost/protocol/openid-connect/auth' +
+        '?response_type=token' +
+        '&client_id=bezbednost' +
+        '&redirect_uri=https://localhost:4200/keycloak-callback';
+  }
 }

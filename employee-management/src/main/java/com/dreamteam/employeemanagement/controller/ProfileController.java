@@ -34,6 +34,9 @@ import java.time.ZoneId;
 import java.util.*;
 import java.time.LocalDateTime;
 
+import static com.dreamteam.employeemanagement.controller.RegisterController.decryptString;
+import static com.dreamteam.employeemanagement.controller.RegisterController.takesFirstPartOfEmail;
+
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
@@ -111,10 +114,24 @@ public class ProfileController {
 
     @PreAuthorize("hasRole('GET-EMPLOYEES')")
     @GetMapping("/users/all")
-    public List<RegisterUserInfo> getAllUsers(HttpServletRequest request, Authentication authentication) {
+    public List<RegisterUserInfo> getAllUsers(HttpServletRequest request, Authentication authentication) throws Exception {
         log.info("getAllUsers initialized by: " + authentication.getName() + ", from ip address: " + request.getRemoteAddr());
         try{
             var response = registerUserInfoRepository.findAll();
+            for(RegisterUserInfo rui: response){
+                try{
+                    String aliasPrefix = takesFirstPartOfEmail(rui.getAccount().getEmail());
+                    rui.setFirstName(decryptString(rui.getFirstName(), aliasPrefix.concat("name")));
+                    rui.setPhoneNumber(decryptString(rui.getPhoneNumber(), aliasPrefix.concat("phone")));
+                    rui.getAddress().setCountry(decryptString(rui.getAddress().getCountry(), aliasPrefix.concat("country")));
+                    rui.getAddress().setCity(decryptString(rui.getAddress().getCity(), aliasPrefix.concat("city")));
+                    rui.getAddress().setStreet(decryptString(rui.getAddress().getStreet(), aliasPrefix.concat("street")));
+                    rui.setLastName(decryptString(rui.getLastName(), aliasPrefix.concat("prezime")));
+                }catch (Exception e){
+                    log.warn("getAllUsers from ip address: " + request.getRemoteAddr() + " has failed.");
+                    throw e;
+                }
+            }
             log.info("getAllUsers for: " + authentication.getName() + " from ip address: " + request.getRemoteAddr() + " was successful.");
             return response;
         }catch (Exception e){
@@ -479,10 +496,20 @@ public class ProfileController {
             @PathVariable("email") String email,
             @PathVariable("from") String from,
             @PathVariable("to") String to
-    ) {
+    ) throws Exception {
         LocalDateTime date1 = LocalDateTime.parse(from);
         LocalDateTime date2 = LocalDateTime.parse(to);
-        return new ResponseEntity<>(profileService.SearchByEmail(email, date1, date2), HttpStatus.OK);}
+        var response = profileService.SearchByEmail(email, date1, date2);
+        for(RegisterUserInfo rui: response) {
+            String aliasPrefix = takesFirstPartOfEmail(rui.getAccount().getEmail());
+            rui.setFirstName(decryptString(rui.getFirstName(), aliasPrefix.concat("name")));
+            rui.setPhoneNumber(decryptString(rui.getPhoneNumber(), aliasPrefix.concat("phone")));
+            rui.getAddress().setCountry(decryptString(rui.getAddress().getCountry(), aliasPrefix.concat("country")));
+            rui.getAddress().setCity(decryptString(rui.getAddress().getCity(), aliasPrefix.concat("city")));
+            rui.getAddress().setStreet(decryptString(rui.getAddress().getStreet(), aliasPrefix.concat("street")));
+            rui.setLastName(decryptString(rui.getLastName(), aliasPrefix.concat("prezime")));
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);}
     @PreAuthorize("hasRole('SEARCH')")
     @GetMapping("/users/{email}/{firstname}/{lastname}/{from}/{to}")
     public  ResponseEntity<List<RegisterUserInfo>> SearchByMailAndOneParameter(

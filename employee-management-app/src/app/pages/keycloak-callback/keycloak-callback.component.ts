@@ -1,7 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-keycloak-callback',
@@ -15,7 +13,7 @@ export class KeycloakCallbackComponent {
     this.token = this.getAccessTokenFromUrl();
     setTimeout(() => {
       this.loginViaKeycloak();
-    }, 2000);
+    }, 20000);
   }
 
   private getAccessTokenFromUrl(): string|null {

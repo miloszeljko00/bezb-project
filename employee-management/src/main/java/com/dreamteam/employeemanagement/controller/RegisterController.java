@@ -9,7 +9,9 @@ import com.dreamteam.employeemanagement.repository.IRoleRepository;
 import com.dreamteam.employeemanagement.security.gdpr.EncryptionKeyManager;
 import com.dreamteam.employeemanagement.service.EmailService;
 import com.dreamteam.employeemanagement.service.RegisterService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +25,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/register")
 @RequiredArgsConstructor
+@Slf4j
 public class RegisterController {
     private final PasswordEncoder passwordEncoder;
     private final IAccountRepository accountRepository;
@@ -55,12 +58,14 @@ public class RegisterController {
         return email.substring(0, atIndex);
     }
     @PostMapping
-    public ResponseEntity register(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) throws Exception {
 
-        if(registerService.checkIfAccountWithThisEmailWasRecentlyDeclined(registerUserInfoRequest.getEmail())){
-            return ResponseEntity.badRequest().body("Registration request with this email was declined recently.");
-        }
-        //Encrypt personal data
+    public ResponseEntity register(@RequestBody RegisterUserInfoRequest registerUserInfoRequest, HttpServletRequest request) throws Exception {
+        log.info("Registration initialized from ip address: " + request.getRemoteAddr());
+        try{
+            if(registerService.checkIfAccountWithThisEmailWasRecentlyDeclined(registerUserInfoRequest.getEmail())){
+                log.warn("Registration from ip address: " + request.getRemoteAddr() + " has failed.");
+                return ResponseEntity.badRequest().body("Registration request with this email was declined recently.");
+            }
         String aliasPrefix = takesFirstPartOfEmail(registerUserInfoRequest.getEmail());
         registerUserInfoRequest.setFirstName(encryptString(registerUserInfoRequest.getFirstName(), aliasPrefix.concat("name")));
         registerUserInfoRequest.setPhone(encryptString(registerUserInfoRequest.getPhone(), aliasPrefix.concat("phone")));
@@ -97,136 +102,198 @@ public class RegisterController {
         registerUserInfo.setPhoneNumber(registerUserInfoRequest.getPhone());
         registerUserInfo.setAddress(address);
         registerUserInfo = registerUserInfoRepository.save(registerUserInfo);
+         log.info("Registration from ip address: " + request.getRemoteAddr() + " was successful.");
         return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
+        }catch (Exception e){
+            log.warn("Registration from ip address: " + request.getRemoteAddr() + " has failed.");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
     }
     @GetMapping("/get-all-unconfirmed")
-    public ResponseEntity<List<RegisterUserInfo>> getAllUnconfirmedRegistrations() {
-        return new ResponseEntity<>(registerUserInfoRepository.findByAccount_Status(AccountStatus.PENDING), HttpStatus.OK);
+    public ResponseEntity<List<RegisterUserInfo>> getAllUnconfirmedRegistrations(HttpServletRequest request) {
+        log.info("getAllUnconfirmedRegistrations initialized from ip address: " + request.getRemoteAddr());
+        try{
+            var response = registerUserInfoRepository.findByAccount_Status(AccountStatus.PENDING);
+            log.info("getAllUnconfirmedRegistrations from ip address: " + request.getRemoteAddr() + " was successful.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            log.warn("getAllUnconfirmedRegistrations from ip address: " + request.getRemoteAddr() + " has failed.");
+            throw e;
+        }
     }
     //TODO: desifrovati podatke
     @GetMapping("/get-by-id/{userEmail}")
-    public ResponseEntity<RegisterUserInfo> getById(@PathVariable("userEmail") String userEmail) throws Exception {
-        var registerUserInfo = registerUserInfoRepository.findByAccount_Email(userEmail);
-        String aliasPrefix = takesFirstPartOfEmail(registerUserInfo.getAccount().getEmail());
-        registerUserInfo.setFirstName(decryptString(registerUserInfo.getFirstName(), aliasPrefix.concat("name")));
-        registerUserInfo.setPhoneNumber(decryptString(registerUserInfo.getPhoneNumber(), aliasPrefix.concat("phone")));
-        registerUserInfo.getAddress().setCountry(decryptString(registerUserInfo.getAddress().getCountry(), aliasPrefix.concat("country")));
-        registerUserInfo.getAddress().setCity(decryptString(registerUserInfo.getAddress().getCity(), aliasPrefix.concat("city")));
-        registerUserInfo.getAddress().setStreet(decryptString(registerUserInfo.getAddress().getStreet(), aliasPrefix.concat("street")));
-        registerUserInfo.setLastName(decryptString(registerUserInfo.getLastName(), aliasPrefix.concat("prezime")));
-        return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
+    public ResponseEntity<RegisterUserInfo> getById(@PathVariable("userEmail") String userEmail, HttpServletRequest request) throws Exception {
+        log.info("getById initialized from ip address: " + request.getRemoteAddr());
+        try{
+            var registerUserInfo = registerUserInfoRepository.findByAccount_Email(userEmail);
+            String aliasPrefix = takesFirstPartOfEmail(registerUserInfo.getAccount().getEmail());
+                registerUserInfo.setFirstName(decryptString(registerUserInfo.getFirstName(), aliasPrefix.concat("name")));
+            registerUserInfo.setPhoneNumber(decryptString(registerUserInfo.getPhoneNumber(), aliasPrefix.concat("phone")));
+            registerUserInfo.getAddress().setCountry(decryptString(registerUserInfo.getAddress().getCountry(), aliasPrefix.concat("country")));
+            registerUserInfo.getAddress().setCity(decryptString(registerUserInfo.getAddress().getCity(), aliasPrefix.concat("city")));
+            registerUserInfo.getAddress().setStreet(decryptString(registerUserInfo.getAddress().getStreet(), aliasPrefix.concat("street")));
+            registerUserInfo.setLastName(decryptString(registerUserInfo.getLastName(), aliasPrefix.concat("prezime")));
+            log.info("getById from ip address: " + request.getRemoteAddr() + " was successful.");
+            return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
+        }catch (Exception e){
+            log.warn("getById from ip address: " + request.getRemoteAddr() + " has failed.");
+            throw e;
+        }
     }
     @GetMapping("/confirm-registration")
-    public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token, @RequestParam("registerUserInfoId") String registerUserInfoId) {
-        // Retrieve the RegisterUserInfo object using the provided registerUserInfoId
-        Optional<RegisterUserInfo> userInfoOptional = registerUserInfoRepository.findById(UUID.fromString(registerUserInfoId));
+    public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token, @RequestParam("registerUserInfoId") String registerUserInfoId, HttpServletRequest request) {
+        log.info("confirmRegistration initialized from ip address: " + request.getRemoteAddr());
+        try{
+            // Retrieve the RegisterUserInfo object using the provided registerUserInfoId
+            Optional<RegisterUserInfo> userInfoOptional = registerUserInfoRepository.findById(UUID.fromString(registerUserInfoId));
 
-        // Check if the RegisterUserInfo exists and the token matches
-        if (userInfoOptional.isPresent()) {
-            RegisterUserInfo userInfo = userInfoOptional.get();
-            RegistrationToken registrationToken = userInfo.getRegistrationToken();
+            // Check if the RegisterUserInfo exists and the token matches
+            if (userInfoOptional.isPresent()) {
+                RegisterUserInfo userInfo = userInfoOptional.get();
+                RegistrationToken registrationToken = userInfo.getRegistrationToken();
 
-            // Check if the token is expired
-            if (registrationToken.getExpirationDate().before(new Date())) {
-                return ResponseEntity.badRequest().body("Token has expired.");
+                // Check if the token is expired
+                if (registrationToken.getExpirationDate().before(new Date())) {
+                    log.warn("confirmRegistration from ip address: " + request.getRemoteAddr() + " has failed.");
+                    return ResponseEntity.badRequest().body("Token has expired.");
+                }
+
+                // Check if the token has been used before
+                if (registrationToken.isUsed()) {
+                    log.warn("confirmRegistration from ip address: " + request.getRemoteAddr() + " has failed.");
+                    return ResponseEntity.badRequest().body("Token has already been used.");
+                }
+
+                // Generate the expected HMAC for the token and registerUserInfoId
+                String expectedHmac = HmacUtil.generateHmac(userInfo.getRegistrationToken().getToken() + registerUserInfoId, "veljin-tajni-kljuc");
+                String encodedToken;
+                try{
+                    assert expectedHmac != null;
+                    encodedToken = URLDecoder.decode(expectedHmac, StandardCharsets.UTF_8);
+                }catch(Exception e){
+                    log.warn("confirmRegistration from ip address: " + request.getRemoteAddr() + " has failed.");
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                // Verify if the provided HMAC matches the expected HMAC
+                if (encodedToken.equals(token)) {
+                    // Activate the user account
+                    var account = userInfo.getAccount();
+                    account.setStatus(AccountStatus.ACCEPTED);
+                    account = accountRepository.save(account);
+                    userInfo.setAccount(account);
+                    registrationToken.setUsed(true);
+                    userInfo.setRegistrationToken(registrationToken);
+                    userInfo.setRevisionDate(new Date());
+                    registerUserInfoRepository.save(userInfo);
+                    log.info("confirmRegistration from ip address: " + request.getRemoteAddr() + " was successful.");
+                    return ResponseEntity.ok("User activated successfully.");
+                }
             }
-
-            // Check if the token has been used before
-            if (registrationToken.isUsed()) {
-                return ResponseEntity.badRequest().body("Token has already been used.");
-            }
-
-            // Generate the expected HMAC for the token and registerUserInfoId
-            String expectedHmac = HmacUtil.generateHmac(userInfo.getRegistrationToken().getToken() + registerUserInfoId, "veljin-tajni-kljuc");
-            String encodedToken;
-            try{
-                assert expectedHmac != null;
-                encodedToken = URLDecoder.decode(expectedHmac, StandardCharsets.UTF_8);
-            }catch(Exception e){
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            // Verify if the provided HMAC matches the expected HMAC
-            if (encodedToken.equals(token)) {
-                // Activate the user account
-                var account = userInfo.getAccount();
-                account.setStatus(AccountStatus.ACCEPTED);
-                account = accountRepository.save(account);
-                userInfo.setAccount(account);
-                registrationToken.setUsed(true);
-                userInfo.setRegistrationToken(registrationToken);
-                userInfo.setRevisionDate(new Date());
-                registerUserInfoRepository.save(userInfo);
-
-                return ResponseEntity.ok("User activated successfully.");
-            }
+            log.warn("confirmRegistration from ip address: " + request.getRemoteAddr() + " has failed.");
+            return ResponseEntity.badRequest().body("Invalid activation link.");
+        }catch (Exception e){
+            log.warn("confirmRegistration from ip address: " + request.getRemoteAddr() + " has failed.");
+            throw e;
         }
 
-        return ResponseEntity.badRequest().body("Invalid activation link.");
     }
 
     @PreAuthorize("hasRole('REGISTER-ADMIN')")
     @PostMapping("/admin")
-    public ResponseEntity registerAdmin(@RequestBody RegisterUserInfoRequest registerUserInfoRequest) {
+    public ResponseEntity registerAdmin(@RequestBody RegisterUserInfoRequest registerUserInfoRequest, HttpServletRequest request) throws Exception {
+        log.info("registerAdmin initialized from ip address: " + request.getRemoteAddr());
+        try{
+            var role = roleRepository.findByName("Administrator");
+            var roles = new ArrayList<Role>();
+            roles.add(role);
+            //
+            String aliasPrefix = takesFirstPartOfEmail(registerUserInfoRequest.getEmail());
+            registerUserInfoRequest.setFirstName(encryptString(registerUserInfoRequest.getFirstName(), aliasPrefix.concat("name")));
+            registerUserInfoRequest.setPhone(encryptString(registerUserInfoRequest.getPhone(), aliasPrefix.concat("phone")));
+            registerUserInfoRequest.setCountry(encryptString(registerUserInfoRequest.getCountry(), aliasPrefix.concat("country")));
+            registerUserInfoRequest.setCity(encryptString(registerUserInfoRequest.getCity(), aliasPrefix.concat("city")));
+            registerUserInfoRequest.setStreet(encryptString(registerUserInfoRequest.getStreet(), aliasPrefix.concat("street")));
+            registerUserInfoRequest.setLastName(encryptString(registerUserInfoRequest.getLastName(), aliasPrefix.concat("prezime")));
 
-        var role = roleRepository.findByName("Administrator");
-        var roles = new ArrayList<Role>();
-        roles.add(role);
-        //Create account
-        var account = new Account();
-        account.setStatus(AccountStatus.ACCEPTED);
-        account.setRoles(roles);
-        account.setEmail(registerUserInfoRequest.getEmail());
-        account.setFirstLogin(true);
-        var passwordEncoded = passwordEncoder.encode(registerUserInfoRequest.getPassword());
-        account.setPassword(passwordEncoded);
-        account = accountRepository.save(account);
-        //Create Address
-        var address = Address.builder()
-                .City(registerUserInfoRequest.getCity())
-                .Country(registerUserInfoRequest.getCountry())
-                .Street(registerUserInfoRequest.getStreet())
-                .build();
-        //Create RegisterUserInfo
-        var registerUserInfo = new RegisterUserInfo();
-        registerUserInfo.setAccount(account);
-        registerUserInfo.setFirstName(registerUserInfoRequest.getFirstName());
-        registerUserInfo.setLastName(registerUserInfoRequest.getLastName());
-        registerUserInfo.setPhoneNumber(registerUserInfoRequest.getPhone());
-        registerUserInfo.setAddress(address);
-        registerUserInfo = registerUserInfoRepository.save(registerUserInfo);
-        return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
+            //Create account
+            var account = new Account();
+            account.setStatus(AccountStatus.ACCEPTED);
+            account.setFirstLogin(true);
+            account.setEnabled(true);
+            account.setRoles(roles);
+            account.setEmail(registerUserInfoRequest.getEmail());
+            var passwordEncoded = passwordEncoder.encode(registerUserInfoRequest.getPassword());
+            account.setPassword(passwordEncoded);
+            account = accountRepository.save(account);
+            //Create Address
+            var address = Address.builder()
+                    .City(registerUserInfoRequest.getCity())
+                    .Country(registerUserInfoRequest.getCountry())
+                    .Street(registerUserInfoRequest.getStreet())
+                    .build();
+            //Create RegisterUserInfo
+            var registerUserInfo = new RegisterUserInfo();
+            registerUserInfo.setAccount(account);
+            registerUserInfo.setFirstName(registerUserInfoRequest.getFirstName());
+            registerUserInfo.setLastName(registerUserInfoRequest.getLastName());
+            registerUserInfo.setPhoneNumber(registerUserInfoRequest.getPhone());
+            registerUserInfo.setAddress(address);
+            registerUserInfo = registerUserInfoRepository.save(registerUserInfo);
+            log.info("registerAdmin from ip address: " + request.getRemoteAddr() + " was successful.");
+            return new ResponseEntity<>(registerUserInfo, HttpStatus.OK);
+        }catch (Exception e){
+            log.warn("registerAdmin from ip address: " + request.getRemoteAddr() + " has failed.");
+            throw e;
+        }
     }
     @PutMapping("/accept-registration")
-    public ResponseEntity<RegisterUserInfo> acceptRegistration(@RequestBody String idString) throws Exception {
-        UUID id = UUID.fromString(idString);
-        var registrationRequest = registerUserInfoRepository.findById(id);
-        RegistrationToken token = RegistrationToken.builder()
-                .token(UUID.randomUUID())
-                .expirationDate(getExpirationDate())
-                .isUsed(false) // Set it to false initially
-                .build();
-        registrationRequest.get().setRegistrationToken(token);
-        var updatedRegistrationRequest = registerUserInfoRepository.save(registrationRequest.get());
+    public ResponseEntity<RegisterUserInfo> acceptRegistration(@RequestBody String idString, HttpServletRequest request) throws Exception {
+        log.info("acceptRegistration initialized from ip address: " + request.getRemoteAddr());
+        try{
+            UUID id = UUID.fromString(idString);
+            var registrationRequest = registerUserInfoRepository.findById(id);
 
-        // Generate the HMAC for the token and registerUserInfoId
-        String hmac = HmacUtil.generateHmac(token.getToken().toString() + idString, "veljin-tajni-kljuc");
+            RegistrationToken token = RegistrationToken.builder()
+                    .token(UUID.randomUUID())
+                    .expirationDate(getExpirationDate())
+                    .isUsed(false) // Set it to false initially
+                    .build();
+            registrationRequest.get().setRegistrationToken(token);
+            var updatedRegistrationRequest = registerUserInfoRepository.save(registrationRequest.get());
 
-        String activationLink = "https://localhost:443/api/register/confirm-registration?token=" + hmac + "&registerUserInfoId=" + idString;
-        emailService.sendEmail(registrationRequest.get().getAccount().getEmail(), "Obradjen zahtev za registraciju", "Vas zahtev za registraciju je prihvacen! Potvrdite pritiskom na link: " + activationLink);
-        return new ResponseEntity<>(updatedRegistrationRequest, HttpStatus.OK);
+            // Generate the HMAC for the token and registerUserInfoId
+            String hmac = HmacUtil.generateHmac(token.getToken().toString() + idString, "veljin-tajni-kljuc");
+
+            String activationLink = "https://localhost:443/api/register/confirm-registration?token=" + hmac + "&registerUserInfoId=" + idString;
+            emailService.sendEmail(registrationRequest.get().getAccount().getEmail(), "Obradjen zahtev za registraciju", "Vas zahtev za registraciju je prihvacen! Potvrdite pritiskom na link: " + activationLink);
+            log.info("acceptRegistration from ip address: " + request.getRemoteAddr() + " was successful.");
+            return new ResponseEntity<>(updatedRegistrationRequest, HttpStatus.OK);
+        }catch (Exception e){
+            log.warn("acceptRegistration from ip address: " + request.getRemoteAddr() + " has failed.");
+            throw e;
+        }
+
     }
     @PutMapping("/decline-registration")
-    public ResponseEntity<RegisterUserInfo> denyRegistration(@RequestBody String idString) {
-        UUID id = UUID.fromString(idString);
+    public ResponseEntity<RegisterUserInfo> denyRegistration(@RequestBody String idString, HttpServletRequest request) {
+        log.info("acceptRegistration initialized from ip address: " + request.getRemoteAddr());
+        try{
+            UUID id = UUID.fromString(idString);
 
-        var registrationRequest = registerUserInfoRepository.findById(id);
-        var account = registrationRequest.get().getAccount();
-        account.setStatus(AccountStatus.DENIED);
-        account = accountRepository.save(account);
-        registrationRequest.get().setAccount(account);
-        registrationRequest.get().setRevisionDate(new Date());
-        emailService.sendEmail(account.getEmail(), "Obradjen zahtev za registraciju", "Nazalost, vas zahtev je odbijen, za vise informacija kontaktirajte nas putem telefona: 123456789");
-        return new ResponseEntity<>(registerUserInfoRepository.save(registrationRequest.get()), HttpStatus.OK);
+            var registrationRequest = registerUserInfoRepository.findById(id);
+            var account = registrationRequest.get().getAccount();
+            account.setStatus(AccountStatus.DENIED);
+            account = accountRepository.save(account);
+            registrationRequest.get().setAccount(account);
+            registrationRequest.get().setRevisionDate(new Date());
+            emailService.sendEmail(account.getEmail(), "Obradjen zahtev za registraciju", "Nazalost, vas zahtev je odbijen, za vise informacija kontaktirajte nas putem telefona: 123456789");
+            log.info("acceptRegistration from ip address: " + request.getRemoteAddr() + " was successful.");
+            return new ResponseEntity<>(registerUserInfoRepository.save(registrationRequest.get()), HttpStatus.OK);
+        }catch (Exception e){
+            log.warn("acceptRegistration from ip address: " + request.getRemoteAddr() + " has failed.");
+            throw e;
+        }
     }
     private Date getExpirationDate() {
         Calendar calendar = Calendar.getInstance();

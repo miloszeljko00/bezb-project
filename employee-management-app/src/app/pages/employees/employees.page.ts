@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { EmployeeService } from 'src/app/core/services/employee.service';
+import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/core/services/user.service';
-import {Router} from "@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
   templateUrl: './employees.page.html',
@@ -9,12 +9,46 @@ import {Router} from "@angular/router";
 })
 export class EmployeesPage {
 
-  displayedColumns = ['id', 'firstName', 'lastName', 'country', 'city', 'street', 'email', 'phone'];
+  displayedColumns = ['id', 'firstName', 'lastName', 'country', 'city', 'street', 'email', 'phone', 'actions'];
   employees$ = this.userService.getUsers()
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(
+    private userService: UserService,
+    private toastr: ToastrService,
+    private router: Router) {}
+
 
   Search() {
     this.router.navigate(['/account/search']);
+  }
+
+
+  enableAccount(user: any) {
+    this.userService.enableUser(user.account.id).subscribe({
+      next: () => this.handleEnableAccountSuccess(user),
+      error: () => this.handleEnableAccountError(user)
+    })
+  }
+
+  disableAccount(user: any) {
+    this.userService.disableUser(user.account.id).subscribe({
+      next: () => this.handleDisableAccountSuccess(user),
+      error: () => this.handleDisableAccountError(user)
+    })
+  }
+
+  private handleEnableAccountSuccess(user: any): void {
+    this.toastr.success(`Account for: [${user.account.email}] is enabled!`);
+    user.account.enabled = true
+  }
+  private handleDisableAccountSuccess(user: any): void {
+    this.toastr.success(`Account for: [${user.account.email}] is disabled!`);
+    user.account.enabled = false
+  }
+  private handleEnableAccountError(user: any): void {
+    this.toastr.error(`Error enabling account for: [${user.account.email}]!`);
+  }
+  private handleDisableAccountError(user: any): void {
+    this.toastr.error(`Error enabling account for: [${user.account.email}]!`);
   }
 }

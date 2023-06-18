@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { LoginRequest } from '../dtos/login-request';
 import { environment } from 'src/environments/environment';
 import { LoginResponse } from '../dtos/login-response';
@@ -8,15 +8,17 @@ import jwtDecode from 'jwt-decode';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AccessToken } from '../models/access-token';
-import { Subject, firstValueFrom } from 'rxjs';
+import { Subject, firstValueFrom, tap } from 'rxjs';
 import { LogoutRequest } from '../dtos/logout-request';
 import { RefreshAccessTokenRequest } from '../dtos/refresh-access-token-request';
 import { RefreshAccessTokenResponse } from '../dtos/refresh-access-token-response';
+import { KeycloakLoginRequest } from '../dtos/keycloak-login-request';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  
   private user$: Subject<User|null> = new Subject();
   private user: User|null = null
 
@@ -43,8 +45,20 @@ export class AuthService {
       }
     })
   }
+  loginViaKeycloak(loginRequest: KeycloakLoginRequest) {
+    this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/keycloak-login", loginRequest).subscribe({
+      next: (response) => {
+        this.setAuth(response)
+        this.toastr.success('Login successful.', "Login Success")
+        this.redirectHome();
+      },
+      error: (error: Error) => {
+        this.toastr.error("Invalid credentials.", "Login Failed")
+      }
+    })
+  }
   changePassword(request: any) {
-    this.http.post<LoginResponse>(environment.apiUrl+"/api/auth/actions/change-password", request).subscribe({
+    this.http.post<LoginResponse>(environment.apiUrl+`/api/auth/actions/change-password`, request).subscribe({
       next: (response) => {
         if(response.accessToken == 'password_change_required') this.router.navigate(['/change-password', request.email])
         this.setAuth(response)
@@ -55,6 +69,17 @@ export class AuthService {
         this.toastr.error("Something went wrong :/", "Password Change Failed")
       }
     })
+  }
+  requestResetPassword(email: string) {
+    return this.http.get(environment.apiUrl+"/api/auth/actions/request-reset-password/"+email)
+  }
+  confirmResetPassword(request: any, token: string) {
+    const url = `${environment.apiUrl}/api/auth/actions/confirm-reset-password`;
+    const params = new HttpParams().set('token', token);
+
+    return this.http.post(url, request, { params }).pipe(
+      tap((response: any) => this.setAuth(response))
+    );
   }
   magicLogin(email: string){
     this.http.post(environment.apiUrl+"/api/auth/actions/magic-login", email).subscribe({

@@ -28,29 +28,39 @@ public class AuthenticationService {
 
     private final JwtService jwtService;
 
-    public LoginResponse login(String email, String password) {
+    public LoginResponse login(String email, String password) throws Exception {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
         var account = accountRepository.findByEmail(email).orElseThrow();
+        if(!account.isEnabled()) throw new Exception("User account is disabled.");
         if(account.isFirstLogin()) return new LoginResponse("password_change_required", null);
         var refreshToken = jwtService.generateRefreshToken(account);
         var accessToken = jwtService.generateAccessToken(account);
 
         return new LoginResponse(accessToken, refreshToken.getToken().toString());
     }
-    public LoginResponse magicLogin(Account account) {
+    public LoginResponse keycloakLogin(String email) throws Exception {
+        var account = accountRepository.findByEmail(email).orElseThrow();
+        if(!account.isEnabled()) throw new Exception("User account is disabled.");
+        var refreshToken = jwtService.generateRefreshToken(account);
+        var accessToken = jwtService.generateAccessToken(account);
+
+        return new LoginResponse(accessToken, refreshToken.getToken().toString());
+    }
+    public LoginResponse magicLogin(Account account) throws Exception {
+        if(!account.isEnabled()) throw new Exception("User account is disabled.");
         var refreshToken = jwtService.generateRefreshToken(account);
         var accessToken = jwtService.generateAccessToken(account);
 
         return new LoginResponse(accessToken, refreshToken.getToken().toString());
     }
 
-    public String refreshAccessToken(RefreshAccessTokenRequest refreshAccessTokenRequest) {
+    public String refreshAccessToken(RefreshAccessTokenRequest refreshAccessTokenRequest) throws Exception {
 
         var token = refreshTokenRepository.findById(UUID.fromString(refreshAccessTokenRequest.getRefreshToken())).orElse(null);
 
         if(token != null && token.validate()){
             var account = token.getAccount();
+            if(!account.isEnabled()) throw new Exception("User account is disabled.");
             return jwtService.generateAccessToken(account);
         }
         return null;
@@ -68,11 +78,22 @@ public class AuthenticationService {
         }
     }
 
-    public LoginResponse changePassword(String email, String oldPassword, String newPassword) {
+    public LoginResponse changePassword(String email, String oldPassword, String newPassword) throws Exception {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, oldPassword));
 
         var account = accountRepository.findByEmail(email).orElseThrow();
+        if(!account.isEnabled()) throw new Exception("User account is disabled.");
         account.setFirstLogin(false);
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+        var refreshToken = jwtService.generateRefreshToken(account);
+        var accessToken = jwtService.generateAccessToken(account);
+
+        return new LoginResponse(accessToken, refreshToken.getToken().toString());
+    }
+
+    public LoginResponse magicResetPassword(Account account, String newPassword) throws Exception {
+        if(!account.isEnabled()) throw new Exception("User account is disabled.");
         account.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account);
         var refreshToken = jwtService.generateRefreshToken(account);

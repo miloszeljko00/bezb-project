@@ -1,0 +1,24 @@
+.unseen-log {
+    font-weight: 700;
+}
+
+.warn{
+    color: #f0ad4e;
+}
+
+.error{
+    color: #d9534f;
+}
+
+.info{
+    color: #5bc0de;
+}
+
+.debug{
+    color: #5cb85c;
+}
+
+.container{
+    background-color: darkslategray;
+    min-height: calc(100vh - 72px);
+}

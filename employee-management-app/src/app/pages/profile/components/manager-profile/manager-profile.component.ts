@@ -54,7 +54,9 @@ export class ManagerProfileComponent implements OnInit{
     public toastrService: ToastrService,
     private authService: AuthService,
     public registerUserInfoService: RegisterUserInfoService) { }
-
+    setup2F() {
+      window.open('https://login-keycloak.azurewebsites.net/auth/realms/bezbednost/account/totp', '_blank');
+    }
   ngOnInit() {
     const user = this.authService.getUser()
     if(!user) return

@@ -96,7 +96,9 @@ export class AdminProfileComponent  implements OnInit {
 
     
   }
-
+  setup2F() {
+    window.open('https://login-keycloak.azurewebsites.net/auth/realms/bezbednost/account/totp', '_blank');
+  }
   newProject() {
 
   }

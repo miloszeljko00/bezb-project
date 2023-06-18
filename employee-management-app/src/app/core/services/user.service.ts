@@ -22,6 +22,14 @@ export class UserService {
   getProjects() {
     return this.http.get(environment.apiUrl + "/api/profile/project/all");
   }
+  
+  enableUser(userId: string) {
+    return this.http.get(environment.apiUrl + `/api/auth/actions/enable-user/${userId}`);
+  }
+  
+  disableUser(userId: string) {
+    return this.http.get(environment.apiUrl + `/api/auth/actions/disable-user/${userId}`);
+  }
 
   getProjectById(id: string) {
     return this.http.get(environment.apiUrl + "/api/profile/project/"+ id);
